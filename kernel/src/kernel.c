@@ -2,7 +2,7 @@
 
 int main(void){
 
-	//Declaraciones varias:
+	//Declaraciones de variables para config:
 
 	char* ip_memoria;
 	char* puerto_memoria;
@@ -13,10 +13,12 @@ int main(void){
 	char* puerto_escucha;
 	char* algoritmo_planificacion;
 	char* estimacion_inicial;
-	char* hrrn_alfa;
-	char* grado_max_multiprogramacion;
+	int hrrn_alfa;
+	int grado_max_multiprogramacion;
 	t_list* recursos;
 	t_list* instancias_recursos;
+
+	// Variables de testeeo de conexion
 	int conexion_memoria;
 	int conexion_filesystem;
 	int conexion_cpu;
@@ -73,23 +75,29 @@ int main(void){
 
 			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
 
+		}else{
+			log_info(logger, "El KerneL se conecto con el modulo Memoria correctamente");
 		}
+
 	if(result_conexion_filesystem == -1){
 			log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
 			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
 
+		}else{
+			log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 		}
+
 	if(result_conexion_cpu == -1){
 			log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
 			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
 
+		}else{
+			log_info(logger, "El KerneL se conecto con el modulo CPU correctamente");
 		}
 
-	log_info(logger, "El KerneL se conecto con el modulo Memoria correctamente");
-	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
-	log_info(logger, "El KerneL se conecto con el modulo CPU correctamente");
+
 
 
 

@@ -30,7 +30,7 @@ int main(void){
 
 
 	if(result_conexion == -1){
-		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
+		log_error(logger, "El File System no se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(conexion, logger, config);
 

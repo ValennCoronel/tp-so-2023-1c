@@ -1,5 +1,5 @@
-#ifndef UTILS_SERVER_KERNEl_H_
-#define UTILS_SERVER_KERNEl_H_
+#ifndef UTILS_SERVER_H_
+#define UTILS_SERVER_H_
 
 
 #include<stdio.h>
