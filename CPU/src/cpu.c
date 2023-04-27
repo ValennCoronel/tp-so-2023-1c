@@ -41,17 +41,16 @@ int main(void){
 	}
 
 	//Realizo la conexion con memoria
-	int result_conexion = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
+	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
 
 	//Testeo el resultado de la conexion
-	if(result_conexion == -1){
+	if(result_conexion_memoria == -1){
 		log_error(logger, "La CPU no se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(conexion_memoria, logger, config);
-
-	} else{
-		log_info(logger, "La CPU se conecto con el modulo Memoria correctamente");
 	}
+
+	log_info(logger, "La CPU se conecto con el modulo Memoria correctamente");
 
 
 
