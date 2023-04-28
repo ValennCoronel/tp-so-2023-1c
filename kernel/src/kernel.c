@@ -56,49 +56,39 @@ int main(void){
 
 	// Control archivo configuracion
 	if(!ip_memoria || !puerto_memoria || !ip_filesystem || !puerto_filesystem || !ip_cpu || !puerto_cpu || !puerto_escucha){
-			log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA'");
+		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA'");
 
-			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
-		}
+		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+	}
 
+	// Realizar las conexiones y probarlas
 
-	//Declaracion de enteros para probar la conexion
 	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
-	int result_conexion_filesystem = conectar_modulo(conexion_filesystem, ip_filesystem, puerto_filesystem);
-	int result_conexion_cpu = conectar_modulo(conexion_cpu, ip_cpu, puerto_cpu);
-
-
-	//Prueba de conexion
-
 	if(result_conexion_memoria == -1){
-			log_error(logger, "No se pudo conectar con el modulo Memoria !!");
+		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
 
-			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+	}
+	log_info(logger, "El KerneL se conecto con el modulo Memoria correctamente");
 
-		}else{
-			log_info(logger, "El KerneL se conecto con el modulo Memoria correctamente");
-		}
 
+
+	int result_conexion_filesystem = conectar_modulo(conexion_filesystem, ip_filesystem, puerto_filesystem);
 	if(result_conexion_filesystem == -1){
-			log_error(logger, "No se pudo conectar con el modulo filesystem !!");
+		log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
-			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+	}
+	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 
-		}else{
-			log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
-		}
 
+	int result_conexion_cpu = conectar_modulo(conexion_cpu, ip_cpu, puerto_cpu);
 	if(result_conexion_cpu == -1){
-			log_error(logger, "No se pudo conectar con el modulo CPU !!");
+		log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
-			terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
-
-		}else{
-			log_info(logger, "El KerneL se conecto con el modulo CPU correctamente");
-		}
-
-
-
+		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+	}
+	log_info(logger, "El KerneL se conecto con el modulo CPU correctamente");
 
 
 	//Iniciar escucha de consola
@@ -111,9 +101,6 @@ int main(void){
 
 
 	terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
-
-
-
 } // Fin del MAIN
 
 

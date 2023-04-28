@@ -4,3 +4,11 @@
 [ERROR] 18:40:35:327 CPU/(8613:8613): No se pudo conectar con el modulo Kernel !!
 [ERROR] 18:41:06:980 CPU/(8673:8673): No se pudo conectar con el modulo Kernel !!
 [ERROR] 18:41:41:099 CPU/(8703:8703): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:18:35:450 CPU/(4103:4103): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 00:17:08:610 CPU/(7387:7387): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 00:19:28:454 CPU/(7545:7545): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:23:46:256 CPU/(2445:2445): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:28:36:071 CPU/(2624:2624): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:11:03:226 CPU/(2847:2847): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:15:40:664 CPU/(3060:3060): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 08:35:18:342 CPU/(17850:17850): La Consola se conecto con el modulo Kernel correctamente

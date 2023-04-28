@@ -26,10 +26,10 @@ int main(void){
 		terminar_programa(conexion, logger, config);
 	}
 
-	int result_conexion = conectar_con_memoria(conexion, ip_memoria, puerto_memoria);
+	int result_conexion_memoria = conectar_con_memoria(conexion, ip_memoria, puerto_memoria);
 
 
-	if(result_conexion == -1){
+	if(result_conexion_memoria == -1){
 		log_error(logger, "El File System no se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(conexion, logger, config);

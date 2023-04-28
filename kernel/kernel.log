@@ -10,5 +10,101 @@
 [ERROR] 13:21:05:511 Kernel/(8670:8670): No se pudo conectar con el modulo Memoria !!
 [ERROR] 13:36:37:220 Kernel/(9133:9133): No se pudo conectar con el modulo Memoria !!
 [ERROR] 18:44:30:001 Kernel/(8884:8884): No se pudo conectar con el modulo Memoria !!
+<<<<<<< HEAD
 [INFO] 20:01:46:086 Kernel/(5470:5470): El KerneL se conecto con el modulo Memoria correctamente
 [INFO] 20:01:46:120 Kernel/(5470:5470): El KerneL se conecto con el modulo Filesystem correctamente
+=======
+[ERROR] 23:18:51:313 Kernel/(4161:4161): No se pudo conectar con el modulo Memoria !!
+[ERROR] 23:19:23:530 Kernel/(4232:4232): No se pudo conectar con el modulo Memoria !!
+[ERROR] 23:30:18:641 Kernel/(4434:4434): No se pudo conectar con el modulo Memoria !!
+[INFO] 23:36:08:213 Kernel/(4722:4722): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:36:08:217 Kernel/(4722:4722): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:36:08:218 Kernel/(4722:4722): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:36:08:218 Kernel/(4722:4722): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 23:37:01:343 Kernel/(4743:4743): No se pudo conectar con el modulo Memoria !!
+[INFO] 23:37:51:246 Kernel/(4807:4807): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:37:51:248 Kernel/(4807:4807): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:37:51:248 Kernel/(4807:4807): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:37:51:248 Kernel/(4807:4807): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 23:38:44:765 Kernel/(4861:4861): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:40:02:996 Kernel/(4861:4861): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:40:11:667 Kernel/(4861:4861): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:40:13:605 Kernel/(4861:4861): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 23:43:53:017 Kernel/(5090:5090): No se pudo conectar con el modulo filesystem !!
+[INFO] 23:44:38:749 Kernel/(5252:5252): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:44:38:750 Kernel/(5252:5252): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:44:38:750 Kernel/(5252:5252): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:44:38:750 Kernel/(5252:5252): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 23:46:00:414 Kernel/(5348:5348): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:46:46:212 Kernel/(5435:5435): El KerneL se conecto con el modulo Memoria correctamente
+[ERROR] 23:48:57:088 Kernel/(5580:5580): No se pudo conectar con el modulo Memoria !!
+[ERROR] 23:51:04:088 Kernel/(5754:5754): No se pudo conectar con el modulo Memoria !!
+[ERROR] 23:51:17:307 Kernel/(5787:5787): No se pudo conectar con el modulo Memoria !!
+[INFO] 23:51:58:061 Kernel/(5866:5866): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:51:58:064 Kernel/(5866:5866): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 23:58:37:217 Kernel/(6221:6221): No se pudo conectar con el modulo Memoria !!
+[ERROR] 00:14:56:938 Kernel/(7276:7276): No se pudo conectar con el modulo filesystem !!
+[INFO] 00:16:31:500 Kernel/(7365:7365): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 00:17:08:608 Kernel/(7365:7365): Se conecto un cliente!
+[ERROR] 00:17:08:613 Kernel/(7365:7365): El cliente se desconecto. Terminando servidor
+[INFO] 00:19:19:755 Kernel/(7529:7529): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 00:19:19:756 Kernel/(7529:7529): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 00:19:28:453 Kernel/(7529:7529): Se conecto un cliente!
+[ERROR] 00:19:28:454 Kernel/(7529:7529): El cliente se desconecto. Terminando servidor
+[INFO] 00:20:26:618 Kernel/(7623:7623): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 00:20:26:622 Kernel/(7623:7623): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 00:20:26:622 Kernel/(7623:7623): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 00:23:01:108 Kernel/(7689:7689): No se pudo conectar con el modulo CPU !!
+[INFO] 00:24:40:721 Kernel/(7837:7837): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 00:24:40:725 Kernel/(7837:7837): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 19:20:50:826 Kernel/(2344:2344): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 19:20:50:830 Kernel/(2344:2344): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 19:23:26:549 Kernel/(2433:2433): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 19:23:26:554 Kernel/(2433:2433): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 19:23:26:556 Kernel/(2433:2433): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 19:23:26:556 Kernel/(2433:2433): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 19:23:46:256 Kernel/(2433:2433): Se conecto un cliente!
+[ERROR] 19:23:46:258 Kernel/(2433:2433): El cliente se desconecto. Terminando servidor
+[INFO] 19:28:21:684 Kernel/(2611:2611): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 19:28:21:689 Kernel/(2611:2611): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 19:28:21:690 Kernel/(2611:2611): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 19:28:21:691 Kernel/(2611:2611): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 19:28:36:068 Kernel/(2611:2611): Se conecto un cliente!
+[ERROR] 19:28:36:074 Kernel/(2611:2611): El cliente se desconecto. Terminando servidor
+[ERROR] 20:09:53:259 Kernel/(3628:3628): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:11:12:263 Kernel/(3681:3681): No se pudo conectar con el modulo Memoria !!
+[INFO] 20:12:53:804 Kernel/(3785:3785): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 20:12:53:805 Kernel/(3785:3785): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 20:12:53:806 Kernel/(3785:3785): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 20:12:53:806 Kernel/(3785:3785): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 20:16:25:508 Kernel/(3906:3906): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:21:16:258 Kernel/(4103:4103): No se pudo conectar con el modulo Memoria !!
+[INFO] 20:23:02:367 Kernel/(4193:4193): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 20:23:02:373 Kernel/(4193:4193): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 20:23:02:374 Kernel/(4193:4193): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 20:23:02:374 Kernel/(4193:4193): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 20:24:52:967 Kernel/(4272:4272): No se pudo conectar con el modulo Memoria !!
+[INFO] 20:25:34:736 Kernel/(4350:4350): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 20:25:34:741 Kernel/(4350:4350): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 20:25:34:743 Kernel/(4350:4350): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 20:25:34:743 Kernel/(4350:4350): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 23:10:57:056 Kernel/(2833:2833): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:10:57:059 Kernel/(2833:2833): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:10:57:061 Kernel/(2833:2833): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:10:57:061 Kernel/(2833:2833): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 23:11:03:218 Kernel/(2833:2833): Se conecto un cliente!
+[ERROR] 23:11:03:229 Kernel/(2833:2833): El cliente se desconecto. Terminando servidor
+[ERROR] 23:13:13:649 Kernel/(2954:2954): No se pudo conectar con el modulo Memoria !!
+[INFO] 23:14:39:595 Kernel/(3033:3033): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:14:39:614 Kernel/(3033:3033): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:14:39:615 Kernel/(3033:3033): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:14:39:616 Kernel/(3033:3033): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 23:15:40:660 Kernel/(3033:3033): Se conecto un cliente!
+[ERROR] 23:15:40:668 Kernel/(3033:3033): El cliente se desconecto. Terminando servidor
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 08:35:18:341 Kernel/(17803:17803): Se conecto un cliente!
+[ERROR] 08:35:18:342 Kernel/(17803:17803): El cliente se desconecto. Terminando servidor
+>>>>>>> test

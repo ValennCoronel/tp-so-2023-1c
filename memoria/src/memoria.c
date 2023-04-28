@@ -42,15 +42,17 @@ int main(void){
 		terminar_programa(logger, config);
 	}
 
-
-
 	//Escucho conexiones del Kernel, CPU y File System
 	int server_fd = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones_kernel(logger, server_fd);
+	manejar_peticiones_kernel(server_fd);
 
+	log_info(logger, "SE conectaron todos los módulos!!");
+
+	//esperamos 1 segundo para que el kernel llegue a conectarse
+	usleep(1500);// sacarlo luego de implementar el resto de la funcionalidad
 
 } //FIN DEL MAIN
 
@@ -101,12 +103,27 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 
 
 //Funcion para manejo de peticiones del kernel
-void manejar_peticiones_kernel(t_log* logger, int server_fd){
+void manejar_peticiones_kernel(int server_fd){
 
-	int cliente_fd = esperar_cliente(server_fd);
+	int clientes_conectados = 0;
+	while(clientes_conectados < 3){
+		pthread_t thread;
+		int cliente_fd = esperar_cliente(server_fd);
 
-	while (1) {
-			int cod_op = recibir_operacion(cliente_fd);
+		pthread_create(&thread, NULL, (void*) atender_cliente, cliente_fd);
+
+		pthread_detach(thread);
+
+		clientes_conectados++;
+	}
+
+}
+
+void atender_cliente(void *args){
+	int cliente_fd = (int) args;
+
+	while(1){
+		int cod_op = recibir_operacion(cliente_fd);
 
 			switch (cod_op) {
 				case MENSAJE:
@@ -122,9 +139,8 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 					log_warning(logger,"Operacion desconocida. No quieras meter la pata");
 					break;
 			}
-		}
+	}
 
-	return ;
+	return;
 }
-
 
