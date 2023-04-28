@@ -140,3 +140,7 @@
 [INFO] 23:14:35:647 FileSystem/(3019:3019): File System listo para recibir peticiones del Kernel
 [INFO] 23:14:39:598 FileSystem/(3019:3019): Se conecto un cliente!
 [ERROR] 23:15:40:668 FileSystem/(3019:3019): El cliente se desconecto. Terminando servidor
+[INFO] 08:34:20:847 FileSystem/(17746:17746): El File System se conecto con el modulo Memoria correctamente
+[INFO] 08:34:20:847 FileSystem/(17746:17746): File System listo para recibir peticiones del Kernel
+[INFO] 08:34:56:757 FileSystem/(17746:17746): Se conecto un cliente!
+[ERROR] 08:35:18:342 FileSystem/(17746:17746): El cliente se desconecto. Terminando servidor

@@ -97,3 +97,9 @@
 [INFO] 23:14:39:616 Kernel/(3033:3033): El Kernel esta listo para recibir instrucciones de la consola
 [INFO] 23:15:40:660 Kernel/(3033:3033): Se conecto un cliente!
 [ERROR] 23:15:40:668 Kernel/(3033:3033): El cliente se desconecto. Terminando servidor
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 08:34:56:757 Kernel/(17803:17803): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 08:35:18:341 Kernel/(17803:17803): Se conecto un cliente!
+[ERROR] 08:35:18:342 Kernel/(17803:17803): El cliente se desconecto. Terminando servidor
