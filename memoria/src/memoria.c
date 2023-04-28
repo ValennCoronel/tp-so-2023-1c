@@ -52,9 +52,6 @@ int main(void){
 	manejar_peticiones_kernel(logger, server_fd);
 
 
-	terminar_programa(logger, config);
-
-
 } //FIN DEL MAIN
 
 

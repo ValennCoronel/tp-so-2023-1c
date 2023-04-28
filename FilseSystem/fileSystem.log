@@ -78,3 +78,14 @@
 [ERROR] 18:32:16:685 FileSystem/(8107:8107): No se pudo conectar con el modulo Memoria !!
 [ERROR] 18:43:26:292 FileSystem/(8804:8804): No se pudo conectar con el modulo Memoria !!
 [ERROR] 18:43:43:406 FileSystem/(8838:8838): El File System no se pudo conectar con el modulo Memoria !!
+[INFO] 19:44:01:348 FileSystem/(4632:4632): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:44:01:349 FileSystem/(4632:4632): File System listo para recibir peticiones del Kernel
+[INFO] 19:56:49:610 FileSystem/(4632:4632): Se conecto un cliente!
+[ERROR] 19:57:09:349 FileSystem/(4632:4632): El cliente se desconecto. Terminando servidor
+[INFO] 19:57:38:793 FileSystem/(5402:5402): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:57:38:793 FileSystem/(5402:5402): File System listo para recibir peticiones del Kernel
+[INFO] 19:57:48:440 FileSystem/(5402:5402): Se conecto un cliente!
+[ERROR] 19:57:59:690 FileSystem/(5402:5402): El cliente se desconecto. Terminando servidor
+[INFO] 19:58:26:085 FileSystem/(5432:5432): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:58:26:085 FileSystem/(5432:5432): File System listo para recibir peticiones del Kernel
+[INFO] 19:59:10:549 FileSystem/(5432:5432): Se conecto un cliente!

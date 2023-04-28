@@ -1,2 +1,10 @@
 [ERROR] 18:50:53:200 Memoria/(9481:9481): Falta una de las siguientes propiedades en el archivo de configuración: 'puerto_escucha', 'tam_memoria', 'tam_segmento_0', 'cant_segmentos', 'retardo_memoria', 'retardo_compactacion', 'algoritmo_asignacion'
 [INFO] 18:52:03:498 Memoria/(9690:9690): Memoria lista para recibir peticiones
+[INFO] 19:43:20:148 Memoria/(4604:4604): Memoria lista para recibir peticiones
+[INFO] 19:44:01:348 Memoria/(4604:4604): Se conecto un cliente!
+[ERROR] 19:57:09:350 Memoria/(4604:4604): El cliente se desconecto. Terminando servidor
+[INFO] 19:57:32:418 Memoria/(5392:5392): Memoria lista para recibir peticiones
+[INFO] 19:57:38:793 Memoria/(5392:5392): Se conecto un cliente!
+[ERROR] 19:57:59:690 Memoria/(5392:5392): El cliente se desconecto. Terminando servidor
+[INFO] 19:58:20:253 Memoria/(5422:5422): Memoria lista para recibir peticiones
+[INFO] 19:58:26:085 Memoria/(5422:5422): Se conecto un cliente!
