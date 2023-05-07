@@ -6,10 +6,12 @@
 #include<stdlib.h>
 #include<sys/socket.h>
 #include<netdb.h>
-#include<commons/log.h>
-#include<commons/collections/list.h>
+#include <unistd.h>
 #include<string.h>
 #include<assert.h>
+#include<commons/log.h>
+#include<commons/collections/list.h>
+#include "utils_cliente.h"
 
 #define IP "127.0.0.1"
 

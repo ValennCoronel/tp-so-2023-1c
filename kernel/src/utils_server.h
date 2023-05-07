@@ -10,10 +10,14 @@
 #include<commons/collections/list.h>
 #include<string.h>
 #include<assert.h>
+#include<unistd.h>
+#include "utils_cliente.h"
+
 
 #define IP "127.0.0.1"
 
 extern t_log* logger;
+
 
 void* recibir_buffer(int*, int);
 

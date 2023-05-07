@@ -97,3 +97,46 @@
 [INFO] 23:14:39:616 Kernel/(3033:3033): El Kernel esta listo para recibir instrucciones de la consola
 [INFO] 23:15:40:660 Kernel/(3033:3033): Se conecto un cliente!
 [ERROR] 23:15:40:668 Kernel/(3033:3033): El cliente se desconecto. Terminando servidor
+[INFO] 22:30:17:634 Kernel/(1966:1966): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:30:17:635 Kernel/(1966:1966): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:30:17:641 Kernel/(1966:1966): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:30:17:644 Kernel/(1966:1966): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 22:30:36:550 Kernel/(1966:1966): Se conecto un cliente!
+[ERROR] 22:30:36:557 Kernel/(1966:1966): El cliente se desconecto. Terminando servidor
+[INFO] 22:31:35:483 Kernel/(2061:2061): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:31:35:491 Kernel/(2061:2061): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:31:35:492 Kernel/(2061:2061): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:31:35:492 Kernel/(2061:2061): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 22:32:08:797 Kernel/(2061:2061): Se conecto un cliente!
+[ERROR] 22:32:08:799 Kernel/(2061:2061): El cliente se desconecto. Terminando servidor
+[INFO] 22:40:46:475 Kernel/(2525:2525): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:40:46:478 Kernel/(2525:2525): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:40:46:480 Kernel/(2525:2525): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:40:46:480 Kernel/(2525:2525): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 22:40:53:038 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:40:53:049 Kernel/(2525:2543): El cliente se desconecto. Terminando servidor
+[INFO] 22:42:13:716 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:42:18:675 Kernel/(2525:2611): El cliente se desconecto. Terminando servidor
+[INFO] 22:42:19:821 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:42:29:836 Kernel/(2525:2623): El cliente se desconecto. Terminando servidor
+[INFO] 22:45:12:384 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:45:14:249 Kernel/(2525:2683): El cliente se desconecto. Terminando servidor
+[INFO] 22:45:15:592 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:45:18:097 Kernel/(2525:2697): El cliente se desconecto. Terminando servidor
+[INFO] 22:45:19:106 Kernel/(2525:2525): Se conecto un cliente!
+[ERROR] 22:45:29:138 Kernel/(2525:2710): El cliente se desconecto. Terminando servidor
+[INFO] 22:55:37:172 Kernel/(2992:2992): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:55:37:181 Kernel/(2992:2992): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:55:37:184 Kernel/(2992:2992): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:55:37:184 Kernel/(2992:2992): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 22:55:48:600 Kernel/(2992:2992): Se conecto un cliente!
+[ERROR] 22:55:48:625 Kernel/(2992:3036): El cliente se desconecto. Terminando servidor
+[ERROR] 19:19:03:335 Kernel/(7768:7768): No se pudo conectar con el modulo Memoria !!
+[INFO] 19:20:10:572 Kernel/(7852:7852): estimacion: 10000
+[INFO] 19:20:58:412 Kernel/(7979:7979): INSTANCIAS_RECURSOS: -2014804256
+[INFO] 19:22:30:028 Kernel/(8086:8086): INSTANCIAS_RECURSOS: 1
+[INFO] 19:34:51:827 Kernel/(9044:9044): INSTANCIAS_RECURSOS: 8
+[INFO] 19:35:15:801 Kernel/(9094:9094): INSTANCIAS_RECURSOS: 2
+[INFO] 19:35:28:316 Kernel/(9109:9109): INSTANCIAS_RECURSOS: 2
+[INFO] 19:35:47:063 Kernel/(9146:9146): INSTANCIAS_RECURSOS: 8
+[INFO] 19:42:12:487 Kernel/(9237:9237): INSTANCIAS_RECURSOS: 3

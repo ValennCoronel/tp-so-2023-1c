@@ -37,15 +37,11 @@ int crear_conexion(char *ip, char* puerto)
 	return socket_cliente;
 }
 
-void enviar_mensaje(char* mensaje, int socket_cliente)
+void enviar_mensaje(char* mensaje, int socket_cliente, op_code codigo)
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 
-	if( strcmp(mensaje, "OK") == 0){
-		paquete->codigo_operacion = HANDSHAKE;
-	} else {
-		paquete->codigo_operacion = MENSAJE;
-	}
+	paquete->codigo_operacion = codigo;
 
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer->size = strlen(mensaje) + 1;

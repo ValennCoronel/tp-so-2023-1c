@@ -19,14 +19,37 @@
 #include <commons/config.h>
 #include <commons/collections/node.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
+#include <pthread.h>
 
 #include "utils_cliente.h"
 #include "utils_server.h"
+#include "planificador_largo_plazo.h"
+#include "planificador_corto_plazo.h"
+#include "peticiones_cpu.h"
+
+typedef struct {
+	int server_fd;
+	int estimacion_inicial;
+}manejar_peticiones_cosola_args;
+
+typedef struct {
+	int consola_fd;
+	int estimacion_inicial;
+}atender_cliente_args;
+
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int conexion, int conexion2, int conexion3, t_log* logger, t_config* config);
-int conectar_con_memoria(int conexion, char* ip, char* puerto);
-void manejar_peticiones_kernel(t_log* logger, int server_fd);
+int conectar_modulo(int conexion, char* ip, char* puerto);
+
+void *manejar_peticiones_consola(void *arg);
+void *atender_cliente(void *args);
+void recibir_instrucciones(int socket_cliente, int estimacion_inicial);
+
+void *escuchar_peticiones_cpu(int cliente_fd);
+
+
 
 #endif /* FILESYSTEM_H_ */

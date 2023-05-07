@@ -48,7 +48,6 @@ int main(void){
 	log_info(logger, "La Consola se conecto con el modulo Kernel correctamente");
 
 
-
 	terminar_programa(conexion_kernel, logger, config);
 
 } //FIN DEL MAIN
