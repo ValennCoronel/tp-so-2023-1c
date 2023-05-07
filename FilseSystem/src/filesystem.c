@@ -49,9 +49,9 @@ int main(void){
 
 	log_info(logger, "El File System se conecto con el modulo Memoria correctamente");
 
-	//Levanto el bitmap
-	bitmap = fopen(path_bitmap, "w");
-	administrar_fcb(path_fcb);
+	//TODO DESCOMENTAR ESTO DESPUES Levanto el bitmap
+	//bitmap = fopen(path_bitmap, "w");
+	//administrar_fcb(path_fcb);
 
 	//escucho conexiones del Kernel
 	int server_fd = iniciar_servidor(puerto_escucha);

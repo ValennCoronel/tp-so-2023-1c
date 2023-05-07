@@ -105,7 +105,7 @@ void manejar_peticiones(int server_fd ){
 		pthread_t thread;
 		int cliente_fd = esperar_cliente(server_fd);
 
-		pthread_create(&thread, NULL, atender_cliente, &cliente_fd);
+		pthread_create(&thread, NULL, atender_cliente, cliente_fd);
 
 		pthread_detach(thread);
 	}
@@ -127,6 +127,7 @@ void* atender_cliente(void *args){
 					break;
 				case NUEVO_PROCESO_MEMORIA:
 					crear_nuevo_proceso(cliente_fd);
+					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
 					return NULL;

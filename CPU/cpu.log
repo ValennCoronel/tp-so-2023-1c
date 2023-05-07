@@ -81,3 +81,58 @@
 [INFO] 22:51:33:725 CPU/(2825:2825): CPU listo para recibir peticiones del Kernel
 [INFO] 22:55:37:183 CPU/(2825:2825): Se conecto un cliente!
 [ERROR] 22:56:05:957 CPU/(2825:2825): El cliente se desconecto. Terminando servidor
+[ERROR] 21:08:19:479 CPU/(2243:2243): La CPU no se pudo conectar con el modulo Memoria !!
+[INFO] 21:33:42:929 CPU/(3117:3117): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 21:33:48:050 CPU/(3117:3117): CPU listo para recibir peticiones del Kernel
+[INFO] 21:37:06:965 CPU/(3308:3308): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 21:37:06:969 CPU/(3308:3308): CPU listo para recibir peticiones del Kernel
+[INFO] 21:37:37:638 CPU/(3308:3308): Se conecto un cliente!
+[ERROR] 21:37:37:936 CPU/(3308:3308): El cliente se desconecto. Terminando servidor
+[INFO] 22:37:03:255 CPU/(3547:3547): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:37:03:256 CPU/(3547:3547): CPU listo para recibir peticiones del Kernel
+[INFO] 22:38:19:577 CPU/(3547:3547): Se conecto un cliente!
+[ERROR] 22:39:59:010 CPU/(3547:3547): El cliente se desconecto. Terminando servidor
+[INFO] 22:41:39:423 CPU/(3739:3739): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:41:39:426 CPU/(3739:3739): CPU listo para recibir peticiones del Kernel
+[INFO] 22:42:18:815 CPU/(3739:3739): Se conecto un cliente!
+[ERROR] 22:43:05:429 CPU/(3739:3739): El cliente se desconecto. Terminando servidor
+[INFO] 22:46:41:070 CPU/(3962:3962): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:46:41:073 CPU/(3962:3962): CPU listo para recibir peticiones del Kernel
+[INFO] 22:46:55:248 CPU/(3962:3962): Se conecto un cliente!
+[INFO] 22:48:43:623 CPU/(4093:4093): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:48:43:628 CPU/(4093:4093): CPU listo para recibir peticiones del Kernel
+[INFO] 22:52:22:923 CPU/(4265:4265): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:52:22:926 CPU/(4265:4265): CPU listo para recibir peticiones del Kernel
+[INFO] 22:52:27:575 CPU/(4265:4265): Se conecto un cliente!
+[INFO] 22:58:53:322 CPU/(4603:4603): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:58:53:323 CPU/(4603:4603): CPU listo para recibir peticiones del Kernel
+[INFO] 22:59:36:072 CPU/(4723:4723): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 22:59:36:072 CPU/(4723:4723): CPU listo para recibir peticiones del Kernel
+[INFO] 23:00:58:050 CPU/(4783:4783): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:00:58:051 CPU/(4783:4783): CPU listo para recibir peticiones del Kernel
+[INFO] 23:01:31:244 CPU/(4783:4783): Se conecto un cliente!
+[ERROR] 23:04:57:797 CPU/(4783:4783): El cliente se desconecto. Terminando servidor
+[INFO] 23:05:20:931 CPU/(4920:4920): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:05:20:931 CPU/(4920:4920): CPU listo para recibir peticiones del Kernel
+[INFO] 23:05:36:060 CPU/(4920:4920): Se conecto un cliente!
+[ERROR] 23:06:52:524 CPU/(4920:4920): El cliente se desconecto. Terminando servidor
+[INFO] 23:08:13:116 CPU/(5035:5035): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:08:13:120 CPU/(5035:5035): CPU listo para recibir peticiones del Kernel
+[INFO] 23:08:20:059 CPU/(5035:5035): Se conecto un cliente!
+[ERROR] 23:10:49:447 CPU/(5035:5035): El cliente se desconecto. Terminando servidor
+[INFO] 23:11:59:991 CPU/(5258:5258): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:11:59:994 CPU/(5258:5258): CPU listo para recibir peticiones del Kernel
+[INFO] 23:12:07:143 CPU/(5258:5258): Se conecto un cliente!
+[ERROR] 23:14:56:193 CPU/(5258:5258): El cliente se desconecto. Terminando servidor
+[INFO] 23:25:55:683 CPU/(5967:5967): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:25:55:683 CPU/(5967:5967): CPU listo para recibir peticiones del Kernel
+[INFO] 23:26:02:071 CPU/(5967:5967): Se conecto un cliente!
+[ERROR] 23:31:09:937 CPU/(5967:5967): El cliente se desconecto. Terminando servidor
+[INFO] 23:31:55:056 CPU/(6191:6191): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:31:55:078 CPU/(6191:6191): CPU listo para recibir peticiones del Kernel
+[INFO] 23:32:02:959 CPU/(6191:6191): Se conecto un cliente!
+[ERROR] 23:35:04:179 CPU/(6191:6191): El cliente se desconecto. Terminando servidor
+[INFO] 23:35:23:216 CPU/(6398:6398): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 23:35:23:216 CPU/(6398:6398): CPU listo para recibir peticiones del Kernel
+[INFO] 23:35:30:664 CPU/(6398:6398): Se conecto un cliente!
+[ERROR] 23:53:44:134 CPU/(6398:6398): El cliente se desconecto. Terminando servidor

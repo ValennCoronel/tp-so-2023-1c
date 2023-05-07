@@ -28,6 +28,7 @@ void recibir_mensaje(int);
 int recibir_operacion(int);
 void recibir_handshake(int);
 int responder_peticiones(int cliente_fd);
+void manejar_handshake_del_cliente(int);
 
 
 #endif /* UTILS_SERVER_H_ */

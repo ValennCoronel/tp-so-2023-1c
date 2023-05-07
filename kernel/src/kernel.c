@@ -63,7 +63,7 @@ int main(void){
 
 	// Realizar las conexiones y probarlas
 
-	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
+	int result_conexion_memoria = conectar_modulo(&conexion_memoria, ip_memoria, puerto_memoria);
 	if(result_conexion_memoria == -1){
 		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
 
@@ -73,7 +73,7 @@ int main(void){
 
 
 
-	int result_conexion_filesystem = conectar_modulo(conexion_filesystem, ip_filesystem, puerto_filesystem);
+	int result_conexion_filesystem = conectar_modulo(&conexion_filesystem, ip_filesystem, puerto_filesystem);
 	if(result_conexion_filesystem == -1){
 		log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
@@ -82,7 +82,7 @@ int main(void){
 	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 
 
-	int result_conexion_cpu = conectar_modulo(conexion_cpu, ip_cpu, puerto_cpu);
+	int result_conexion_cpu = conectar_modulo(&conexion_cpu, ip_cpu, puerto_cpu);
 	if(result_conexion_cpu == -1){
 		log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
@@ -97,6 +97,7 @@ int main(void){
 
 	log_info(logger, "El Kernel esta listo para recibir instrucciones de la consola");
 
+
 	inicializar_colas_y_semaforos();
 
 	//inicio hilos
@@ -106,7 +107,7 @@ int main(void){
 	args_consolas->estimacion_inicial = estimacion_inicial;
 	args_consolas->server_fd = server_fd;
 
-	pthread_create(&thread_consolas, NULL, manejar_peticiones_consola, &args_consolas);
+	pthread_create(&thread_consolas, NULL, manejar_peticiones_consola, args_consolas);
 
 
 	//inicio planificador largo plazo
@@ -115,7 +116,7 @@ int main(void){
 	args_planificador_largo_plazo->grado_max_multiprogramacion = grado_max_multiprogramacion;
 	args_planificador_largo_plazo->conexion_memoria = conexion_memoria;
 
-	pthread_create(&thread_planificador_largo_plazo, NULL, planificar_nuevos_procesos_largo_plazo, &args_planificador_largo_plazo);
+	pthread_create(&thread_planificador_largo_plazo, NULL, planificar_nuevos_procesos_largo_plazo, args_planificador_largo_plazo);
 
 	//inicio planificador corto plazo
 	planificar_corto_plazo_args* args_planificador_corto_plazo = malloc(sizeof(planificar_corto_plazo_args));
@@ -123,19 +124,20 @@ int main(void){
 	args_planificador_corto_plazo->algoritmo_planificacion = algoritmo_planificacion;
 	args_planificador_corto_plazo->hrrn_alfa = hrrn_alfa;
 
-	pthread_create(&thread_planificador_corto_plazo, NULL, planificar_corto_plazo, &args_planificador_corto_plazo);
+	pthread_create(&thread_planificador_corto_plazo, NULL, planificar_corto_plazo, args_planificador_corto_plazo);
 
 
 	pthread_detach(thread_consolas);
 	pthread_detach(thread_planificador_largo_plazo);
 	pthread_detach(thread_planificador_corto_plazo);
 
+
 	escuchar_peticiones_cpu(conexion_cpu);
 
-	free(args_consolas);
-	free(args_planificador_largo_plazo);
-	free(args_planificador_corto_plazo->algoritmo_planificacion);
-	free(args_planificador_corto_plazo);
+	//free(args_consolas);
+	//free(args_planificador_largo_plazo);
+	//free(args_planificador_corto_plazo->algoritmo_planificacion);
+	//free(args_planificador_corto_plazo);
 
 	terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
 } // Fin del MAIN
@@ -172,15 +174,15 @@ t_config* iniciar_config(void){
 
 // CREAR CONEXIONES --------------------------------------------------------------------
 
-int conectar_modulo(int conexion, char* ip, char* puerto){
+int conectar_modulo(int* conexion, char* ip, char* puerto){
 
-	conexion = crear_conexion(ip, puerto);
+	*conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion, HANDSHAKE);
+	enviar_mensaje("OK", *conexion, HANDSHAKE);
 
 	int size;
-	char* buffer = recibir_buffer(&size, conexion);
+	char* buffer = recibir_buffer(&size, *conexion);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -209,7 +211,7 @@ void *manejar_peticiones_consola(void *arg){
 			args_cliente->consola_fd = consola_fd;
 			args_cliente->estimacion_inicial = estimacion_inicial;
 
-			pthread_create(&thread, NULL, atender_cliente, &args_cliente);
+			pthread_create(&thread, NULL, atender_cliente, args_cliente);
 
 			pthread_detach(thread);
 		}
@@ -282,6 +284,9 @@ void *escuchar_peticiones_cpu(int cliente_fd){
 				case MENSAJE:
 					recibir_mensaje(cliente_fd);
 					break;
+				case HANDSHAKE:
+					manejar_handshake_del_cliente(cliente_fd);
+					break;
 				case FINALIZAR_PROCESO:
 					finalizar_proceso(cliente_fd);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
@@ -299,10 +304,10 @@ void *escuchar_peticiones_cpu(int cliente_fd){
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case -1:
-					log_error(logger, "El cliente se desconecto. Terminando servidor");
+					log_error(logger, "La CPU se desconecto. Terminando servidor");
 					return NULL;
 				default:
-					log_warning(logger,"Operacion desconocida. No quieras meter la pata");
+					log_warning(logger,"Operacion desconocida. No quieras meter la pata, la operacion es: %d",cod_op );
 					break;
 			}
 	}

@@ -187,3 +187,116 @@
 [ERROR] 22:56:05:956 Memoria/(2814:2998): El cliente se desconecto. Terminando servidor
 [ERROR] 22:56:05:960 Memoria/(2814:2845): El cliente se desconecto. Terminando servidor
 [ERROR] 22:56:05:964 Memoria/(2814:2831): El cliente se desconecto. Terminando servidor
+[INFO] 21:03:26:694 Memoria/(2197:2197): Memoria lista para recibir peticiones
+[INFO] 21:03:49:534 Memoria/(2197:2197): Se conecto un cliente!
+[ERROR] 21:03:49:547 Memoria/(2197:2215): El cliente se desconecto. Terminando servidor
+[INFO] 21:09:06:493 Memoria/(2274:2274): Memoria lista para recibir peticiones
+[INFO] 21:09:53:131 Memoria/(2274:2274): Se conecto un cliente!
+[ERROR] 21:09:53:134 Memoria/(2274:2354): El cliente se desconecto. Terminando servidor
+[INFO] 21:11:58:329 Memoria/(2441:2441): Memoria lista para recibir peticiones
+[INFO] 21:12:03:876 Memoria/(2441:2441): Se conecto un cliente!
+[ERROR] 21:12:03:878 Memoria/(2441:2488): El cliente se desconecto. Terminando servidor
+[INFO] 21:13:35:899 Memoria/(2511:2511): Memoria lista para recibir peticiones
+[INFO] 21:14:25:220 Memoria/(2571:2571): Memoria lista para recibir peticiones
+[INFO] 21:14:29:762 Memoria/(2571:2571): Se conecto un cliente!
+[ERROR] 21:14:29:763 Memoria/(2571:2590): El cliente se desconecto. Terminando servidor
+[INFO] 21:16:32:501 Memoria/(2674:2674): Memoria lista para recibir peticiones
+[INFO] 21:17:15:894 Memoria/(2674:2674): Se conecto un cliente!
+[ERROR] 21:17:15:896 Memoria/(2674:2724): El cliente se desconecto. Terminando servidor
+[INFO] 21:18:05:971 Memoria/(2674:2674): Se conecto un cliente!
+[ERROR] 21:18:05:976 Memoria/(2674:2780): El cliente se desconecto. Terminando servidor
+[INFO] 21:23:35:947 Memoria/(2844:2844): Memoria lista para recibir peticiones
+[INFO] 21:24:20:978 Memoria/(2876:2876): Memoria lista para recibir peticiones
+[INFO] 21:25:08:415 Memoria/(2876:2876): Se conecto un cliente!
+[ERROR] 21:25:20:016 Memoria/(2876:2976): El cliente se desconecto. Terminando servidor
+[INFO] 21:32:25:654 Memoria/(3068:3068): Memoria lista para recibir peticiones
+[INFO] 21:32:54:462 Memoria/(3068:3068): Se conecto un cliente!
+[ERROR] 21:34:06:832 Memoria/(3068:3140): El cliente se desconecto. Terminando servidor
+[INFO] 21:36:59:288 Memoria/(3297:3297): Memoria lista para recibir peticiones
+[INFO] 21:37:06:962 Memoria/(3297:3297): Se conecto un cliente!
+[INFO] 21:37:15:369 Memoria/(3297:3297): Se conecto un cliente!
+[INFO] 21:37:37:630 Memoria/(3297:3297): Se conecto un cliente!
+[ERROR] 21:37:37:936 Memoria/(3297:3365): El cliente se desconecto. Terminando servidor
+[ERROR] 21:37:37:937 Memoria/(3297:3314): El cliente se desconecto. Terminando servidor
+[ERROR] 21:37:38:181 Memoria/(3297:3351): El cliente se desconecto. Terminando servidor
+[INFO] 22:36:40:628 Memoria/(3530:3530): Memoria lista para recibir peticiones
+[INFO] 22:37:03:251 Memoria/(3530:3530): Se conecto un cliente!
+[INFO] 22:37:11:817 Memoria/(3530:3530): Se conecto un cliente!
+[INFO] 22:37:58:317 Memoria/(3530:3530): Se conecto un cliente!
+[ERROR] 22:39:59:009 Memoria/(3530:3625): El cliente se desconecto. Terminando servidor
+[ERROR] 22:39:59:010 Memoria/(3530:3552): El cliente se desconecto. Terminando servidor
+[ERROR] 22:39:59:290 Memoria/(3530:3570): El cliente se desconecto. Terminando servidor
+[INFO] 22:41:31:065 Memoria/(3727:3727): Memoria lista para recibir peticiones
+[INFO] 22:41:39:418 Memoria/(3727:3727): Se conecto un cliente!
+[INFO] 22:41:45:191 Memoria/(3727:3727): Se conecto un cliente!
+[INFO] 22:42:12:462 Memoria/(3727:3727): Se conecto un cliente!
+[ERROR] 22:43:05:428 Memoria/(3727:3807): El cliente se desconecto. Terminando servidor
+[ERROR] 22:43:05:430 Memoria/(3727:3745): El cliente se desconecto. Terminando servidor
+[ERROR] 22:43:05:723 Memoria/(3727:3759): El cliente se desconecto. Terminando servidor
+[INFO] 22:46:35:210 Memoria/(3949:3949): Memoria lista para recibir peticiones
+[INFO] 22:46:41:065 Memoria/(3949:3949): Se conecto un cliente!
+[INFO] 22:46:45:820 Memoria/(3949:3949): Se conecto un cliente!
+[INFO] 22:46:55:233 Memoria/(3949:3949): Se conecto un cliente!
+[INFO] 22:48:29:185 Memoria/(4068:4068): Memoria lista para recibir peticiones
+[INFO] 22:48:37:035 Memoria/(4068:4068): Se conecto un cliente!
+[INFO] 22:48:43:621 Memoria/(4068:4068): Se conecto un cliente!
+[INFO] 22:49:00:655 Memoria/(4068:4068): Se conecto un cliente!
+[ERROR] 22:50:42:537 Memoria/(4068:4149): El cliente se desconecto. Terminando servidor
+[ERROR] 22:50:42:804 Memoria/(4068:4086): El cliente se desconecto. Terminando servidor
+[ERROR] 22:51:52:623 Memoria/(4068:4099): El cliente se desconecto. Terminando servidor
+[INFO] 22:52:07:156 Memoria/(4240:4240): Memoria lista para recibir peticiones
+[INFO] 22:52:18:991 Memoria/(4240:4240): Se conecto un cliente!
+[INFO] 22:52:22:920 Memoria/(4240:4240): Se conecto un cliente!
+[INFO] 22:52:27:569 Memoria/(4240:4240): Se conecto un cliente!
+[INFO] 22:58:51:892 Memoria/(4573:4573): Memoria lista para recibir peticiones
+[INFO] 22:58:53:319 Memoria/(4573:4573): Se conecto un cliente!
+[INFO] 22:58:55:569 Memoria/(4573:4573): Se conecto un cliente!
+[ERROR] 22:58:55:874 Memoria/(4573:4677): El cliente se desconecto. Terminando servidor
+[INFO] 22:58:56:216 Memoria/(4573:4573): Se conecto un cliente!
+[INFO] 22:59:23:731 Memoria/(4696:4696): Memoria lista para recibir peticiones
+[INFO] 22:59:29:303 Memoria/(4696:4696): Se conecto un cliente!
+[INFO] 22:59:36:071 Memoria/(4696:4696): Se conecto un cliente!
+[INFO] 22:59:52:697 Memoria/(4696:4696): Se conecto un cliente!
+[ERROR] 22:59:53:024 Memoria/(4696:4744): El cliente se desconecto. Terminando servidor
+[ERROR] 22:59:53:343 Memoria/(4696:4713): El cliente se desconecto. Terminando servidor
+[ERROR] 23:00:35:636 Memoria/(4696:4729): El cliente se desconecto. Terminando servidor
+[INFO] 23:00:47:282 Memoria/(4758:4758): Memoria lista para recibir peticiones
+[INFO] 23:00:53:089 Memoria/(4758:4758): Se conecto un cliente!
+[INFO] 23:00:58:047 Memoria/(4758:4758): Se conecto un cliente!
+[INFO] 23:01:23:396 Memoria/(4758:4758): Se conecto un cliente!
+[ERROR] 23:04:57:794 Memoria/(4758:4840): El cliente se desconecto. Terminando servidor
+[ERROR] 23:04:57:801 Memoria/(4758:4789): El cliente se desconecto. Terminando servidor
+[ERROR] 23:04:58:116 Memoria/(4758:4776): El cliente se desconecto. Terminando servidor
+[INFO] 23:05:13:657 Memoria/(4908:4908): Memoria lista para recibir peticiones
+[INFO] 23:05:20:924 Memoria/(4908:4908): Se conecto un cliente!
+[INFO] 23:05:27:558 Memoria/(4908:4908): Se conecto un cliente!
+[INFO] 23:05:36:051 Memoria/(4908:4908): Se conecto un cliente!
+[ERROR] 23:06:52:524 Memoria/(4908:4953): El cliente se desconecto. Terminando servidor
+[ERROR] 23:06:52:526 Memoria/(4908:4926): El cliente se desconecto. Terminando servidor
+[ERROR] 23:06:52:882 Memoria/(4908:4940): El cliente se desconecto. Terminando servidor
+[INFO] 23:08:01:997 Memoria/(5008:5008): Memoria lista para recibir peticiones
+[INFO] 23:08:07:319 Memoria/(5008:5008): Se conecto un cliente!
+[INFO] 23:08:13:115 Memoria/(5008:5008): Se conecto un cliente!
+[INFO] 23:08:20:046 Memoria/(5008:5008): Se conecto un cliente!
+[INFO] 23:11:49:929 Memoria/(5230:5230): Memoria lista para recibir peticiones
+[INFO] 23:11:54:259 Memoria/(5230:5230): Se conecto un cliente!
+[INFO] 23:11:59:988 Memoria/(5230:5230): Se conecto un cliente!
+[INFO] 23:12:07:136 Memoria/(5230:5230): Se conecto un cliente!
+[ERROR] 23:14:56:191 Memoria/(5230:5295): El cliente se desconecto. Terminando servidor
+[ERROR] 23:14:56:194 Memoria/(5230:5264): El cliente se desconecto. Terminando servidor
+[ERROR] 23:14:56:499 Memoria/(5230:5250): El cliente se desconecto. Terminando servidor
+[INFO] 23:25:45:141 Memoria/(5941:5941): Memoria lista para recibir peticiones
+[INFO] 23:25:50:667 Memoria/(5941:5941): Se conecto un cliente!
+[INFO] 23:25:55:664 Memoria/(5941:5941): Se conecto un cliente!
+[INFO] 23:26:02:069 Memoria/(5941:5941): Se conecto un cliente!
+[INFO] 23:31:36:220 Memoria/(6163:6163): Memoria lista para recibir peticiones
+[INFO] 23:31:51:003 Memoria/(6163:6163): Se conecto un cliente!
+[INFO] 23:31:55:055 Memoria/(6163:6163): Se conecto un cliente!
+[INFO] 23:32:02:951 Memoria/(6163:6163): Se conecto un cliente!
+[INFO] 23:35:14:337 Memoria/(6370:6370): Memoria lista para recibir peticiones
+[INFO] 23:35:18:935 Memoria/(6370:6370): Se conecto un cliente!
+[INFO] 23:35:23:211 Memoria/(6370:6370): Se conecto un cliente!
+[INFO] 23:35:30:658 Memoria/(6370:6370): Se conecto un cliente!
+[ERROR] 23:53:44:127 Memoria/(6370:6435): El cliente se desconecto. Terminando servidor
+[ERROR] 23:53:44:143 Memoria/(6370:6404): El cliente se desconecto. Terminando servidor
+[ERROR] 23:53:44:471 Memoria/(6370:6390): El cliente se desconecto. Terminando servidor

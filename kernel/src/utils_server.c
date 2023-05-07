@@ -96,12 +96,24 @@ void recibir_handshake(int socket_cliente)
 	char* buffer = recibir_buffer(&size, socket_cliente);
 
 	if(strcmp(buffer, "OK") == 0)
-		enviar_mensaje("OK", socket_cliente, 1);// 1 es el codigo de operacion del HANDSHAKE
+		enviar_mensaje("OK", socket_cliente, HANDSHAKE);// 1 es el codigo de operacion del HANDSHAKE
 	else
-		enviar_mensaje("ERROR", socket_cliente, 1);
+		enviar_mensaje("ERROR", socket_cliente, HANDSHAKE);
 
 
 	free(buffer);
 }
 
+void manejar_handshake_del_cliente(int socket_cliente){
+	int size;
+		char* buffer = recibir_buffer(&size, socket_cliente);
+
+		if(strcmp(buffer, "OK") == 0){
+			log_info(logger, "Se establecio la conexion con cpu correctamente");
+		} else {
+			log_info(logger, "No se pudo recibir el handshake de la CPU");
+		}
+
+	free(buffer);
+}
 

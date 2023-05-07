@@ -96,12 +96,10 @@ void recibir_handshake(int socket_cliente)
 	char* buffer = recibir_buffer(&size, socket_cliente);
 
 	if(strcmp(buffer, "OK") == 0)
-		enviar_mensaje("OK", socket_cliente);
+		enviar_mensaje("OK", socket_cliente, HANDSHAKE);
 	else
-		enviar_mensaje("ERROR", socket_cliente);
+		enviar_mensaje("ERROR", socket_cliente, HANDSHAKE);
 
 
 	free(buffer);
 }
-
-

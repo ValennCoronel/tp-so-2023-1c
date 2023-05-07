@@ -140,3 +140,104 @@
 [INFO] 19:35:28:316 Kernel/(9109:9109): INSTANCIAS_RECURSOS: 2
 [INFO] 19:35:47:063 Kernel/(9146:9146): INSTANCIAS_RECURSOS: 8
 [INFO] 19:42:12:487 Kernel/(9237:9237): INSTANCIAS_RECURSOS: 3
+[ERROR] 21:36:47:369 Kernel/(3284:3284): No se pudo conectar con el modulo Memoria !!
+[INFO] 21:37:37:633 Kernel/(3359:3359): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 21:37:37:637 Kernel/(3359:3359): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 21:37:37:643 Kernel/(3359:3359): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 21:37:37:647 Kernel/(3359:3359): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 21:37:37:647 Kernel/(3359:3359): El cliente se desconecto. Terminando servidor
+[ERROR] 22:35:45:717 Kernel/(3513:3513): No se pudo conectar con el modulo Memoria !!
+[INFO] 22:38:07:306 Kernel/(3596:3596): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:38:18:637 Kernel/(3596:3596): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:38:22:249 Kernel/(3596:3596): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:38:25:583 Kernel/(3596:3596): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 22:39:51:001 Kernel/(3596:3596): La CPU se desconecto. Terminando servidor
+[ERROR] 22:41:13:248 Kernel/(3714:3714): No se pudo conectar con el modulo Memoria !!
+[INFO] 22:42:14:256 Kernel/(3780:3780): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:42:18:142 Kernel/(3780:3780): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:42:20:951 Kernel/(3780:3780): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:42:26:377 Kernel/(3780:3780): El Kernel esta listo para recibir instrucciones de la consola
+[INFO] 22:46:55:235 Kernel/(4008:4008): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:46:55:248 Kernel/(4008:4008): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:46:55:248 Kernel/(4008:4008): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:46:55:248 Kernel/(4008:4008): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 22:46:55:248 Kernel/(4008:4008): Operacion desconocida. No quieras meter la pata
+[INFO] 22:47:31:830 Kernel/(4008:4015): Se conecto un cliente!
+[ERROR] 22:47:31:832 Kernel/(4008:4060): El cliente se desconecto. Terminando servidor
+[WARNING] 22:48:12:587 Kernel/(4008:4008): Operacion desconocida. No quieras meter la pata
+[ERROR] 22:48:12:587 Kernel/(4008:4008): La CPU se desconecto. Terminando servidor
+[INFO] 22:49:02:666 Kernel/(4123:4123): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:49:07:192 Kernel/(4123:4123): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:49:28:055 Kernel/(4123:4123): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:49:30:689 Kernel/(4123:4123): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 22:50:13:293 Kernel/(4123:4123): La CPU se desconecto. Terminando servidor
+[INFO] 22:52:27:573 Kernel/(4278:4278): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:52:27:574 Kernel/(4278:4278): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:52:27:575 Kernel/(4278:4278): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:52:27:575 Kernel/(4278:4278): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 22:52:27:575 Kernel/(4278:4278): Operacion desconocida. No quieras meter la pata
+[WARNING] 22:58:43:749 Kernel/(4278:4278): Operacion desconocida. No quieras meter la pata
+[ERROR] 22:58:43:749 Kernel/(4278:4278): La CPU se desconecto. Terminando servidor
+[INFO] 22:58:55:578 Kernel/(4671:4671): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:58:55:578 Kernel/(4671:4671): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:58:55:579 Kernel/(4671:4671): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:58:55:579 Kernel/(4671:4671): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 22:58:55:579 Kernel/(4671:4671): La CPU se desconecto. Terminando servidor
+[INFO] 22:59:52:704 Kernel/(4738:4738): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:59:52:706 Kernel/(4738:4738): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:59:52:706 Kernel/(4738:4738): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:59:52:706 Kernel/(4738:4738): El Kernel esta listo para recibir instrucciones de la consola
+[ERROR] 22:59:52:706 Kernel/(4738:4738): La CPU se desconecto. Terminando servidor
+[INFO] 23:01:25:292 Kernel/(4815:4815): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:01:29:773 Kernel/(4815:4815): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:01:33:860 Kernel/(4815:4815): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:01:51:968 Kernel/(4815:4815): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:02:23:108 Kernel/(4815:4815): Operacion desconocida. No quieras meter la pata
+[INFO] 23:05:36:054 Kernel/(4947:4947): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:05:36:060 Kernel/(4947:4947): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:05:36:060 Kernel/(4947:4947): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:05:36:060 Kernel/(4947:4947): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:05:36:060 Kernel/(4947:4947): Operacion desconocida. No quieras meter la pata
+[INFO] 23:08:20:048 Kernel/(5066:5066): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:08:20:059 Kernel/(5066:5066): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:08:20:059 Kernel/(5066:5066): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:08:20:059 Kernel/(5066:5066): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:08:20:059 Kernel/(5066:5066): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 23:08:38:283 Kernel/(5066:5073): Se conecto un cliente!
+[ERROR] 23:08:38:283 Kernel/(5066:5089): El cliente se desconecto. Terminando servidor
+[INFO] 23:09:25:112 Kernel/(5066:5073): Se conecto un cliente!
+[ERROR] 23:09:25:115 Kernel/(5066:5126): El cliente se desconecto. Terminando servidor
+[INFO] 23:10:02:248 Kernel/(5066:5073): Se conecto un cliente!
+[ERROR] 23:10:02:253 Kernel/(5066:5174): El cliente se desconecto. Terminando servidor
+[INFO] 23:12:07:139 Kernel/(5289:5289): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:12:07:143 Kernel/(5289:5289): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:12:07:152 Kernel/(5289:5289): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:12:07:152 Kernel/(5289:5289): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:12:07:152 Kernel/(5289:5289): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 23:26:02:070 Kernel/(5982:5982): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:26:02:071 Kernel/(5982:5982): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:26:02:072 Kernel/(5982:5982): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:26:02:072 Kernel/(5982:5982): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:26:02:072 Kernel/(5982:5982): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 23:32:02:953 Kernel/(6222:6222): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:32:02:958 Kernel/(6222:6222): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:32:02:960 Kernel/(6222:6222): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:32:02:960 Kernel/(6222:6222): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:32:02:980 Kernel/(6222:6222): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 23:32:09:608 Kernel/(6222:6229): Se conecto un cliente!
+[ERROR] 23:32:09:613 Kernel/(6222:6244): El cliente se desconecto. Terminando servidor
+[INFO] 23:32:39:432 Kernel/(6222:6229): Se conecto un cliente!
+[ERROR] 23:32:39:436 Kernel/(6222:6281): El cliente se desconecto. Terminando servidor
+[INFO] 23:33:27:704 Kernel/(6222:6229): Se conecto un cliente!
+[ERROR] 23:33:27:710 Kernel/(6222:6340): El cliente se desconecto. Terminando servidor
+[INFO] 23:35:30:659 Kernel/(6429:6429): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 23:35:30:664 Kernel/(6429:6429): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 23:35:30:665 Kernel/(6429:6429): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 23:35:30:666 Kernel/(6429:6429): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 23:35:30:666 Kernel/(6429:6429): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 23:35:52:467 Kernel/(6429:6436): Se conecto un cliente!
+[ERROR] 23:36:19:068 Kernel/(6429:6485): El cliente se desconecto. Terminando servidor
+[INFO] 23:36:37:797 Kernel/(6429:6436): Se conecto un cliente!
+[ERROR] 23:36:37:800 Kernel/(6429:6515): El cliente se desconecto. Terminando servidor
+[INFO] 23:36:57:141 Kernel/(6429:6436): Se conecto un cliente!
+[ERROR] 23:37:02:208 Kernel/(6429:6554): El cliente se desconecto. Terminando servidor
