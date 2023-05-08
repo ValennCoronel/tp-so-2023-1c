@@ -16,6 +16,7 @@ typedef enum
 	MENSAJE,
 	HANDSHAKE,
 	PAQUETE,
+<<<<<<< HEAD
 	//peticiones CPU
 	INSTRUCCIONES,
 	FINALIZAR_PROCESO,
@@ -26,6 +27,9 @@ typedef enum
 	//peticiones memoria
 	NUEVO_PROCESO_MEMORIA,
 	// filesystem
+=======
+	INSTRUCCION,
+>>>>>>> main
 	ABRIR_ARCHIVO,
 	CREAR_ARCHIVO,
 	TRUNCAR_ARCHIVO,

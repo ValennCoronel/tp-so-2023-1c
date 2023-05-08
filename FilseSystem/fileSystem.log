@@ -1,1 +1,80 @@
-
+[ERROR] 23:38:40:008 FileSystem/(3512:3512): No se pudo crear el archivo de configuración !!
+[ERROR] 23:39:22:459 FileSystem/(3585:3585): No se pudo crear el archivo de configuración !!
+[INFO] 23:48:15:778 FileSystem/(4131:4131): El File System se conecto con el modulo memoria correctamente
+[INFO] 23:58:31:390 FileSystem/(4572:4572): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:59:03:567 FileSystem/(4659:4659): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:59:15:855 FileSystem/(4676:4676): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:59:46:479 FileSystem/(4710:4710): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:01:58:702 FileSystem/(4973:4973): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:07:05:569 FileSystem/(5117:5117): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:13:37:741 FileSystem/(5409:5409): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:17:03:126 FileSystem/(5610:5610): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:13:04:806 FileSystem/(3222:3222): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:15:11:875 FileSystem/(3352:3352): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:18:13:277 FileSystem/(3552:3552): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:18:25:365 FileSystem/(3552:3552): File System listo para recibir peticiones del Kernel
+[INFO] 00:20:44:519 FileSystem/(3622:3622): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:20:44:533 FileSystem/(3622:3622): File System listo para recibir peticiones del Kernel
+[INFO] 18:26:42:289 FileSystem/(2686:2686): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:26:42:295 FileSystem/(2686:2686): File System listo para recibir peticiones del Kernel
+[INFO] 18:32:54:876 FileSystem/(2917:2917): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:32:54:877 FileSystem/(2917:2917): File System listo para recibir peticiones del Kernel
+[INFO] 18:35:51:035 FileSystem/(3030:3030): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:36:16:424 FileSystem/(3030:3030): File System listo para recibir peticiones del Kernel
+[INFO] 18:41:20:815 FileSystem/(3262:3262): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:41:34:272 FileSystem/(3262:3262): File System listo para recibir peticiones del Kernel
+[INFO] 18:48:02:442 FileSystem/(3520:3520): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:48:21:765 FileSystem/(3520:3520): File System listo para recibir peticiones del Kernel
+[INFO] 18:49:21:702 FileSystem/(3623:3623): El File System se conecto con el modulo Memoria correctamente
+[INFO] 18:49:29:560 FileSystem/(3623:3623): File System listo para recibir peticiones del Kernel
+[INFO] 19:01:59:094 FileSystem/(3969:3969): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:02:23:737 FileSystem/(3969:3969): File System listo para recibir peticiones del Kernel
+[INFO] 19:03:12:645 FileSystem/(3969:3969): Se conecto un cliente!
+[INFO] 19:03:39:829 FileSystem/(3969:3969): Me llego el mensaje HOLa
+[ERROR] 19:03:54:246 FileSystem/(3969:3969): El cliente se desconecto. Terminando servidor
+[INFO] 19:07:38:886 FileSystem/(4184:4184): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:07:38:889 FileSystem/(4184:4184): File System listo para recibir peticiones del Kernel
+[INFO] 19:07:46:150 FileSystem/(4184:4184): Se conecto un cliente!
+[INFO] 19:07:46:153 FileSystem/(4184:4184): Me llego el mensaje HOLa
+[ERROR] 19:07:46:158 FileSystem/(4184:4184): El cliente se desconecto. Terminando servidor
+[INFO] 19:12:25:028 FileSystem/(4416:4416): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:12:25:030 FileSystem/(4416:4416): File System listo para recibir peticiones del Kernel
+[INFO] 19:12:29:981 FileSystem/(4416:4416): Se conecto un cliente!
+[INFO] 19:12:29:985 FileSystem/(4416:4416): Me llego el mensaje HOLa
+[ERROR] 19:12:29:989 FileSystem/(4416:4416): El cliente se desconecto. Terminando servidor
+[INFO] 19:16:01:718 FileSystem/(4547:4547): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:16:01:729 FileSystem/(4547:4547): File System listo para recibir peticiones del Kernel
+[INFO] 19:17:34:111 FileSystem/(4616:4616): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:17:34:118 FileSystem/(4616:4616): File System listo para recibir peticiones del Kernel
+[ERROR] 19:26:03:347 FileSystem/(4924:4924): No se pudo conectar con el modulo Memoria !!
+[ERROR] 19:27:37:829 FileSystem/(4982:4982): No se pudo crear el archivo de configuración !!
+[ERROR] 19:30:16:913 FileSystem/(5111:5111): No se pudo conectar con el modulo Memoria !!
+[ERROR] 19:30:43:693 FileSystem/(5211:5211): No se pudo conectar con el modulo Memoria !!
+[INFO] 19:30:55:472 FileSystem/(5227:5227): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:30:55:473 FileSystem/(5227:5227): File System listo para recibir peticiones del Kernel
+[INFO] 19:31:47:480 FileSystem/(5274:5274): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:31:47:484 FileSystem/(5274:5274): File System listo para recibir peticiones del Kernel
+[INFO] 19:34:55:306 FileSystem/(5428:5428): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:34:55:309 FileSystem/(5428:5428): File System listo para recibir peticiones del Kernel
+[ERROR] 19:35:16:841 FileSystem/(5473:5473): No se encontro uno de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA'
+[INFO] 19:40:37:924 FileSystem/(5600:5600): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:40:52:439 FileSystem/(5600:5600): Se conecto un cliente!
+[INFO] 19:40:52:443 FileSystem/(5600:5600): Me llego el mensaje HOLa
+[ERROR] 19:40:52:449 FileSystem/(5600:5600): El cliente se desconecto. Terminando servidor
+[ERROR] 19:44:17:214 FileSystem/(5894:5894): No se pudo conectar con el modulo Memoria !!
+[INFO] 19:45:00:312 FileSystem/(5933:5933): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:45:00:314 FileSystem/(5933:5933): File System listo para recibir peticiones del Kernel
+[INFO] 19:45:16:417 FileSystem/(5933:5933): Se conecto un cliente!
+[INFO] 19:45:16:423 FileSystem/(5933:5933): Me llego el mensaje HOLa
+[ERROR] 19:45:16:424 FileSystem/(5933:5933): El cliente se desconecto. Terminando servidor
+[ERROR] 20:31:14:578 FileSystem/(47773:47773): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:31:25:006 FileSystem/(47786:47786): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:39:19:646 FileSystem/(48218:48218): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:57:43:200 FileSystem/(49103:49103): No se pudo conectar con el modulo Memoria !!
+[ERROR] 20:58:04:879 FileSystem/(49118:49118): No se pudo conectar con el modulo Memoria !!
+[ERROR] 21:01:30:554 FileSystem/(49216:49216): No se pudo conectar con el modulo Memoria !!
+[ERROR] 21:01:46:327 FileSystem/(49234:49234): No se pudo conectar con el modulo Memoria !!
+[ERROR] 18:29:06:115 FileSystem/(7915:7915): No se pudo conectar con el modulo Memoria !!
+[ERROR] 18:32:16:685 FileSystem/(8107:8107): No se pudo conectar con el modulo Memoria !!
+[ERROR] 18:43:26:292 FileSystem/(8804:8804): No se pudo conectar con el modulo Memoria !!
+[ERROR] 18:43:43:406 FileSystem/(8838:8838): El File System no se pudo conectar con el modulo Memoria !!

@@ -50,9 +50,6 @@ int main(void){
 
 
 
-	terminar_programa(logger, config);
-
-
 } //FIN DEL MAIN
 
 

@@ -3,11 +3,11 @@
 int main(void){
 
 	//Declaracion variables para config
-	int retardo_instruccion;
+	char* retardo_instruccion;
 	char* ip_memoria;
 	char* puerto_memoria;
 	char* puerto_escucha;
-	int tam_max_segmento;
+	char* tam_max_segmento;
 
 	//Declaracion variables para test de conexion
 	int conexion_memoria;
@@ -26,19 +26,27 @@ int main(void){
 	}
 
 	//Levantar datos de config a variables
+
 	retardo_instruccion = config_get_int_value(config, "RETARDO_INSTRUCCION");
 	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
 	puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
 	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
 	tam_max_segmento = config_get_int_value(config, "TAM_MAX_SEGMENTO");
 
+	// retardo_instruccion = config_get_string_value(config, "RETARDO_INSTRUCCION");
+	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
+	puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
+	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
+	//tam_max_segmento = config_get_string_value(config, "TAM_MAX_SEGMENTO");
+
+
 
 	//Testeo de carga de variables
-	if(!ip_memoria || !puerto_memoria || !puerto_escucha){
-		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'RETARDO_INSTRUCCION', 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'TAM_MAX_SEGMENTO'");
+	//if(!ip_memoria || !puerto_memoria || !puerto_escucha){
+		//log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'RETARDO_INSTRUCCION', 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'TAM_MAX_SEGMENTO'");
 
-		terminar_programa(conexion_memoria, logger, config);
-	}
+		//terminar_programa(conexion_memoria, logger, config);
+	//}
 
 	//Realizo la conexion con memoria
 	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
