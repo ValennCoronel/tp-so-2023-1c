@@ -67,3 +67,6 @@
 [INFO] 08:34:36:609 CPU/(17791:17791): CPU listo para recibir peticiones del Kernel
 [INFO] 08:34:56:757 CPU/(17791:17791): Se conecto un cliente!
 [ERROR] 08:35:18:342 CPU/(17791:17791): El cliente se desconecto. Terminando servidor
+[INFO] 09:48:24:261 CPU/(21260:21260): La CPU se conecto con el modulo Memoria correctamente
+[INFO] 09:48:24:262 CPU/(21260:21260): CPU listo para recibir peticiones del Kernel
+[INFO] 09:48:44:484 CPU/(21260:21260): Se conecto un cliente!

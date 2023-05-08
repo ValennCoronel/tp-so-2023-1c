@@ -158,3 +158,6 @@
 [INFO] 08:34:56:757 FileSystem/(17746:17746): Se conecto un cliente!
 [ERROR] 08:35:18:342 FileSystem/(17746:17746): El cliente se desconecto. Terminando servidor
 >>>>>>> test
+[INFO] 09:48:03:517 FileSystem/(21231:21231): El File System se conecto con el modulo Memoria correctamente
+[INFO] 09:48:03:517 FileSystem/(21231:21231): File System listo para recibir peticiones del Kernel
+[INFO] 09:48:44:483 FileSystem/(21231:21231): Se conecto un cliente!

@@ -108,3 +108,7 @@
 [INFO] 08:35:18:341 Kernel/(17803:17803): Se conecto un cliente!
 [ERROR] 08:35:18:342 Kernel/(17803:17803): El cliente se desconecto. Terminando servidor
 >>>>>>> test
+[INFO] 09:48:44:432 Kernel/(21291:21291): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 09:48:44:484 Kernel/(21291:21291): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 09:48:44:484 Kernel/(21291:21291): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 09:48:44:485 Kernel/(21291:21291): El Kernel esta listo para recibir instrucciones de la consola

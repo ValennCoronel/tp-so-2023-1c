@@ -1,6 +1,24 @@
 #include "consola.h"
+	// Estructuras y variables de psudocodigo
 
-int main(void){
+	 typedef struct {
+		uint32_t opcode_lenght;
+		char* opcode;
+		uint32_t parametro1_lenght;
+		uint32_t parametro2_lenght;
+		uint32_t parametro3_lenght;
+		char* parametros[3];
+
+	}instruccion;
+
+
+int main(int argc, char** argv){
+
+	//Chequeo que la cantidad de argumentos sea la correcta
+
+	if(argc < 3){
+		return EXIT_FAILURE;
+	}
 
 	//Declaracion variables para config
 	char* ip_kernel;
@@ -9,10 +27,61 @@ int main(void){
 	//Declaracion variables para test de conexion
 	int conexion_kernel;
 
+
+
+	//Inicializar archivo de pseudocodigo
+		FILE* archivo = fopen(argv[2],"r");
+
+
+		//Comprobar si el archivo esta vacio
+		if(archivo == NULL){
+			perror("Error en la apertura del archivo");
+			return 1;
+		}
+
+
+		//Declarar variables a utilizar
+
+		char* cadena;
+		cadena = malloc(30);
+		char* parametros[3];
+
+		//Leer archivo y extraer datos
+
+		while(feof(archivo) == 0){
+				fgets(cadena, 30, archivo);
+				printf("cadena:  %s", cadena);
+				instruccion *ptr_inst = (instruccion*) malloc(sizeof(instruccion)); //Creo la struct y reservo memoria
+
+				char* token = strtok(cadena, " "); // obtiene el primer elemento en token
+				ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
+
+				printf("%s\n", token); // imprime el primer elemento (solo por control)
+
+				token = strtok(NULL, " "); // avanza al segundo elemento
+				int i = 0; // Variable local utilizada para cargar el array de parametros
+
+				    while (token != NULL) { //Ingresa si el parametro no es NULL
+
+				    	ptr_inst->parametros[i] = token; //Carga el parametro en el array de la struct
+				        token = strtok(NULL, " "); // obtiene el siguiente elemento
+				        i++; //Avanza en el array
+
+				    }
+		}
+
+		free(cadena);
+
+		//Cerrar archivo
+		fclose(archivo);
+		printf("\n\n Se ha leido el archivo correctamente");
+
+		return 0;
+
 	//Iniciar logger y config
 
 	logger = iniciar_logger();
-	t_config* config = iniciar_config();
+	t_config* config = iniciar_config(argv[1]);
 
 
 	//Testeo config
@@ -64,8 +133,8 @@ t_log* iniciar_logger(void){
 	return nuevo_logger;
 }
 
-t_config* iniciar_config(void){
-	t_config* nueva_config = config_create("consola.config");
+t_config* iniciar_config(char* archivo){
+	t_config* nueva_config = config_create(archivo);
 
 	return nueva_config;
 }
@@ -96,6 +165,69 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 	}
 
 	return 0;
+}
+
+//Funcion para serializar, crear y enviar paquete de instruccion
+void paquete_instruccion(int conexion, instruccion inst)
+{
+	// Declaro las variables a utilizar
+	char* valor;
+	t_paquete* paquete;
+	t_buffer* buffer = malloc(sizeof(t_buffer)); //Creo buffer para serializar
+
+	//Armado de buffer
+	buffer->size = sizeof(uint32_t)*2 + sizeof(inst.opcode)+1 + sizeof(inst.parametros)+1;
+	void* stream = malloc(buffer->size);
+	int offset = 0; //Desplazamiento
+
+	//Copiado de memoria
+
+		//Opcode
+	memcpy(stream + offset, &inst.opcode_lenght, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+	memcpy(stream + offset, inst.opcode, strlen(inst.opcode)+1);
+	offset += strlen(inst.opcode)+1;
+
+		//Parametros (tamaños)
+	memcpy(stream + offset, &inst.parametro1_lenght, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+	memcpy(stream + offset, &inst.parametro2_lenght, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+	memcpy(stream + offset, &inst.parametro3_lenght, sizeof(uint32_t));
+	offset += sizeof(uint32_t);
+
+		//Parametros (valores)
+	for(int i = 0; i< 3; i++){
+	memcpy(stream + offset, inst.parametros[i], strlen(inst.parametros[i])+1);
+	offset += strlen(inst.parametros[i])+1;
+	}
+
+	//Cargamos el buffer
+	buffer->stream = stream;
+
+	//Liberamos memoria dinamica
+	free(inst.opcode);
+	free(inst.parametros);
+
+	//Creamos el paquete
+	paquete = crear_paquete();
+
+	// Leemos y esta vez agregamos las lineas al paquete
+
+	while(strcmp(valor, "") != 0){
+
+		valor = 4;
+		if(strcmp(valor, "") != 0){
+			agregar_a_paquete(paquete, valor, strlen(valor));
+		}
+	}
+	//enviamos paquete
+			enviar_paquete(paquete, conexion);
+
+	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+
+	free(valor);
+	eliminar_paquete(paquete);
 }
 
 

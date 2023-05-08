@@ -12,3 +12,5 @@
 [INFO] 23:11:03:226 CPU/(2847:2847): La Consola se conecto con el modulo Kernel correctamente
 [INFO] 23:15:40:664 CPU/(3060:3060): La Consola se conecto con el modulo Kernel correctamente
 [INFO] 08:35:18:342 CPU/(17850:17850): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 17:05:11:027 CPU/(12978:12978): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 17:13:00:772 CPU/(13642:13642): Consola no se pudo conectar con el modulo Kernel !!
