@@ -11,7 +11,7 @@ int main(void){
 
 	//Iniciar logger y config
 
-	logger = iniciar_logger();
+	t_log* logger = iniciar_logger();
 	t_config* config = iniciar_config();
 
 
@@ -46,7 +46,6 @@ int main(void){
 	}
 
 	log_info(logger, "La Consola se conecto con el modulo Kernel correctamente");
-
 
 
 	terminar_programa(conexion_kernel, logger, config);
@@ -98,5 +97,14 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 	return 0;
 }
 
+void* recibir_buffer(int* size, int socket_servidor)
+{
+	void * buffer;
 
+	recv(socket_servidor, size, sizeof(int), MSG_WAITALL);
+	buffer = malloc(*size);
+	recv(socket_servidor, buffer, *size, MSG_WAITALL);
+
+	return buffer;
+}
 

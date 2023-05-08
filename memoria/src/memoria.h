@@ -24,9 +24,10 @@
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
-void terminar_programa(t_log*, t_config*);
+void terminar_programa(t_log* logger, t_config* config);
 int conectar_con_memoria(int conexion, char* ip, char* puerto);
-void manejar_peticiones_kernel(int server_fd);
-void atender_cliente(void *args);
+void manejar_peticiones(int server_fd);
+void *atender_cliente(void *args);
+void crear_nuevo_proceso(int socket_cliente);
 
 #endif /* CPU_H */

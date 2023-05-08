@@ -24,7 +24,7 @@
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int, t_log*, t_config*);
-int conectar_con_memoria(int conexion, char* ip, char* puerto);
+int conectar_modulo(int conexion, char* ip, char* puerto);
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
 
 #endif /* CPU_H */

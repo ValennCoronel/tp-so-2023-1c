@@ -7,7 +7,7 @@ int iniciar_servidor(char* puerto_escucha)
 {
 	int socket_servidor;
 
-	struct addrinfo hints, *servinfo, *p;
+	struct addrinfo hints, *servinfo;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
@@ -64,7 +64,7 @@ void recibir_mensaje(int socket_cliente)
 	char* buffer = recibir_buffer(&size, socket_cliente);
 	int length_buffer = strlen(buffer);
 	buffer[length_buffer +1] = '\0';
-	log_info(logger, "Me llego el mensaje %s", buffer);
+
 	free(buffer);
 }
 

@@ -26,11 +26,11 @@ int main(void){
 	}
 
 	//Levantar datos de config a variables
-	retardo_instruccion = config_get_string_value(config, "RETARDO_INSTRUCCION");
+	retardo_instruccion = config_get_int_value(config, "RETARDO_INSTRUCCION");
 	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
 	puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
 	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
-	tam_max_segmento = config_get_string_value(config, "TAM_MAX_SEGMENTO");
+	tam_max_segmento = config_get_int_value(config, "TAM_MAX_SEGMENTO");
 
 
 	//Testeo de carga de variables
@@ -100,7 +100,7 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 	conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion);
+	enviar_mensaje("OK", conexion, HANDSHAKE);
 
 	int size;
 	char* buffer = recibir_buffer(&size, conexion);

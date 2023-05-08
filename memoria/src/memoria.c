@@ -11,7 +11,6 @@ int main(void){
 	char* retardo_compactacion;
 	char* algoritmo_asignacion;
 
-
 	//Iniciar logger y config
 
 	logger = iniciar_logger();
@@ -47,20 +46,14 @@ int main(void){
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones_kernel(server_fd);
+	manejar_peticiones(server_fd);
 
-	log_info(logger, "SE conectaron todos los módulos!!");
 
-	//esperamos 1 segundo para que el kernel llegue a conectarse
-	usleep(1500);// sacarlo luego de implementar el resto de la funcionalidad
 
 	terminar_programa(logger, config);
 
 
 } //FIN DEL MAIN
-
-
-
 
 
 //Funciones de inicio de Config y Logger
@@ -105,24 +98,21 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 }
 
 
-//Funcion para manejo de peticiones del kernel
-void manejar_peticiones_kernel(int server_fd){
+//Funcion para manejo de peticiones
+void manejar_peticiones(int server_fd ){
 
-	int clientes_conectados = 0;
-	while(clientes_conectados < 3){
+	while(1){
 		pthread_t thread;
 		int cliente_fd = esperar_cliente(server_fd);
 
-		pthread_create(&thread, NULL, (void*) atender_cliente, cliente_fd);
+		pthread_create(&thread, NULL, atender_cliente, cliente_fd);
 
 		pthread_detach(thread);
-
-		clientes_conectados++;
 	}
 
 }
 
-void atender_cliente(void *args){
+void* atender_cliente(void *args){
 	int cliente_fd = (int) args;
 
 	while(1){
@@ -135,15 +125,22 @@ void atender_cliente(void *args){
 				case HANDSHAKE:
 					recibir_handshake(cliente_fd);
 					break;
+				case NUEVO_PROCESO_MEMORIA:
+					crear_nuevo_proceso(cliente_fd);
+					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
-					return;
+					return NULL;
 				default:
 					log_warning(logger,"Operacion desconocida. No quieras meter la pata");
 					break;
 			}
 	}
 
-	return;
+	return NULL;
+}
+
+void crear_nuevo_proceso(int socket_cliente){
+	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernell
 }
 

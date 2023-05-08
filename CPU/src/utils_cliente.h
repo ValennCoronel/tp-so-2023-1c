@@ -16,11 +16,21 @@ typedef enum
 	MENSAJE,
 	HANDSHAKE,
 	PAQUETE,
+	//peticiones CPU
+	INSTRUCCIONES,
+	FINALIZAR_PROCESO,
+	BLOQUEAR_PROCESO,
+	PETICION_KERNEL,
+	DESALOJAR_PROCESO,
+	PROCESAR_INSTRUCCIONES,
+	//peticiones memoria
+	NUEVO_PROCESO_MEMORIA,
+	// filesystem
 	ABRIR_ARCHIVO,
 	CREAR_ARCHIVO,
 	TRUNCAR_ARCHIVO,
 	LEER_ARCHIVO,
-	ESCRIBIR_ARCHIVO
+	ESCRIBIR_ARCHIVO,
 }op_code;
 
 typedef struct
@@ -37,7 +47,7 @@ typedef struct
 
 
 int crear_conexion(char* ip, char* puerto);
-void enviar_mensaje(char* mensaje, int socket_cliente);
+void enviar_mensaje(char* mensaje, int socket_cliente, op_code codigo);
 t_paquete* crear_paquete(void);
 t_paquete* crear_super_paquete(void);
 void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio);

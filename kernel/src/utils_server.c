@@ -7,7 +7,7 @@ int iniciar_servidor(char* puerto_escucha)
 {
 	int socket_servidor;
 
-	struct addrinfo hints, *servinfo, *p;
+	struct addrinfo hints, *servinfo;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
@@ -96,12 +96,24 @@ void recibir_handshake(int socket_cliente)
 	char* buffer = recibir_buffer(&size, socket_cliente);
 
 	if(strcmp(buffer, "OK") == 0)
-		enviar_mensaje("OK", socket_cliente);
+		enviar_mensaje("OK", socket_cliente, HANDSHAKE);// 1 es el codigo de operacion del HANDSHAKE
 	else
-		enviar_mensaje("ERROR", socket_cliente);
+		enviar_mensaje("ERROR", socket_cliente, HANDSHAKE);
 
 
 	free(buffer);
 }
 
+void manejar_handshake_del_cliente(int socket_cliente){
+	int size;
+		char* buffer = recibir_buffer(&size, socket_cliente);
+
+		if(strcmp(buffer, "OK") == 0){
+			log_info(logger, "Se establecio la conexion con cpu correctamente");
+		} else {
+			log_info(logger, "No se pudo recibir el handshake de la CPU");
+		}
+
+	free(buffer);
+}
 
