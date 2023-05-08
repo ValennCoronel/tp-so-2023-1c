@@ -84,7 +84,7 @@ t_paquete* crear_super_paquete(void)
 t_paquete* crear_paquete(void)
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = PAQUETE;
+	paquete->codigo_operacion = INSTRUCCIONES;
 	crear_buffer(paquete);
 	return paquete;
 }
