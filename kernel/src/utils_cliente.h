@@ -22,6 +22,7 @@ typedef enum
 	BLOQUEAR_PROCESO,
 	PETICION_KERNEL,
 	DESALOJAR_PROCESO,
+	PROCESAR_INSTRUCCIONES,
 	//peticiones memoria
 	NUEVO_PROCESO_MEMORIA,
 	// filesystem
@@ -47,7 +48,7 @@ typedef struct
 
 int crear_conexion(char* ip, char* puerto);
 void enviar_mensaje(char* mensaje, int socket_cliente, op_code codigo);
-t_paquete* crear_paquete(void);
+t_paquete* crear_paquete(op_code codigo);
 t_paquete* crear_super_paquete(void);
 void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);

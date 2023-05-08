@@ -129,12 +129,12 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 }
 
 void administrar_fcb(char* path_fcb){
-	FILE* archivo_FCB = fopen(path_fcb, 'r');
+	FILE* archivo_FCB = fopen(path_fcb, "r");
 
 	// si no existe lo creo
 	if(archivo_FCB == NULL){
 		fclose(archivo_FCB);
-		archivo_FCB = fopen(path_fcb, 'w');
+		archivo_FCB = fopen(path_fcb, "w");
 	}
 
 	//TODO iniciar estructuras del FCB

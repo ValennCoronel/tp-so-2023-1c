@@ -123,6 +123,7 @@ int main(void){
 	args_planificador_corto_plazo->algoritmo_planificacion = malloc( strlen(algoritmo_planificacion) *sizeof(char));
 	args_planificador_corto_plazo->algoritmo_planificacion = algoritmo_planificacion;
 	args_planificador_corto_plazo->hrrn_alfa = hrrn_alfa;
+	args_planificador_corto_plazo->socket_cpu = conexion_cpu;
 
 	pthread_create(&thread_planificador_corto_plazo, NULL, planificar_corto_plazo, args_planificador_corto_plazo);
 
@@ -134,10 +135,10 @@ int main(void){
 
 	escuchar_peticiones_cpu(conexion_cpu);
 
-	//free(args_consolas);
-	//free(args_planificador_largo_plazo);
-	//free(args_planificador_corto_plazo->algoritmo_planificacion);
-	//free(args_planificador_corto_plazo);
+	free(args_consolas);
+	free(args_planificador_largo_plazo);
+	free(args_planificador_corto_plazo->algoritmo_planificacion);
+	free(args_planificador_corto_plazo);
 
 	terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
 } // Fin del MAIN
