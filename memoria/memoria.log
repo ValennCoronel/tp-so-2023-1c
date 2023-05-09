@@ -1,1 +1,8 @@
 
+[INFO] 22:19:32:717 Memoria/(31784:31784): Memoria lista para recibir peticiones
+[INFO] 22:19:46:923 Memoria/(31784:31784): Se conecto un cliente!
+[INFO] 22:20:01:884 Memoria/(31784:31784): Se conecto un cliente!
+[INFO] 22:20:11:201 Memoria/(31784:31784): Se conecto un cliente!
+[ERROR] 22:27:00:459 Memoria/(31784:31935): El cliente se desconecto. Terminando servidor
+[ERROR] 22:27:00:459 Memoria/(31784:31831): El cliente se desconecto. Terminando servidor
+[ERROR] 22:27:01:199 Memoria/(31784:31868): El cliente se desconecto. Terminando servidor

@@ -14,11 +14,11 @@
 
 int main(int argc, char** argv){
 
-	//Chequeo que la cantidad de argumentos sea la correcta
+	//Iniciar logger y config
 
-	if(argc < 3){
-		return EXIT_FAILURE;
-	}
+	logger = iniciar_logger();
+	t_config* config = iniciar_config(argv[1]);
+
 
 	//Declaracion variables para config
 	char* ip_kernel;
@@ -28,60 +28,12 @@ int main(int argc, char** argv){
 	int conexion_kernel;
 
 
+	//Chequeo que la cantidad de argumentos sea la correcta
 
-	//Inicializar archivo de pseudocodigo
-		FILE* archivo = fopen(argv[2],"r");
+	if(argc < 3){
+		return EXIT_FAILURE;
+	}
 
-
-		//Comprobar si el archivo esta vacio
-		if(archivo == NULL){
-			perror("Error en la apertura del archivo");
-			return 1;
-		}
-
-
-		//Declarar variables a utilizar
-
-		char* cadena;
-		cadena = malloc(30);
-		char* parametros[3];
-
-		//Leer archivo y extraer datos
-
-		while(feof(archivo) == 0){
-				fgets(cadena, 30, archivo);
-				printf("cadena:  %s", cadena);
-				instruccion *ptr_inst = (instruccion*) malloc(sizeof(instruccion)); //Creo la struct y reservo memoria
-
-				char* token = strtok(cadena, " "); // obtiene el primer elemento en token
-				ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
-
-				printf("%s\n", token); // imprime el primer elemento (solo por control)
-
-				token = strtok(NULL, " "); // avanza al segundo elemento
-				int i = 0; // Variable local utilizada para cargar el array de parametros
-
-				    while (token != NULL) { //Ingresa si el parametro no es NULL
-
-				    	ptr_inst->parametros[i] = token; //Carga el parametro en el array de la struct
-				        token = strtok(NULL, " "); // obtiene el siguiente elemento
-				        i++; //Avanza en el array
-
-				    }
-		}
-
-		free(cadena);
-
-		//Cerrar archivo
-		fclose(archivo);
-		printf("\n\n Se ha leido el archivo correctamente");
-
-		return 0;
-
-	//Iniciar logger y config
-
-	logger = iniciar_logger();
-	t_config* config = iniciar_config(argv[1]);
 
 
 	//Testeo config
@@ -118,7 +70,60 @@ int main(int argc, char** argv){
 
 
 
-	terminar_programa(conexion_kernel, logger, config);
+	//-------------------------------Envio de instrucciones---------------------------------------
+
+
+	//Inicializar archivo de pseudocodigo
+			FILE* archivo = fopen(argv[2],"r");
+
+
+			//Comprobar si el archivo esta vacio
+			if(archivo == NULL){
+				perror("Error en la apertura del archivo");
+				return 1;
+			}
+
+
+			//Declarar variables a utilizar
+
+			char* cadena;
+			cadena = malloc(30);
+
+			//Leer archivo y extraer datos
+
+			while(feof(archivo) == 0){
+					fgets(cadena, 30, archivo);
+					printf("cadena:  %s", cadena);
+					instruccion *ptr_inst = (instruccion*) malloc(sizeof(instruccion)); //Creo la struct y reservo memoria
+
+					char* token = strtok(cadena, " "); // obtiene el primer elemento en token
+					ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
+
+					printf("%s\n", token); // imprime el primer elemento (solo por control)
+
+					token = strtok(NULL, " "); // avanza al segundo elemento
+					int i = 0; // Variable local utilizada para cargar el array de parametros
+
+					    while (token != NULL) { //Ingresa si el parametro no es NULL
+
+					    	ptr_inst->parametros[i] = token; //Carga el parametro en el array de la struct
+					        token = strtok(NULL, " "); // obtiene el siguiente elemento
+					        i++; //Avanza en el array
+
+					    }
+
+					    //Serializo y envio el paquete
+
+					    paquete_instruccion(conexion_kernel, ptr_inst);
+			}
+
+			free(cadena);
+
+			//Cerrar archivo
+			fclose(archivo);
+			printf("\n\n Se ha leido el archivo correctamente");
+
+
 
 } //FIN DEL MAIN
 
@@ -128,7 +133,7 @@ int main(int argc, char** argv){
 //Funciones de inicio de Config y Logger
 t_log* iniciar_logger(void){
 
-	t_log* nuevo_logger = log_create("consola.log", "CPU", true, LOG_LEVEL_INFO);
+	t_log* nuevo_logger = log_create("consola.log", "consola", true, LOG_LEVEL_INFO);
 
 	return nuevo_logger;
 }
@@ -210,25 +215,34 @@ void paquete_instruccion(int conexion, instruccion inst)
 	free(inst.opcode);
 	free(inst.parametros);
 
-	//Creamos el paquete
-	paquete = crear_paquete();
+	//Asignamos el tamaño para el paquete y lo rellenamos
+	paquete = malloc(sizeof(t_paquete));
 
-	// Leemos y esta vez agregamos las lineas al paquete
+	paquete->codigo_operacion = INSTRUCCION;
+	paquete->buffer = buffer;
 
-	while(strcmp(valor, "") != 0){
 
-		valor = 4;
-		if(strcmp(valor, "") != 0){
-			agregar_a_paquete(paquete, valor, strlen(valor));
-		}
-	}
-	//enviamos paquete
-			enviar_paquete(paquete, conexion);
+	//Armamos stream a enviar
 
-	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+	void* a_enviar = malloc(buffer->size + sizeof(uint8_t) + sizeof(uint32_t));
+	offset = 0; //Reseteamos el offset
 
-	free(valor);
-	eliminar_paquete(paquete);
+	memcpy(a_enviar + offset, &(paquete->codigo_operacion), sizeof(uint8_t));
+
+	offset += sizeof(uint8_t);
+	memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(uint32_t));
+
+	offset += sizeof(uint32_t);
+	memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
+
+	// Enviamos el paquete
+	send(conexion, a_enviar, buffer->size + sizeof(uint8_t) + sizeof(uint32_t), 0);
+
+	// Liberamos memoria
+	free(a_enviar);
+	free(paquete->buffer->stream);
+	free(paquete->buffer);
+	free(paquete);
 }
 
 

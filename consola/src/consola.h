@@ -1,12 +1,6 @@
-/*
- * filesystem.h
- *
- *  Created on: Apr 14, 2023
- *      Author: utnso
- */
 
-#ifndef CPU_H_
-#define CPU_H_
+#ifndef CONSOLA_H_
+#define CONSOLA_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +13,7 @@
 #include <commons/config.h>
 
 #include "utils_cliente.h"
+#include "utils_server.h"
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(char*);

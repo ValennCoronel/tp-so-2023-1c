@@ -1,1 +1,8 @@
 
+[INFO] 22:20:11:202 Kernel/(31930:31930): El KerneL se conecto con el modulo Memoria correctamente
+[INFO] 22:20:11:203 Kernel/(31930:31930): El KerneL se conecto con el modulo Filesystem correctamente
+[INFO] 22:20:11:203 Kernel/(31930:31930): El KerneL se conecto con el modulo CPU correctamente
+[INFO] 22:20:11:203 Kernel/(31930:31930): El Kernel esta listo para recibir instrucciones de la consola
+[WARNING] 22:20:11:204 Kernel/(31930:31930): Operacion desconocida. No quieras meter la pata, la operacion es: 1325400064
+[INFO] 22:20:52:963 Kernel/(31930:31936): Se conecto un cliente!
+[ERROR] 22:21:13:608 Kernel/(31930:32024): El cliente se desconecto. Terminando servidor
