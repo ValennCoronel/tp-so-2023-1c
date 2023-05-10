@@ -16,7 +16,7 @@ int main(int argc, char** argv){
 
 	//Iniciar logger y config
 
-	logger = iniciar_logger();
+	t_log* logger = iniciar_logger();
 	t_config* config = iniciar_config(argv[1]);
 
 

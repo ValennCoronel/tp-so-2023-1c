@@ -20,6 +20,5 @@ t_config* iniciar_config(char*);
 void terminar_programa(int, t_log*, t_config*);
 int conectar_modulo(int conexion, char* ip, char* puerto);
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
-void* recibir_buffer(int* size, int socket_servidor);
 
 #endif /* CPU_H */
