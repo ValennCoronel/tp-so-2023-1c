@@ -1,18 +1,10 @@
 #include "consola.h"
-	// Estructuras y variables de psudocodigo
 
-	 typedef struct {
-		uint32_t opcode_lenght;
-		char* opcode;
-		uint32_t parametro1_lenght;
-		uint32_t parametro2_lenght;
-		uint32_t parametro3_lenght;
-		char* parametros[3];
 
-	}instruccion;
 
 
 int main(int argc, char** argv){
+
 
 	//Iniciar logger y config
 

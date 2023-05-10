@@ -126,6 +126,7 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 
 	int cliente_fd = esperar_cliente(server_fd);
 
+
 	while (1) {
 			int cod_op = recibir_operacion(cliente_fd);
 
@@ -135,6 +136,10 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 					break;
 				case HANDSHAKE:
 					recibir_handshake(cliente_fd);
+					break;
+
+				case CODIGO_OPERACION_RECIBIDO_POR_KERNEL:
+
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -146,6 +151,17 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 		}
 
 	return ;
+}
+
+void Codigo_recibido_por_Kernel (int cliente_fd){
+
+
+	//se levanta el pcb
+	t_contexto_ejec* nuevo_pcb = recibir_paquete_pcb (cliente_fd);
+
+
+
+
 }
 
 

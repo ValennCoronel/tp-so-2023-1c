@@ -15,6 +15,20 @@
 #include "utils_cliente.h"
 #include "utils_server.h"
 
+// Estructuras y variables de psudocodigo
+
+	 typedef struct {
+		uint32_t opcode_lenght;
+		char* opcode;
+		uint32_t parametro1_lenght;
+		uint32_t parametro2_lenght;
+		uint32_t parametro3_lenght;
+		char* parametros[3];
+
+	}instruccion;
+
+
+
 t_log* iniciar_logger(void);
 t_config* iniciar_config(char*);
 void terminar_programa(int, t_log*, t_config*);

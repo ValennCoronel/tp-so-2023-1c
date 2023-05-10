@@ -16,6 +16,47 @@
 
 extern t_log* logger;
 
+
+
+typedef struct {
+	uint32_t opcode_lenght;
+	char* opcode;
+	uint32_t parametro1_lenght;
+	uint32_t parametro2_lenght;
+	uint32_t parametro3_lenght;
+	char* parametros[3];
+
+}t_instruccion;
+
+
+typedef struct {
+    char AX[4];   // Registro de 4 bytes
+    char BX[4];   // Registro de 4 bytes
+    char CX[4];   // Registro de 4 bytes
+    char DX[4];   // Registro de 4 bytes
+    char EAX[8];  // Registro de 8 bytes
+    char EBX[8];  // Registro de 8 bytes
+    char ECX[8];  // Registro de 8 bytes
+    char EDX[8];  // Registro de 8 bytes
+    char RAX[16]; // Registro de 16 bytes
+    char RBX[16]; // Registro de 16 bytes
+    char RCX[16]; // Registro de 16 bytes
+    char RDX[16]; // Registro de 16 bytes
+} registros_CPU;
+
+typedef struct
+{
+	int tamanio_lista;
+	t_list* lista_instrucciones;
+	int program_counter;
+
+	registros_CPU registros_CPU;
+
+
+} t_contexto_ejec;
+
+
+
 void* recibir_buffer(int*, int);
 
 int iniciar_servidor(char* puerto_escucha);

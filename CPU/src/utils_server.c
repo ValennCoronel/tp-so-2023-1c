@@ -90,6 +90,76 @@ t_list* recibir_paquete(int socket_cliente)
 	return valores;
 }
 
+t_contexto_ejec* recibir_paquete_pcb(int socket_cliente)
+{
+
+	int size;
+	int desplazamiento = 0;
+	void * buffer;
+	t_list* lista_instrucciones = list_create();
+	int tamanio_lista;
+	int program_counter;
+
+	buffer = recibir_buffer(&size, socket_cliente);
+	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
+
+	while(desplazamiento < size )
+	{
+
+		memcpy(&tamanio_lista, buffer + desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+
+
+		while (desplazamiento < tamanio_lista )
+	{
+			int tamanio_instruccion;
+
+			memcpy(&tamanio_instruccion, buffer + desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+			t_instruccion*elemento_lista = malloc(sizeof(t_instruccion));
+			int opcode_lenght;
+			memcpy(&opcode_lenght, buffer + desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+
+			memcpy(&(elemento_lista->opcode), buffer + desplazamiento, opcode_lenght);
+			desplazamiento+=opcode_lenght;
+			int parametro1_lenght;
+			int parametro2_lenght;
+			int parametro3_lenght;
+			memcpy(&parametro1_lenght, buffer + desplazamiento, sizeof(int));
+						desplazamiento+=sizeof(int);
+			memcpy(&parametro2_lenght, buffer + desplazamiento, sizeof(int));
+						desplazamiento+=sizeof(int);
+			memcpy(&parametro3_lenght, buffer + desplazamiento, sizeof(int));
+						desplazamiento+=sizeof(int);
+			//Corregir este error de acá ♥♥♥
+			elemento_lista->parametros=malloc(3*sizeof(char* ));
+			//Corregir este error de acá ♥♥♥
+			memcpy(&elemento_lista->parametros[0], buffer + desplazamiento, parametro1_lenght);
+			desplazamiento+=parametro1_lenght;
+			memcpy(&elemento_lista->parametros[1], buffer + desplazamiento, parametro2_lenght);
+			desplazamiento+=parametro2_lenght;
+			memcpy(&elemento_lista->parametros[2], buffer + desplazamiento, parametro3_lenght);
+			desplazamiento+=parametro3_lenght;
+
+			list_add(lista_instrucciones, elemento_lista);
+
+	}
+
+		memcpy(&program_counter, buffer + desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+	}
+
+	contexto_ejecucion->tamanio_lista = tamanio_lista;
+	contexto_ejecucion->lista_instrucciones = lista_instrucciones;
+	contexto_ejecucion->program_counter = program_counter;
+
+	free(buffer);
+	return contexto_ejecucion;
+}
+
+
+
 void recibir_handshake(int socket_cliente)
 {
 	int size;

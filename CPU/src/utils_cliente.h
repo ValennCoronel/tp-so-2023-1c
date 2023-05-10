@@ -23,6 +23,7 @@ typedef enum
 	PETICION_KERNEL,
 	DESALOJAR_PROCESO,
 	PROCESAR_INSTRUCCIONES,
+	CODIGO_OPERACION_RECIBIDO_POR_KERNEL,
 	//peticiones memoria
 	NUEVO_PROCESO_MEMORIA,
 	// filesystem
@@ -31,6 +32,7 @@ typedef enum
 	TRUNCAR_ARCHIVO,
 	LEER_ARCHIVO,
 	ESCRIBIR_ARCHIVO,
+
 }op_code;
 
 typedef struct
