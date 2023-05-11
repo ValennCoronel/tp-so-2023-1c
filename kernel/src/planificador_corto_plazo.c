@@ -17,6 +17,18 @@ void *planificar_corto_plazo(void *arg){
 	return NULL;
 }
 
+/*
+ * typedef struct
+{
+	int tamanio_lista;
+	t_list* lista_instrucciones;
+	int program_counter;
+
+	registros_CPU registros_CPU;
+
+
+} t_contexto_ejec;
+ * */
 void planificar_corto_plazo_fifo(int socket_cpu){
 	//planificar los procesos con fifo
 
@@ -24,14 +36,59 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
 	sem_post(&productor);
 
-	//envio proceso a cpu
+	//creo el contexto de ejecucion
+
+	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
+	contexto_ejecucion->lista_instrucciones = proceso_a_ejecutar->instrucciones;
+	contexto_ejecucion->program_counter = proceso_a_ejecutar->program_counter;
+	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
+	contexto_ejecucion->registros_CPU = proceso_a_ejecutar->registros_CPU;
+
+	//Lo envio proceso a CPU
 
 	t_paquete* paquete = crear_paquete(PROCESAR_INSTRUCCIONES);
-	agregar_a_paquete(paquete, proceso_a_ejecutar, sizeof(proceso_a_ejecutar));//TODO ver si esta bien
+
+	agregar_a_paquete(paquete, contexto_ejecucion->tamanio_lista, sizeof(int));
+
+	for(int i =0; i<contexto_ejecucion->tamanio_lista; i++){
+		t_instruccion* instruccion = list_get(contexto_ejecucion->lista_instrucciones, i);
+
+		agregar_a_paquete(paquete, instruccion->opcode_lenght, sizeof(int));
+		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght+1);
+		agreagar_a_paquete(paquete, instruccion->parametro1_lenght, sizeof(int));
+		agreagar_a_paquete(paquete, instruccion->parametro2_lenght, sizeof(int));
+		agreagar_a_paquete(paquete, instruccion->parametro3_lenght, sizeof(int));
+
+
+			//Parametros (valores)
+		for(int i = 0; i< 3; i++){
+			agreagar_a_paquete(paquete, instruccion->parametros[i], strlen(instruccion->parametros[i])+1);
+		}
+	}
+
+	agreagar_a_paquete(paquete, contexto_ejecucion->program_counter, sizeof(int));
+
+	//cargo los registros de CPU
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->AX,sizeof(char)*4);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->BX,sizeof(char)*4);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->CX,sizeof(char)*4);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->DX,sizeof(char)*4);
+
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EAX,sizeof(char)*8);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EBX,sizeof(char)*8);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->ECX,sizeof(char)*8);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EDX,sizeof(char)*8);
+
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RAX,sizeof(char)*16);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RBX,sizeof(char)*16);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RCX,sizeof(char)*16);
+	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RDX,sizeof(char)*16);
+
+
+
 	enviar_paquete(paquete, socket_cpu);
 
 	eliminar_paquete(paquete);
-
 }
 
 void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){

@@ -181,8 +181,8 @@ void paquete_instruccion(int conexion, instruccion inst)
 	//Copiado de memoria
 
 		//Opcode
-	memcpy(stream + offset, &inst.opcode_lenght, sizeof(uint32_t));
-	offset += sizeof(uint32_t);
+	memcpy(stream + offset, &inst.opcode_lenght, sizeof(int));
+	offset += sizeof(int);
 	memcpy(stream + offset, inst.opcode, strlen(inst.opcode)+1);
 	offset += strlen(inst.opcode)+1;
 
