@@ -23,7 +23,7 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 	while(1){
 		sem_wait(&productor);
 		int tamanio_cola_ready = queue_size(cola_ready);
-		sem_wait(&consumidor);
+		sem_post(&consumidor);
 		int tamanio_cola_new = queue_size(cola_new);
 
 		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 ){

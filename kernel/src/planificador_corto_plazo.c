@@ -18,7 +18,7 @@ void *planificar_corto_plazo(void *arg){
 }
 
 /*
-TODO descerializar esto del otro lado
+TODO deserializar esto del otro lado
  * */
 void planificar_corto_plazo_fifo(int socket_cpu){
 	//planificar los procesos con fifo

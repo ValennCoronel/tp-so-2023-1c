@@ -73,6 +73,19 @@ int main(void){
 	terminar_programa(conexion_memoria, logger, config);
 
 
+	//********FASE FETCH********
+
+	//****recibir mensaje****
+
+
+
+
+	//FASE DECODE
+
+
+	//FASE EXECUTE
+
+
 } //FIN DEL MAIN
 
 
@@ -154,14 +167,79 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 }
 
 void Codigo_recibido_por_Kernel (int cliente_fd){
-
-
 	//se levanta el pcb
-	t_contexto_ejec* nuevo_pcb = recibir_paquete_pcb (cliente_fd);
 
+	t_contexto_ejec* contexto = recibir_paquete_pcb (cliente_fd);
+	while(1)
+	{
+		int program_counter = contexto->program_counter;
+		t_list *lista = contexto->lista_instrucciones;
+		t_instruccion* instruction = list_get(lista,program_counter);
 
+		if(strcmp(instruction->opcode,"YIELD")==0)
+		{
+			enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd);
+			//poner contexto de ejecucion
 
-
+		}
+		if(strcmp(instruction->opcode,"EXIT")==0)
+		{
+			enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd);
+			//poner contexto de ejecucion
+			//TODO crear_paquete
+		}
+		if(strcmp(instruction->opcode,"SET")==0)
+		{
+			manejar_set(contexto);
+		}
+	}
 }
 
+void enviar_mensaje_a_kernel(op_code,int cliente_fd,t_contexto_ejec* contexto){
+	//elegir el mensaje que se enviara a kernel
+	enviar_paquete()
+}
 
+void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion){
+	char* registro = instruccion -> parametros[0];
+	char* valor = instruccion -> parametros[1];
+	if(strcmp(registro,"AX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->AX,string_subtstring_until(valor,4));
+
+	}else if(strcmp(registro,"BX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->BX,string_subtstring_until(valor,4));
+	}else if(strcmp(registro,"CX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->CX,string_subtstring_until(valor,4));
+	}else if(strcmp(registro,"DX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->DX,string_subtstring_until(valor,4));
+	}else if(strcmp(registro,"EAX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->EAX,string_subtstring_until(valor,8));
+	}else if(strcmp(registro,"EBX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->EBX,string_subtstring_until(valor,8));
+	}else if(strcmp(registro,"ECX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->ECX,string_subtstring_until(valor,8));
+	}else if(strcmp(registro,"EDX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->EDX,string_subtstring_until(valor,8));
+	}else if(strcmp(registro,"RAX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->RAX,string_subtstring_until(valor,16));
+	}else if(strcmp(registro,"RBX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->RBX,string_subtstring_until(valor,16));
+	}else if(strcmp(registro,"RCX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->RCX,string_subtstring_until(valor,16));
+	}else if(strcmp(registro,"RDX")==0)
+	{
+		strcpy((*contexto)->registros_CPU->RDX,string_subtstring_until(valor,16));
+	}
+	(*contexto)->program_counter++;
+}
