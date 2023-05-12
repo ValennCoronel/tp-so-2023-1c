@@ -133,7 +133,7 @@ t_contexto_ejec* recibir_paquete_pcb(int socket_cliente)
 			memcpy(&parametro3_lenght, buffer + desplazamiento, sizeof(int));
 						desplazamiento+=sizeof(int);
 			//Corregir este error de acá ♥♥♥
-			elemento_lista->parametros=malloc(3*sizeof(char* ));
+			//elemento_lista->parametros=malloc(3*sizeof(char* ));
 			//Corregir este error de acá ♥♥♥
 			memcpy(&elemento_lista->parametros[0], buffer + desplazamiento, parametro1_lenght);
 			desplazamiento+=parametro1_lenght;

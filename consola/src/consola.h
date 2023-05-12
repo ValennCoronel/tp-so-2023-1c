@@ -18,21 +18,25 @@
 // Estructuras y variables de psudocodigo
 
 	 typedef struct {
-		uint32_t opcode_lenght;
+		int opcode_lenght;
 		char* opcode;
-		uint32_t parametro1_lenght;
-		uint32_t parametro2_lenght;
-		uint32_t parametro3_lenght;
+		int parametro1_lenght;
+		int parametro2_lenght;
+		int parametro3_lenght;
 		char* parametros[3];
 
-	}instruccion;
+	}t_instruccion;
 
 
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(char*);
 void terminar_programa(int, t_log*, t_config*);
-int conectar_modulo(int conexion, char* ip, char* puerto);
+int conectar_modulo(int *conexion, char* ip, char* puerto);
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
+
+void paquete_instruccion(int conexion, t_list* lista_instrucciones);
+
+void evniar_a_kernel(int conexion, int tamnio_paquete, t_paquete* paquete);
 
 #endif /* CPU_H */

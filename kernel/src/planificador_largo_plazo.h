@@ -60,7 +60,7 @@ typedef struct
 	t_list* instrucciones;
 	int program_counter;
 
-	registros_CPU registros_CPU;
+	registros_CPU* registros_CPU;
 
 	double estimado_proxima_rafaga;
 	int64_t tiempo_llegada_rady;

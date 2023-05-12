@@ -45,6 +45,16 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
+typedef struct {
+	int opcode_lenght;
+	char* opcode;
+	int parametro1_lenght;
+	int parametro2_lenght;
+	int parametro3_lenght;
+	char* parametros[3];
+
+}t_instruccion;
+
 
 int crear_conexion(char* ip, char* puerto);
 void enviar_mensaje(char* mensaje, int socket_cliente, op_code codigo);

@@ -48,7 +48,7 @@ int main(int argc, char** argv){
 	}
 
 	//Realizo la conexion con memoria
-	int result_conexion = conectar_modulo(conexion_kernel, ip_kernel, puerto_kernel);
+	int result_conexion = conectar_modulo(&conexion_kernel, ip_kernel, puerto_kernel);
 
 	//Testeo el resultado de la conexion
 	if(result_conexion == -1){
@@ -79,14 +79,16 @@ int main(int argc, char** argv){
 			//Declarar variables a utilizar
 
 			char* cadena;
-			cadena = malloc(30);
+
+			t_list* lista_instrucciones = list_create();
 
 			//Leer archivo y extraer datos
 
 			while(feof(archivo) == 0){
+				cadena = malloc(30);
 					fgets(cadena, 30, archivo);
-					printf("cadena:  %s", cadena);
-					instruccion *ptr_inst = (instruccion*) malloc(sizeof(instruccion)); //Creo la struct y reservo memoria
+					//printf("cadena:  %s", cadena);
+					t_instruccion *ptr_inst = malloc(sizeof(t_instruccion)); //Creo la struct y reservo memoria
 
 					char* token = strtok(cadena, " "); // obtiene el primer elemento en token
 					ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
@@ -104,10 +106,33 @@ int main(int argc, char** argv){
 
 					    }
 
-					    //Serializo y envio el paquete
 
-					    paquete_instruccion(conexion_kernel, ptr_inst);
+					    //Serializo y envio el paquete
+					    ptr_inst->opcode_lenght = strlen(ptr_inst->opcode)+1;
+
+					    if(ptr_inst->parametros[0] != NULL){
+							ptr_inst->parametro1_lenght = strlen(ptr_inst->parametros[0])+1;
+					    } else {
+					    	ptr_inst->parametro1_lenght = 0;
+					    }
+					    if(ptr_inst->parametros[1] != NULL){
+							ptr_inst->parametro2_lenght = strlen(ptr_inst->parametros[1])+1;
+						} else {
+							ptr_inst->parametro2_lenght = 0;
+						}
+					    if(ptr_inst->parametros[2] != NULL){
+							ptr_inst->parametro3_lenght = strlen(ptr_inst->parametros[2])+1;
+						} else {
+							ptr_inst->parametro3_lenght = 0;
+						}
+
+						list_add(lista_instrucciones, ptr_inst);
+
+
 			}
+
+			paquete_instruccion(conexion_kernel, lista_instrucciones);
+			while(1);
 
 			free(cadena);
 
@@ -147,15 +172,15 @@ void terminar_programa(int conexion, t_log* logger, t_config* config){
 
 
 //Funcion para crear conexion entre modulos
-int conectar_modulo(int conexion, char* ip, char* puerto){
+int conectar_modulo(int *conexion, char* ip, char* puerto){
 
-	conexion = crear_conexion(ip, puerto);
+	*conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion);
+	enviar_mensaje("OK", *conexion);
 
 	int size;
-	char* buffer = recibir_buffer(&size, conexion);
+	char* buffer = recibir_buffer(&size, *conexion);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -166,77 +191,105 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 }
 
 //Funcion para serializar, crear y enviar paquete de instruccion
-void paquete_instruccion(int conexion, instruccion inst)
+void paquete_instruccion(int conexion, t_list* lista_instrucciones)
 {
 	// Declaro las variables a utilizar
-	char* valor;
 	t_paquete* paquete;
 	t_buffer* buffer = malloc(sizeof(t_buffer)); //Creo buffer para serializar
 
-	//Armado de buffer
-	buffer->size = sizeof(uint32_t)*2 + sizeof(inst.opcode)+1 + sizeof(inst.parametros)+1;
-	void* stream = malloc(buffer->size);
+	int lista_length = list_size(lista_instrucciones);
+
+	int buffer_size = sizeof(int); // entero para el tamanio de la lista de instrucciones
+	void* stream = malloc(buffer_size);
 	int offset = 0; //Desplazamiento
 
-	//Copiado de memoria
+	memcpy(stream+offset, &(lista_length), sizeof(int));
+	offset+= sizeof(int);
+
+	//Copiado de memoria cada instruccion
+	//int i = lista_length-1; i>= 0; i--
+	for(int i = 0; i< lista_length; i++){
+		t_instruccion* inst = list_get(lista_instrucciones, i);
+
+		buffer_size += sizeof(int)*1 // opcode_length
+				+ inst->opcode_lenght //opcode
+				+ sizeof(int)*3 // los 3 parametro_length
+				+ inst->parametro1_lenght + inst->parametro2_lenght
+				+ inst->parametro3_lenght;// el array de parametros
+		// le reasigno mas tamaño
+		stream = realloc(stream,buffer_size );
 
 		//Opcode
-	memcpy(stream + offset, &inst.opcode_lenght, sizeof(int));
-	offset += sizeof(int);
-	memcpy(stream + offset, inst.opcode, strlen(inst.opcode)+1);
-	offset += strlen(inst.opcode)+1;
+		memcpy(stream + offset, &(inst->opcode_lenght), sizeof(int));
+		offset += sizeof(int);
+		memcpy(stream + offset, inst->opcode, inst->opcode_lenght);
+		offset += inst->opcode_lenght;
 
-		//Parametros (tamaños)
-	memcpy(stream + offset, &inst.parametro1_lenght, sizeof(uint32_t));
-	offset += sizeof(uint32_t);
-	memcpy(stream + offset, &inst.parametro2_lenght, sizeof(uint32_t));
-	offset += sizeof(uint32_t);
-	memcpy(stream + offset, &inst.parametro3_lenght, sizeof(uint32_t));
-	offset += sizeof(uint32_t);
+			//Parametros (tamaños)
+		memcpy(stream + offset, &(inst->parametro1_lenght), sizeof(int));
+		offset += sizeof(int);
+		memcpy(stream + offset, &(inst->parametro2_lenght), sizeof(int));
+		offset += sizeof(int);
+		memcpy(stream + offset, &(inst->parametro3_lenght), sizeof(int));
+		offset += sizeof(int);
 
-		//Parametros (valores)
-	for(int i = 0; i< 3; i++){
-	memcpy(stream + offset, inst.parametros[i], strlen(inst.parametros[i])+1);
-	offset += strlen(inst.parametros[i])+1;
+			//Parametros (valores)
+		memcpy(stream + offset, inst->parametros[0], inst->parametro1_lenght);
+		offset += inst->parametro1_lenght;
+		memcpy(stream + offset, inst->parametros[1], inst->parametro2_lenght);
+		offset +=inst->parametro2_lenght;
+		memcpy(stream + offset, inst->parametros[2], inst->parametro3_lenght);
+		offset += inst->parametro3_lenght;
+
+		//Liberamos memoria dinamica
+		//free(inst->opcode);
+		//free(inst->parametros);
+		//free(inst);
 	}
 
+
+	buffer->size = buffer_size;
 	//Cargamos el buffer
 	buffer->stream = stream;
 
-	//Liberamos memoria dinamica
-	free(inst.opcode);
-	free(inst.parametros);
+
 
 	//Asignamos el tamaño para el paquete y lo rellenamos
 	paquete = malloc(sizeof(t_paquete));
 
-	paquete->codigo_operacion = INSTRUCCION;
+	paquete->codigo_operacion = INSTRUCCIONES;
 	paquete->buffer = buffer;
 
 
-	//Armamos stream a enviar
-
-	void* a_enviar = malloc(buffer->size + sizeof(uint8_t) + sizeof(uint32_t));
-	offset = 0; //Reseteamos el offset
-
-	memcpy(a_enviar + offset, &(paquete->codigo_operacion), sizeof(uint8_t));
-
-	offset += sizeof(uint8_t);
-	memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(uint32_t));
-
-	offset += sizeof(uint32_t);
-	memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
-
-	// Enviamos el paquete
-	send(conexion, a_enviar, buffer->size + sizeof(uint8_t) + sizeof(uint32_t), 0);
+	evniar_a_kernel(conexion,sizeof(op_code) + sizeof(int) + buffer->size , paquete);
 
 	// Liberamos memoria
-	free(a_enviar);
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
 }
 
 
+void evniar_a_kernel(int conexion, int tamnio_paquete, t_paquete* paquete){
 
+	void* a_enviar = malloc(tamnio_paquete);
+	int offset = 0; //Reseteamos el offset
+
+		memcpy(a_enviar + offset, &(paquete->codigo_operacion), sizeof(op_code));
+
+		offset += sizeof(op_code);
+		memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(int));
+
+		offset += sizeof(int);
+		memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
+
+		// Enviamos el paquete
+		send(conexion, a_enviar, tamnio_paquete, 0);
+
+		// se queda en la espera de la finalizacion del proceso por parte del kernel
+		int size;
+		void* buffer_rcv = recibir_buffer(&size, conexion);
+
+		free(a_enviar);
+}
 

@@ -228,7 +228,7 @@ void *atender_cliente(void *arg){
 
 	int cliente_fd = args->consola_fd;
 	int estimacion_inicial = args->estimacion_inicial;
-
+	printf("%d", cliente_fd);
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
 
@@ -255,7 +255,8 @@ void *atender_cliente(void *arg){
 }
 
 void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
-	t_list* instrucciones = recibir_paquete(socket_cliente);
+
+	t_list* instrucciones = (t_list*) recibir_paquete_instrucciones(socket_cliente);
 
 	//se levanta el pcb
 	t_pcb* pcb_proceso = malloc(sizeof(t_pcb));

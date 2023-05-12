@@ -18,16 +18,7 @@ void *planificar_corto_plazo(void *arg){
 }
 
 /*
- * typedef struct
-{
-	int tamanio_lista;
-	t_list* lista_instrucciones;
-	int program_counter;
-
-	registros_CPU registros_CPU;
-
-
-} t_contexto_ejec;
+TODO descerializar esto del otro lado
  * */
 void planificar_corto_plazo_fifo(int socket_cpu){
 	//planificar los procesos con fifo
@@ -38,6 +29,8 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 
 	//creo el contexto de ejecucion
 
+	//TODO ARREGLAR ESTO O VER SI FUNCIONA ANTES DE COMMITEAR
+	/*
 	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
 	contexto_ejecucion->lista_instrucciones = proceso_a_ejecutar->instrucciones;
 	contexto_ejecucion->program_counter = proceso_a_ejecutar->program_counter;
@@ -55,40 +48,41 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 
 		agregar_a_paquete(paquete, instruccion->opcode_lenght, sizeof(int));
 		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght+1);
-		agreagar_a_paquete(paquete, instruccion->parametro1_lenght, sizeof(int));
-		agreagar_a_paquete(paquete, instruccion->parametro2_lenght, sizeof(int));
-		agreagar_a_paquete(paquete, instruccion->parametro3_lenght, sizeof(int));
+		agregar_a_paquete(paquete, instruccion->parametro1_lenght, sizeof(int));
+		agregar_a_paquete(paquete, instruccion->parametro2_lenght, sizeof(int));
+		agregar_a_paquete(paquete, instruccion->parametro3_lenght, sizeof(int));
 
 
 			//Parametros (valores)
 		for(int i = 0; i< 3; i++){
-			agreagar_a_paquete(paquete, instruccion->parametros[i], strlen(instruccion->parametros[i])+1);
+			agregar_a_paquete(paquete, instruccion->parametros[i], strlen(instruccion->parametros[i])+1);
 		}
 	}
 
-	agreagar_a_paquete(paquete, contexto_ejecucion->program_counter, sizeof(int));
+	agregar_a_paquete(paquete, contexto_ejecucion->program_counter, sizeof(int));
 
 	//cargo los registros de CPU
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->AX,sizeof(char)*4);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->BX,sizeof(char)*4);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->CX,sizeof(char)*4);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->DX,sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->AX,sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->BX,sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->CX,sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->DX,sizeof(char)*4);
 
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EAX,sizeof(char)*8);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EBX,sizeof(char)*8);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->ECX,sizeof(char)*8);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EDX,sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EAX,sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EBX,sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->ECX,sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->EDX,sizeof(char)*8);
 
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RAX,sizeof(char)*16);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RBX,sizeof(char)*16);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RCX,sizeof(char)*16);
-	agreagar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RDX,sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RAX,sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RBX,sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RCX,sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto_ejecucion->registros_CPU->RDX,sizeof(char)*16);
 
 
 
 	enviar_paquete(paquete, socket_cpu);
 
 	eliminar_paquete(paquete);
+	*/
 }
 
 void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){

@@ -90,6 +90,57 @@ t_list* recibir_paquete(int socket_cliente)
 	return valores;
 }
 
+t_list* recibir_paquete_instrucciones(int socket_cliente){
+	int size;
+		int desplazamiento = 0;
+		void * buffer;
+		t_list* instrucciones = list_create();
+
+
+		buffer = recibir_buffer(&size, socket_cliente);
+		while(desplazamiento < size)
+		{
+
+			int lista_length;
+			memcpy(&lista_length, buffer + desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+
+			for(int i = 0; i< lista_length; i++){
+				t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
+				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->opcode = malloc(instruccion->opcode_lenght);
+				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
+				desplazamiento+=instruccion->opcode_lenght;
+				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+
+				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+				memcpy(instruccion->parametros[0], buffer+desplazamiento, instruccion->parametro1_lenght);
+				desplazamiento += instruccion->parametro1_lenght;
+				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+				memcpy(instruccion->parametros[1], buffer+desplazamiento,instruccion->parametro2_lenght );
+				desplazamiento += instruccion->parametro2_lenght;
+				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+				memcpy(instruccion->parametros[2], buffer+desplazamiento, instruccion->parametro3_lenght);
+				desplazamiento += instruccion->parametro3_lenght;
+
+				list_add(instrucciones, instruccion);
+			}
+
+
+
+		}
+
+		free(buffer);
+		return instrucciones;
+}
+
 void recibir_handshake(int socket_cliente)
 {
 	int size;

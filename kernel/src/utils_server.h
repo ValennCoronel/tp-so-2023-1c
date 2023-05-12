@@ -24,6 +24,7 @@ void* recibir_buffer(int*, int);
 int iniciar_servidor(char* puerto_escucha);
 int esperar_cliente(int);
 t_list* recibir_paquete(int);
+t_list* recibir_paquete_instrucciones(int socket_cliente);
 void recibir_mensaje(int);
 int recibir_operacion(int);
 void recibir_handshake(int);

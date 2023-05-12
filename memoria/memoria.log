@@ -6,3 +6,175 @@
 [ERROR] 22:27:00:459 Memoria/(31784:31935): El cliente se desconecto. Terminando servidor
 [ERROR] 22:27:00:459 Memoria/(31784:31831): El cliente se desconecto. Terminando servidor
 [ERROR] 22:27:01:199 Memoria/(31784:31868): El cliente se desconecto. Terminando servidor
+[INFO] 00:16:24:990 Memoria/(8408:8408): Memoria lista para recibir peticiones
+[INFO] 00:16:36:527 Memoria/(8408:8408): Se conecto un cliente!
+[INFO] 00:17:28:053 Memoria/(8408:8408): Se conecto un cliente!
+[INFO] 00:17:53:315 Memoria/(8408:8408): Se conecto un cliente!
+[ERROR] 00:45:05:812 Memoria/(8408:8543): El cliente se desconecto. Terminando servidor
+[ERROR] 00:45:05:826 Memoria/(8408:8530): El cliente se desconecto. Terminando servidor
+[ERROR] 00:45:06:078 Memoria/(8408:8428): El cliente se desconecto. Terminando servidor
+[INFO] 00:46:34:473 Memoria/(8408:8408): Se conecto un cliente!
+[INFO] 00:46:39:602 Memoria/(8408:8408): Se conecto un cliente!
+[INFO] 00:46:49:136 Memoria/(8408:8408): Se conecto un cliente!
+[ERROR] 00:46:57:485 Memoria/(8408:10655): El cliente se desconecto. Terminando servidor
+[ERROR] 00:46:57:487 Memoria/(8408:10640): El cliente se desconecto. Terminando servidor
+[ERROR] 00:46:57:706 Memoria/(8408:10626): El cliente se desconecto. Terminando servidor
+[INFO] 16:23:27:691 Memoria/(2277:2277): Memoria lista para recibir peticiones
+[INFO] 16:23:33:036 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:23:41:528 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:23:51:819 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:25:03:285 Memoria/(2277:2341): El cliente se desconecto. Terminando servidor
+[ERROR] 16:25:03:290 Memoria/(2277:2296): El cliente se desconecto. Terminando servidor
+[ERROR] 16:25:03:571 Memoria/(2277:2310): El cliente se desconecto. Terminando servidor
+[INFO] 16:29:28:908 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:29:32:826 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:29:40:618 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:30:07:422 Memoria/(2277:2664): El cliente se desconecto. Terminando servidor
+[ERROR] 16:30:07:426 Memoria/(2277:2635): El cliente se desconecto. Terminando servidor
+[ERROR] 16:30:07:711 Memoria/(2277:2649): El cliente se desconecto. Terminando servidor
+[INFO] 16:39:42:182 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:39:47:116 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:39:55:472 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:41:46:610 Memoria/(2277:3402): El cliente se desconecto. Terminando servidor
+[ERROR] 16:41:46:614 Memoria/(2277:3388): El cliente se desconecto. Terminando servidor
+[ERROR] 16:41:46:882 Memoria/(2277:3375): El cliente se desconecto. Terminando servidor
+[INFO] 16:43:12:026 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:43:15:813 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:43:19:640 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:44:23:828 Memoria/(2277:3690): El cliente se desconecto. Terminando servidor
+[ERROR] 16:44:23:834 Memoria/(2277:3677): El cliente se desconecto. Terminando servidor
+[ERROR] 16:44:24:106 Memoria/(2277:3663): El cliente se desconecto. Terminando servidor
+[INFO] 16:45:52:018 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:45:55:726 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:46:10:128 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:47:53:239 Memoria/(2277:3962): El cliente se desconecto. Terminando servidor
+[ERROR] 16:47:53:242 Memoria/(2277:3901): El cliente se desconecto. Terminando servidor
+[ERROR] 16:47:53:529 Memoria/(2277:3914): El cliente se desconecto. Terminando servidor
+[INFO] 16:48:33:216 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:48:36:526 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:48:54:858 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:50:41:611 Memoria/(2277:4197): El cliente se desconecto. Terminando servidor
+[ERROR] 16:50:41:614 Memoria/(2277:4158): El cliente se desconecto. Terminando servidor
+[ERROR] 16:50:41:910 Memoria/(2277:4144): El cliente se desconecto. Terminando servidor
+[INFO] 16:51:24:817 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:51:31:690 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:51:58:742 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:53:07:753 Memoria/(2277:4405): El cliente se desconecto. Terminando servidor
+[ERROR] 16:53:07:754 Memoria/(2277:4349): El cliente se desconecto. Terminando servidor
+[ERROR] 16:53:08:032 Memoria/(2277:4336): El cliente se desconecto. Terminando servidor
+[INFO] 16:54:49:554 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:54:52:302 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:55:01:660 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:56:34:729 Memoria/(2277:4590): El cliente se desconecto. Terminando servidor
+[ERROR] 16:56:34:730 Memoria/(2277:4542): El cliente se desconecto. Terminando servidor
+[ERROR] 16:56:35:041 Memoria/(2277:4529): El cliente se desconecto. Terminando servidor
+[INFO] 16:58:00:972 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:58:04:072 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 16:58:20:011 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 16:59:59:145 Memoria/(2277:4829): El cliente se desconecto. Terminando servidor
+[ERROR] 16:59:59:148 Memoria/(2277:4777): El cliente se desconecto. Terminando servidor
+[ERROR] 16:59:59:418 Memoria/(2277:4764): El cliente se desconecto. Terminando servidor
+[INFO] 17:00:16:126 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:00:19:126 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:00:24:600 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:00:29:061 Memoria/(2277:4926): El cliente se desconecto. Terminando servidor
+[ERROR] 17:00:29:063 Memoria/(2277:4913): El cliente se desconecto. Terminando servidor
+[ERROR] 17:00:29:440 Memoria/(2277:4900): El cliente se desconecto. Terminando servidor
+[INFO] 17:05:50:941 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:05:55:350 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:06:05:349 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:07:49:192 Memoria/(2277:5173): El cliente se desconecto. Terminando servidor
+[ERROR] 17:07:49:193 Memoria/(2277:5122): El cliente se desconecto. Terminando servidor
+[ERROR] 17:07:49:539 Memoria/(2277:5107): El cliente se desconecto. Terminando servidor
+[INFO] 17:08:02:962 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:08:06:099 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:08:13:961 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:10:29:538 Memoria/(2277:5322): El cliente se desconecto. Terminando servidor
+[ERROR] 17:10:29:540 Memoria/(2277:5275): El cliente se desconecto. Terminando servidor
+[ERROR] 17:10:29:857 Memoria/(2277:5262): El cliente se desconecto. Terminando servidor
+[INFO] 17:10:42:821 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:10:46:141 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:10:51:466 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:11:15:884 Memoria/(2277:5468): El cliente se desconecto. Terminando servidor
+[ERROR] 17:11:15:886 Memoria/(2277:5437): El cliente se desconecto. Terminando servidor
+[ERROR] 17:11:16:207 Memoria/(2277:5420): El cliente se desconecto. Terminando servidor
+[INFO] 17:29:32:464 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:29:37:290 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:29:43:787 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:37:21:895 Memoria/(2277:6687): El cliente se desconecto. Terminando servidor
+[ERROR] 17:37:21:904 Memoria/(2277:6655): El cliente se desconecto. Terminando servidor
+[ERROR] 17:37:22:114 Memoria/(2277:6640): El cliente se desconecto. Terminando servidor
+[INFO] 17:38:21:003 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:38:24:398 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:38:27:296 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:40:49:700 Memoria/(2277:7054): El cliente se desconecto. Terminando servidor
+[ERROR] 17:40:49:702 Memoria/(2277:7022): El cliente se desconecto. Terminando servidor
+[ERROR] 17:40:49:935 Memoria/(2277:7007): El cliente se desconecto. Terminando servidor
+[INFO] 17:42:13:176 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:42:16:694 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:42:28:794 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:45:42:019 Memoria/(2277:7228): El cliente se desconecto. Terminando servidor
+[ERROR] 17:45:42:022 Memoria/(2277:7180): El cliente se desconecto. Terminando servidor
+[ERROR] 17:45:42:345 Memoria/(2277:7196): El cliente se desconecto. Terminando servidor
+[INFO] 17:45:48:454 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:45:51:839 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:45:55:408 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:48:30:727 Memoria/(2277:7352): El cliente se desconecto. Terminando servidor
+[ERROR] 17:48:30:733 Memoria/(2277:7320): El cliente se desconecto. Terminando servidor
+[ERROR] 17:48:31:026 Memoria/(2277:7335): El cliente se desconecto. Terminando servidor
+[INFO] 17:48:38:972 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:48:41:635 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:48:49:316 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:49:10:200 Memoria/(2277:7536): El cliente se desconecto. Terminando servidor
+[ERROR] 17:49:10:204 Memoria/(2277:7482): El cliente se desconecto. Terminando servidor
+[ERROR] 17:49:10:485 Memoria/(2277:7494): El cliente se desconecto. Terminando servidor
+[INFO] 17:49:48:356 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:49:52:458 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:49:56:324 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:51:55:932 Memoria/(2277:7621): El cliente se desconecto. Terminando servidor
+[ERROR] 17:51:55:947 Memoria/(2277:7604): El cliente se desconecto. Terminando servidor
+[ERROR] 17:51:56:258 Memoria/(2277:7589): El cliente se desconecto. Terminando servidor
+[INFO] 17:52:05:785 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:52:08:372 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:52:13:406 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:53:06:262 Memoria/(2277:7807): El cliente se desconecto. Terminando servidor
+[ERROR] 17:53:06:266 Memoria/(2277:7762): El cliente se desconecto. Terminando servidor
+[ERROR] 17:53:06:607 Memoria/(2277:7774): El cliente se desconecto. Terminando servidor
+[INFO] 17:53:14:027 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:53:17:139 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:53:22:591 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:53:26:577 Memoria/(2277:7884): El cliente se desconecto. Terminando servidor
+[ERROR] 17:53:26:597 Memoria/(2277:7869): El cliente se desconecto. Terminando servidor
+[ERROR] 17:53:26:823 Memoria/(2277:7856): El cliente se desconecto. Terminando servidor
+[INFO] 17:53:54:245 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:53:56:489 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:54:02:492 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:54:17:993 Memoria/(2277:7968): El cliente se desconecto. Terminando servidor
+[ERROR] 17:54:17:994 Memoria/(2277:7924): El cliente se desconecto. Terminando servidor
+[ERROR] 17:54:18:281 Memoria/(2277:7937): El cliente se desconecto. Terminando servidor
+[INFO] 17:54:24:526 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:54:28:678 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:54:32:627 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:55:03:716 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:55:13:210 Memoria/(2277:8041): El cliente se desconecto. Terminando servidor
+[ERROR] 17:55:13:212 Memoria/(2277:8026): El cliente se desconecto. Terminando servidor
+[ERROR] 17:55:13:488 Memoria/(2277:8011): El cliente se desconecto. Terminando servidor
+[ERROR] 17:55:13:712 Memoria/(2277:8070): El cliente se desconecto. Terminando servidor
+[INFO] 17:55:22:102 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:55:25:842 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:55:30:165 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 17:57:55:001 Memoria/(2277:8114): El cliente se desconecto. Terminando servidor
+[ERROR] 17:57:55:006 Memoria/(2277:8101): El cliente se desconecto. Terminando servidor
+[ERROR] 17:57:55:324 Memoria/(2277:8088): El cliente se desconecto. Terminando servidor
+[INFO] 17:58:01:992 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:58:06:928 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 17:58:10:207 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 18:24:15:111 Memoria/(2277:8213): El cliente se desconecto. Terminando servidor
+[ERROR] 18:24:15:115 Memoria/(2277:8199): El cliente se desconecto. Terminando servidor
+[ERROR] 18:24:15:456 Memoria/(2277:8183): El cliente se desconecto. Terminando servidor
+[INFO] 18:25:14:982 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 18:25:18:760 Memoria/(2277:2277): Se conecto un cliente!
+[INFO] 18:25:24:362 Memoria/(2277:2277): Se conecto un cliente!
+[ERROR] 18:25:55:970 Memoria/(2277:9266): El cliente se desconecto. Terminando servidor
+[ERROR] 18:25:55:972 Memoria/(2277:9234): El cliente se desconecto. Terminando servidor
+[ERROR] 18:25:56:262 Memoria/(2277:9220): El cliente se desconecto. Terminando servidor
