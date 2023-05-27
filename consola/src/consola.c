@@ -3,7 +3,7 @@
 
 
 
-int main(int argc, char** argv){
+int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argumentos (argc) y un vector de argumentos con el archivo config y el pseudocodigo
 
 
 	//Iniciar logger y config
@@ -16,13 +16,14 @@ int main(int argc, char** argv){
 	char* ip_kernel;
 	char* puerto_kernel;
 
-	//Declaracion variables para test de conexion
+	//Declaracion variables para test de conexion y socket
 	int conexion_kernel;
 
 
 	//Chequeo que la cantidad de argumentos sea la correcta
 
 	if(argc < 3){
+		//se evalua menor a 3 ya que argc cuenta los dos argumentos y se cuenta a si mismo
 		return EXIT_FAILURE;
 	}
 
@@ -82,7 +83,7 @@ int main(int argc, char** argv){
 
 	t_list* lista_instrucciones = list_create();
 
-	//Leer archivo y extraer datos
+	//Leer archivo de pseudocodigo, guardar memoria y rellenar la estructura
 
 	while(feof(archivo) == 0){
 		cadena = malloc(30);
@@ -107,7 +108,7 @@ int main(int argc, char** argv){
 				}
 
 
-				//Serializo y envio el paquete
+				//Cargo la estructura con los tamaños de cada parametro
 				ptr_inst->opcode_lenght = strlen(ptr_inst->opcode)+1;
 
 				if(ptr_inst->parametros[0] != NULL){
@@ -126,13 +127,13 @@ int main(int argc, char** argv){
 					ptr_inst->parametro3_lenght = 0;
 				}
 
-				list_add(lista_instrucciones, ptr_inst);
+				list_add(lista_instrucciones, ptr_inst); //añado el stream a la lista
 
 			}
 
-			paquete_instruccion(conexion_kernel, lista_instrucciones);
-			while(1);
+			paquete_instruccion(conexion_kernel, lista_instrucciones); //Serializo la lista y la envio a kernel
 
+			while(1);
 			free(cadena);
 
 			//Cerrar archivo
@@ -239,10 +240,7 @@ void paquete_instruccion(int conexion, t_list* lista_instrucciones)
 		memcpy(stream + offset, inst->parametros[2], inst->parametro3_lenght);
 		offset += inst->parametro3_lenght;
 
-		//Liberamos memoria dinamica
-		//free(inst->opcode);
-		//free(inst->parametros);
-		//free(inst);
+
 	}
 
 
