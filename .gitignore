@@ -1,8 +1,9 @@
 # Prerequisites
 *.d
 
-#LOGS
+#LOGS y settings
 *.log
+*.settings
 
 # Object files
 *.o
