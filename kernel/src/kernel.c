@@ -128,6 +128,7 @@ int main(void){
 	pthread_create(&thread_planificador_corto_plazo, NULL, planificar_corto_plazo, args_planificador_corto_plazo);
 
 
+	//Cerrando ejecucion de hilos luego de terminado
 	pthread_detach(thread_consolas);
 	pthread_detach(thread_planificador_largo_plazo);
 	pthread_detach(thread_planificador_corto_plazo);
