@@ -267,7 +267,6 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->estimado_proxima_rafaga = estimacion_inicial;
 	pcb_proceso->tiempo_llegada_rady = 0;
 
-	log_info(logger, "Se crea el proceso %d en NEW", pcb_proceso->PID);
 
 	agregar_cola_new(pcb_proceso);
 
@@ -309,7 +308,7 @@ void *escuchar_peticiones_cpu(int cliente_fd){
 					log_error(logger, "La CPU se desconecto. Terminando servidor");
 					return NULL;
 				default:
-					log_warning(logger,"Operacion desconocida. No quieras meter la pata, la operacion es: %d",cod_op );
+					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata, la operacion es: %d",cod_op );
 					break;
 			}
 	}

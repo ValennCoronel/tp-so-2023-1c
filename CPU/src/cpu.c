@@ -151,8 +151,8 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 					recibir_handshake(cliente_fd);
 					break;
 
-				case CODIGO_OPERACION_RECIBIDO_POR_KERNEL:
-
+				case PROCESAR_INSTRUCCIONES:
+					Codigo_recibido_por_Kernel(cliente_fd);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -169,77 +169,118 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 void Codigo_recibido_por_Kernel (int cliente_fd){
 	//se levanta el pcb
 
-	t_contexto_ejec* contexto = recibir_paquete_pcb (cliente_fd);
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_paquete_pcb (cliente_fd);
+
+
 	while(1)
 	{
 		int program_counter = contexto->program_counter;
 		t_list *lista = contexto->lista_instrucciones;
-		t_instruccion* instruction = list_get(lista,program_counter);
+		t_instruccion* instruction = list_get(lista,program_counter-1);
+
 
 		if(strcmp(instruction->opcode,"YIELD")==0)
 		{
-			enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd);
+			enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, contexto);
 			//poner contexto de ejecucion
 
 		}
 		if(strcmp(instruction->opcode,"EXIT")==0)
 		{
-			enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd);
-			//poner contexto de ejecucion
-			//TODO crear_paquete
+			enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, contexto);
+
 		}
 		if(strcmp(instruction->opcode,"SET")==0)
 		{
-			manejar_set(contexto);
+			manejar_set(contexto, instruction);
 		}
 	}
 }
 
-void enviar_mensaje_a_kernel(op_code,int cliente_fd,t_contexto_ejec* contexto){
-	//elegir el mensaje que se enviara a kernel
-	enviar_paquete()
+
+void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contexto){
+
+	t_paquete* paquete = crear_paquete(code);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, contexto->tamanio_lista, sizeof(int));
+
+	for(int i =0; i<contexto->tamanio_lista; i++){
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones, i);
+
+
+		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght);
+
+		agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+		agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+		agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+
+	}
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, contexto->program_counter, sizeof(int));
+
+	agregar_a_paquete(paquete, contexto->registros_CPU->AX, sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto->registros_CPU->BX, sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto->registros_CPU->CX, sizeof(char)*4);
+	agregar_a_paquete(paquete, contexto->registros_CPU->DX, sizeof(char)*4);
+
+	agregar_a_paquete(paquete, contexto->registros_CPU->EAX, sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto->registros_CPU->EBX, sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto->registros_CPU->ECX, sizeof(char)*8);
+	agregar_a_paquete(paquete, contexto->registros_CPU->EDX, sizeof(char)*8);
+
+	agregar_a_paquete(paquete, contexto->registros_CPU->RAX, sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto->registros_CPU->RBX, sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto->registros_CPU->RCX, sizeof(char)*16);
+	agregar_a_paquete(paquete, contexto->registros_CPU->RDX, sizeof(char)*16);
+
+
+
+	enviar_paquete(paquete, cliente_fd);
+	eliminar_paquete(paquete);
 }
 
-void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion){
-	char* registro = instruccion -> parametros[0];
-	char* valor = instruccion -> parametros[1];
+void manejar_set(t_contexto_ejec* contexto,t_instruccion* instruccion){
+	char* registro = strdup(instruccion->parametros[0]);
+	char* valor = strdup(instruccion->parametros[1]);
+
 	if(strcmp(registro,"AX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->AX,string_subtstring_until(valor,4));
+		strcpy(contexto->registros_CPU->AX, string_substring_until(valor,4));
 
 	}else if(strcmp(registro,"BX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->BX,string_subtstring_until(valor,4));
+		strcpy(contexto->registros_CPU->BX, string_substring_until(valor,4));
 	}else if(strcmp(registro,"CX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->CX,string_subtstring_until(valor,4));
+		strcpy(contexto->registros_CPU->CX, string_substring_until(valor,4));
 	}else if(strcmp(registro,"DX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->DX,string_subtstring_until(valor,4));
+		strcpy(contexto->registros_CPU->DX, string_substring_until(valor,4));
 	}else if(strcmp(registro,"EAX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->EAX,string_subtstring_until(valor,8));
+		strcpy(contexto->registros_CPU->EAX, string_substring_until(valor,8));
 	}else if(strcmp(registro,"EBX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->EBX,string_subtstring_until(valor,8));
+		strcpy(contexto->registros_CPU->EBX,string_substring_until(valor,8));
 	}else if(strcmp(registro,"ECX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->ECX,string_subtstring_until(valor,8));
+		strcpy(contexto->registros_CPU->ECX,string_substring_until(valor,8));
 	}else if(strcmp(registro,"EDX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->EDX,string_subtstring_until(valor,8));
+		strcpy(contexto->registros_CPU->EDX,string_substring_until(valor,8));
 	}else if(strcmp(registro,"RAX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->RAX,string_subtstring_until(valor,16));
+		strcpy(contexto->registros_CPU->RAX,string_substring_until(valor,16));
 	}else if(strcmp(registro,"RBX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->RBX,string_subtstring_until(valor,16));
+		strcpy(contexto->registros_CPU->RBX,string_substring_until(valor,16));
 	}else if(strcmp(registro,"RCX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->RCX,string_subtstring_until(valor,16));
+		strcpy(contexto->registros_CPU->RCX,string_substring_until(valor,16));
 	}else if(strcmp(registro,"RDX")==0)
 	{
-		strcpy((*contexto)->registros_CPU->RDX,string_subtstring_until(valor,16));
+		strcpy(contexto->registros_CPU->RDX,string_substring_until(valor,16));
 	}
-	(*contexto)->program_counter++;
+
+	contexto->program_counter++;
 }

@@ -30,5 +30,7 @@ void terminar_programa(int, t_log*, t_config*);
 int conectar_modulo(int conexion, char* ip, char* puerto);
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
 void Codigo_recibido_por_Kernel (int cliente_fd);
+void manejar_set(t_contexto_ejec* contexto,t_instruccion* instruccion);
+void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contexto);
 
 #endif /* CPU_H */

@@ -39,42 +39,16 @@ typedef struct {
 	int puntero;
 } archivo;
 
-typedef struct {
-    char AX[4];   // Registro de 4 bytes
-    char BX[4];   // Registro de 4 bytes
-    char CX[4];   // Registro de 4 bytes
-    char DX[4];   // Registro de 4 bytes
-    char EAX[8];  // Registro de 8 bytes
-    char EBX[8];  // Registro de 8 bytes
-    char ECX[8];  // Registro de 8 bytes
-    char EDX[8];  // Registro de 8 bytes
-    char RAX[16]; // Registro de 16 bytes
-    char RBX[16]; // Registro de 16 bytes
-    char RCX[16]; // Registro de 16 bytes
-    char RDX[16]; // Registro de 16 bytes
-} registros_CPU;
 
-typedef struct
-{
-	int PID;
-	t_list* instrucciones;
-	int program_counter;
 
-	registros_CPU* registros_CPU;
 
-	double estimado_proxima_rafaga;
-	int64_t tiempo_llegada_rady;
-
-	t_list* tabla_segmentos;
-	t_list* tabla_archivos;
-
-	t_temporal* temporal;
-} t_pcb;
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
-extern sem_t productor;
+extern sem_t m_cola_ready;
+extern sem_t m_cola_new;
 extern sem_t consumidor;
+
 
 void inicializar_colas_y_semaforos();
 void *planificar_nuevos_procesos_largo_plazo(void *arg);

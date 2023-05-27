@@ -194,3 +194,436 @@
 [INFO] 18:25:14:984 FileSystem/(9214:9214): File System listo para recibir peticiones del Kernel
 [INFO] 18:25:24:367 FileSystem/(9214:9214): Se conecto un cliente!
 [ERROR] 18:25:55:970 FileSystem/(9214:9214): El cliente se desconecto. Terminando servidor
+[INFO] 23:23:45:524 FileSystem/(3276:3276): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:23:45:526 FileSystem/(3276:3276): File System listo para recibir peticiones del Kernel
+[INFO] 23:24:07:175 FileSystem/(3276:3276): Se conecto un cliente!
+[ERROR] 23:31:23:544 FileSystem/(3276:3276): El cliente se desconecto. Terminando servidor
+[INFO] 23:31:34:168 FileSystem/(3508:3508): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:31:34:169 FileSystem/(3508:3508): File System listo para recibir peticiones del Kernel
+[INFO] 23:31:47:205 FileSystem/(3508:3508): Se conecto un cliente!
+[ERROR] 23:32:59:788 FileSystem/(3508:3508): El cliente se desconecto. Terminando servidor
+[INFO] 23:35:03:643 FileSystem/(3741:3741): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:35:03:648 FileSystem/(3741:3741): File System listo para recibir peticiones del Kernel
+[INFO] 23:35:09:625 FileSystem/(3741:3741): Se conecto un cliente!
+[ERROR] 23:35:46:122 FileSystem/(3741:3741): El cliente se desconecto. Terminando servidor
+[INFO] 23:35:53:841 FileSystem/(3810:3810): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:35:53:842 FileSystem/(3810:3810): File System listo para recibir peticiones del Kernel
+[INFO] 23:36:17:007 FileSystem/(3810:3810): Se conecto un cliente!
+[INFO] 23:37:40:291 FileSystem/(3900:3900): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:37:40:293 FileSystem/(3900:3900): File System listo para recibir peticiones del Kernel
+[INFO] 23:37:52:622 FileSystem/(3900:3900): Se conecto un cliente!
+[ERROR] 23:37:52:856 FileSystem/(3900:3900): El cliente se desconecto. Terminando servidor
+[INFO] 23:38:18:178 FileSystem/(3944:3944): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:38:18:181 FileSystem/(3944:3944): File System listo para recibir peticiones del Kernel
+[INFO] 23:38:31:716 FileSystem/(3944:3944): Se conecto un cliente!
+[ERROR] 23:38:31:905 FileSystem/(3944:3944): El cliente se desconecto. Terminando servidor
+[INFO] 23:39:42:709 FileSystem/(4037:4037): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:39:42:709 FileSystem/(4037:4037): File System listo para recibir peticiones del Kernel
+[INFO] 23:39:56:061 FileSystem/(4037:4037): Se conecto un cliente!
+[ERROR] 23:41:18:414 FileSystem/(4037:4037): El cliente se desconecto. Terminando servidor
+[INFO] 23:42:40:308 FileSystem/(4165:4165): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:42:40:309 FileSystem/(4165:4165): File System listo para recibir peticiones del Kernel
+[INFO] 23:42:49:480 FileSystem/(4165:4165): Se conecto un cliente!
+[ERROR] 23:43:28:066 FileSystem/(4165:4165): El cliente se desconecto. Terminando servidor
+[INFO] 22:14:43:684 FileSystem/(1966:1966): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:14:43:689 FileSystem/(1966:1966): File System listo para recibir peticiones del Kernel
+[INFO] 22:15:11:764 FileSystem/(1966:1966): Se conecto un cliente!
+[ERROR] 22:19:16:887 FileSystem/(1966:1966): El cliente se desconecto. Terminando servidor
+[INFO] 22:19:41:354 FileSystem/(2325:2325): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:19:41:354 FileSystem/(2325:2325): File System listo para recibir peticiones del Kernel
+[INFO] 22:20:09:028 FileSystem/(2325:2325): Se conecto un cliente!
+[ERROR] 22:20:30:100 FileSystem/(2325:2325): El cliente se desconecto. Terminando servidor
+[INFO] 22:21:01:254 FileSystem/(2436:2436): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:21:01:256 FileSystem/(2436:2436): File System listo para recibir peticiones del Kernel
+[INFO] 22:21:11:764 FileSystem/(2436:2436): Se conecto un cliente!
+[ERROR] 22:22:24:176 FileSystem/(2436:2436): El cliente se desconecto. Terminando servidor
+[INFO] 22:22:33:661 FileSystem/(2532:2532): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:22:33:661 FileSystem/(2532:2532): File System listo para recibir peticiones del Kernel
+[INFO] 22:22:47:731 FileSystem/(2532:2532): Se conecto un cliente!
+[ERROR] 22:25:49:228 FileSystem/(2532:2532): El cliente se desconecto. Terminando servidor
+[INFO] 22:31:08:892 FileSystem/(2827:2827): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:31:08:897 FileSystem/(2827:2827): File System listo para recibir peticiones del Kernel
+[INFO] 22:31:38:190 FileSystem/(2827:2827): Se conecto un cliente!
+[ERROR] 22:44:06:863 FileSystem/(2827:2827): El cliente se desconecto. Terminando servidor
+[INFO] 22:46:25:250 FileSystem/(3629:3629): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:46:25:250 FileSystem/(3629:3629): File System listo para recibir peticiones del Kernel
+[INFO] 22:48:24:881 FileSystem/(3629:3629): Se conecto un cliente!
+[ERROR] 22:50:27:989 FileSystem/(3629:3629): El cliente se desconecto. Terminando servidor
+[INFO] 22:50:47:778 FileSystem/(3831:3831): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:50:47:778 FileSystem/(3831:3831): File System listo para recibir peticiones del Kernel
+[INFO] 22:51:04:803 FileSystem/(3831:3831): Se conecto un cliente!
+[ERROR] 22:55:52:778 FileSystem/(3831:3831): El cliente se desconecto. Terminando servidor
+[INFO] 22:56:02:089 FileSystem/(4109:4109): El File System se conecto con el modulo Memoria correctamente
+[INFO] 22:56:02:089 FileSystem/(4109:4109): File System listo para recibir peticiones del Kernel
+[INFO] 22:56:11:008 FileSystem/(4109:4109): Se conecto un cliente!
+[ERROR] 23:06:14:336 FileSystem/(4109:4109): El cliente se desconecto. Terminando servidor
+[INFO] 23:06:23:372 FileSystem/(4515:4515): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:06:23:372 FileSystem/(4515:4515): File System listo para recibir peticiones del Kernel
+[INFO] 23:06:32:579 FileSystem/(4515:4515): Se conecto un cliente!
+[ERROR] 23:08:49:773 FileSystem/(4515:4515): El cliente se desconecto. Terminando servidor
+[INFO] 23:08:59:056 FileSystem/(4630:4630): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:08:59:056 FileSystem/(4630:4630): File System listo para recibir peticiones del Kernel
+[INFO] 23:09:15:620 FileSystem/(4630:4630): Se conecto un cliente!
+[ERROR] 23:09:55:937 FileSystem/(4630:4630): El cliente se desconecto. Terminando servidor
+[INFO] 23:11:29:976 FileSystem/(4785:4785): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:11:29:977 FileSystem/(4785:4785): File System listo para recibir peticiones del Kernel
+[INFO] 23:11:43:221 FileSystem/(4785:4785): Se conecto un cliente!
+[ERROR] 23:14:02:270 FileSystem/(4785:4785): El cliente se desconecto. Terminando servidor
+[INFO] 23:14:09:761 FileSystem/(4928:4928): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:14:09:762 FileSystem/(4928:4928): File System listo para recibir peticiones del Kernel
+[INFO] 23:14:21:069 FileSystem/(4928:4928): Se conecto un cliente!
+[ERROR] 23:16:10:647 FileSystem/(4928:4928): El cliente se desconecto. Terminando servidor
+[INFO] 23:16:21:572 FileSystem/(5068:5068): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:16:21:572 FileSystem/(5068:5068): File System listo para recibir peticiones del Kernel
+[INFO] 23:16:31:712 FileSystem/(5068:5068): Se conecto un cliente!
+[ERROR] 23:17:06:234 FileSystem/(5068:5068): El cliente se desconecto. Terminando servidor
+[INFO] 23:17:16:867 FileSystem/(5214:5214): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:17:16:867 FileSystem/(5214:5214): File System listo para recibir peticiones del Kernel
+[INFO] 23:17:28:761 FileSystem/(5214:5214): Se conecto un cliente!
+[ERROR] 23:19:02:030 FileSystem/(5214:5214): El cliente se desconecto. Terminando servidor
+[INFO] 23:19:17:803 FileSystem/(5334:5334): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:19:17:803 FileSystem/(5334:5334): File System listo para recibir peticiones del Kernel
+[INFO] 23:19:29:009 FileSystem/(5334:5334): Se conecto un cliente!
+[ERROR] 23:19:45:629 FileSystem/(5334:5334): El cliente se desconecto. Terminando servidor
+[INFO] 23:19:53:523 FileSystem/(5438:5438): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:19:53:523 FileSystem/(5438:5438): File System listo para recibir peticiones del Kernel
+[INFO] 23:20:05:803 FileSystem/(5438:5438): Se conecto un cliente!
+[ERROR] 23:20:56:392 FileSystem/(5438:5438): El cliente se desconecto. Terminando servidor
+[INFO] 23:21:05:700 FileSystem/(5546:5546): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:21:05:700 FileSystem/(5546:5546): File System listo para recibir peticiones del Kernel
+[INFO] 23:21:13:924 FileSystem/(5546:5546): Se conecto un cliente!
+[ERROR] 23:22:22:705 FileSystem/(5546:5546): El cliente se desconecto. Terminando servidor
+[INFO] 23:29:14:406 FileSystem/(5870:5870): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:29:14:409 FileSystem/(5870:5870): File System listo para recibir peticiones del Kernel
+[INFO] 23:29:19:051 FileSystem/(5870:5870): Se conecto un cliente!
+[ERROR] 23:29:25:580 FileSystem/(5870:5870): El cliente se desconecto. Terminando servidor
+[INFO] 23:31:44:764 FileSystem/(5988:5988): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:31:44:765 FileSystem/(5988:5988): File System listo para recibir peticiones del Kernel
+[INFO] 23:31:56:160 FileSystem/(5988:5988): Se conecto un cliente!
+[ERROR] 23:33:50:153 FileSystem/(5988:5988): El cliente se desconecto. Terminando servidor
+[INFO] 23:34:03:789 FileSystem/(6107:6107): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:34:03:789 FileSystem/(6107:6107): File System listo para recibir peticiones del Kernel
+[INFO] 23:34:14:971 FileSystem/(6107:6107): Se conecto un cliente!
+[ERROR] 23:34:41:920 FileSystem/(6107:6107): El cliente se desconecto. Terminando servidor
+[INFO] 23:34:55:128 FileSystem/(6210:6210): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:34:55:128 FileSystem/(6210:6210): File System listo para recibir peticiones del Kernel
+[INFO] 23:35:03:398 FileSystem/(6210:6210): Se conecto un cliente!
+[ERROR] 23:38:32:921 FileSystem/(6210:6210): El cliente se desconecto. Terminando servidor
+[INFO] 23:39:15:568 FileSystem/(6366:6366): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:39:15:569 FileSystem/(6366:6366): File System listo para recibir peticiones del Kernel
+[INFO] 23:39:20:716 FileSystem/(6366:6366): Se conecto un cliente!
+[ERROR] 23:39:48:758 FileSystem/(6366:6366): El cliente se desconecto. Terminando servidor
+[INFO] 23:39:55:329 FileSystem/(6444:6444): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:39:55:330 FileSystem/(6444:6444): File System listo para recibir peticiones del Kernel
+[INFO] 23:40:05:077 FileSystem/(6444:6444): Se conecto un cliente!
+[ERROR] 23:41:13:841 FileSystem/(6444:6444): El cliente se desconecto. Terminando servidor
+[INFO] 23:41:22:990 FileSystem/(6569:6569): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:41:22:993 FileSystem/(6569:6569): File System listo para recibir peticiones del Kernel
+[INFO] 23:41:30:277 FileSystem/(6569:6569): Se conecto un cliente!
+[ERROR] 23:41:37:598 FileSystem/(6569:6569): El cliente se desconecto. Terminando servidor
+[INFO] 23:43:52:832 FileSystem/(6750:6750): El File System se conecto con el modulo Memoria correctamente
+[INFO] 23:43:52:832 FileSystem/(6750:6750): File System listo para recibir peticiones del Kernel
+[INFO] 23:44:02:990 FileSystem/(6750:6750): Se conecto un cliente!
+[ERROR] 23:45:44:440 FileSystem/(6750:6750): El cliente se desconecto. Terminando servidor
+[INFO] 00:11:01:896 FileSystem/(8141:8141): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:11:01:896 FileSystem/(8141:8141): File System listo para recibir peticiones del Kernel
+[INFO] 00:22:38:707 FileSystem/(8141:8141): Se conecto un cliente!
+[ERROR] 00:22:47:749 FileSystem/(8141:8141): El cliente se desconecto. Terminando servidor
+[INFO] 00:23:35:960 FileSystem/(9071:9071): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:23:35:961 FileSystem/(9071:9071): File System listo para recibir peticiones del Kernel
+[INFO] 00:23:48:019 FileSystem/(9071:9071): Se conecto un cliente!
+[ERROR] 00:23:48:274 FileSystem/(9071:9071): El cliente se desconecto. Terminando servidor
+[INFO] 00:24:08:082 FileSystem/(9134:9134): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:24:08:083 FileSystem/(9134:9134): File System listo para recibir peticiones del Kernel
+[INFO] 00:24:18:636 FileSystem/(9134:9134): Se conecto un cliente!
+[ERROR] 00:24:37:013 FileSystem/(9134:9134): El cliente se desconecto. Terminando servidor
+[INFO] 00:24:51:704 FileSystem/(9205:9205): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:24:51:707 FileSystem/(9205:9205): File System listo para recibir peticiones del Kernel
+[INFO] 00:24:56:732 FileSystem/(9205:9205): Se conecto un cliente!
+[ERROR] 00:25:03:704 FileSystem/(9205:9205): El cliente se desconecto. Terminando servidor
+[INFO] 00:26:43:132 FileSystem/(9291:9291): El File System se conecto con el modulo Memoria correctamente
+[INFO] 00:26:43:133 FileSystem/(9291:9291): File System listo para recibir peticiones del Kernel
+[INFO] 00:27:21:394 FileSystem/(9291:9291): Se conecto un cliente!
+[ERROR] 00:28:26:312 FileSystem/(9291:9291): El cliente se desconecto. Terminando servidor
+[INFO] 13:02:35:044 FileSystem/(1866:1866): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:02:35:054 FileSystem/(1866:1866): File System listo para recibir peticiones del Kernel
+[INFO] 13:03:15:996 FileSystem/(1866:1866): Se conecto un cliente!
+[ERROR] 13:04:14:915 FileSystem/(1866:1866): El cliente se desconecto. Terminando servidor
+[INFO] 13:15:02:919 FileSystem/(2144:2144): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:15:02:919 FileSystem/(2144:2144): File System listo para recibir peticiones del Kernel
+[INFO] 13:15:31:088 FileSystem/(2144:2144): Se conecto un cliente!
+[ERROR] 13:17:53:309 FileSystem/(2144:2144): El cliente se desconecto. Terminando servidor
+[INFO] 13:19:50:982 FileSystem/(2340:2340): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:19:50:991 FileSystem/(2340:2340): File System listo para recibir peticiones del Kernel
+[INFO] 13:20:03:478 FileSystem/(2340:2340): Se conecto un cliente!
+[ERROR] 13:23:03:529 FileSystem/(2340:2340): El cliente se desconecto. Terminando servidor
+[INFO] 13:31:54:750 FileSystem/(2705:2705): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:31:54:751 FileSystem/(2705:2705): File System listo para recibir peticiones del Kernel
+[INFO] 13:32:14:253 FileSystem/(2705:2705): Se conecto un cliente!
+[ERROR] 13:33:51:682 FileSystem/(2705:2705): El cliente se desconecto. Terminando servidor
+[INFO] 13:46:38:481 FileSystem/(3900:3900): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:46:38:481 FileSystem/(3900:3900): File System listo para recibir peticiones del Kernel
+[INFO] 13:46:51:910 FileSystem/(3900:3900): Se conecto un cliente!
+[ERROR] 13:46:58:672 FileSystem/(3900:3900): El cliente se desconecto. Terminando servidor
+[INFO] 13:47:35:749 FileSystem/(3966:3966): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:47:35:749 FileSystem/(3966:3966): File System listo para recibir peticiones del Kernel
+[INFO] 13:47:58:645 FileSystem/(3966:3966): Se conecto un cliente!
+[ERROR] 13:48:25:590 FileSystem/(3966:3966): El cliente se desconecto. Terminando servidor
+[INFO] 13:48:35:232 FileSystem/(4065:4065): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:48:35:232 FileSystem/(4065:4065): File System listo para recibir peticiones del Kernel
+[INFO] 13:48:53:553 FileSystem/(4065:4065): Se conecto un cliente!
+[ERROR] 13:49:02:084 FileSystem/(4065:4065): El cliente se desconecto. Terminando servidor
+[INFO] 13:51:24:185 FileSystem/(4297:4297): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:51:24:186 FileSystem/(4297:4297): File System listo para recibir peticiones del Kernel
+[INFO] 13:51:32:826 FileSystem/(4297:4297): Se conecto un cliente!
+[ERROR] 13:54:55:381 FileSystem/(4297:4297): El cliente se desconecto. Terminando servidor
+[INFO] 13:55:35:730 FileSystem/(4517:4517): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:55:35:732 FileSystem/(4517:4517): File System listo para recibir peticiones del Kernel
+[INFO] 13:55:50:791 FileSystem/(4517:4517): Se conecto un cliente!
+[ERROR] 13:56:04:188 FileSystem/(4517:4517): El cliente se desconecto. Terminando servidor
+[INFO] 13:56:16:712 FileSystem/(4594:4594): El File System se conecto con el modulo Memoria correctamente
+[INFO] 13:56:16:714 FileSystem/(4594:4594): File System listo para recibir peticiones del Kernel
+[INFO] 13:56:31:009 FileSystem/(4594:4594): Se conecto un cliente!
+[ERROR] 14:13:19:490 FileSystem/(4594:4594): El cliente se desconecto. Terminando servidor
+[INFO] 15:29:00:409 FileSystem/(9533:9533): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:29:00:409 FileSystem/(9533:9533): File System listo para recibir peticiones del Kernel
+[INFO] 15:29:18:757 FileSystem/(9533:9533): Se conecto un cliente!
+[ERROR] 15:31:14:228 FileSystem/(9533:9533): El cliente se desconecto. Terminando servidor
+[INFO] 15:31:26:159 FileSystem/(9694:9694): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:31:26:160 FileSystem/(9694:9694): File System listo para recibir peticiones del Kernel
+[INFO] 15:31:42:303 FileSystem/(9694:9694): Se conecto un cliente!
+[ERROR] 15:31:42:497 FileSystem/(9694:9694): El cliente se desconecto. Terminando servidor
+[INFO] 15:32:06:768 FileSystem/(9788:9788): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:32:06:768 FileSystem/(9788:9788): File System listo para recibir peticiones del Kernel
+[INFO] 15:32:26:659 FileSystem/(9788:9788): Se conecto un cliente!
+[ERROR] 15:33:16:964 FileSystem/(9788:9788): El cliente se desconecto. Terminando servidor
+[INFO] 15:34:05:176 FileSystem/(9903:9903): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:34:05:178 FileSystem/(9903:9903): File System listo para recibir peticiones del Kernel
+[INFO] 15:34:19:079 FileSystem/(9903:9903): Se conecto un cliente!
+[ERROR] 15:34:19:322 FileSystem/(9903:9903): El cliente se desconecto. Terminando servidor
+[INFO] 15:34:31:690 FileSystem/(9993:9993): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:34:31:700 FileSystem/(9993:9993): File System listo para recibir peticiones del Kernel
+[INFO] 15:34:47:191 FileSystem/(9993:9993): Se conecto un cliente!
+[ERROR] 15:35:10:940 FileSystem/(9993:9993): El cliente se desconecto. Terminando servidor
+[INFO] 15:35:21:964 FileSystem/(10085:10085): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:35:21:967 FileSystem/(10085:10085): File System listo para recibir peticiones del Kernel
+[INFO] 15:35:36:294 FileSystem/(10085:10085): Se conecto un cliente!
+[ERROR] 15:37:41:893 FileSystem/(10085:10085): El cliente se desconecto. Terminando servidor
+[INFO] 15:38:48:722 FileSystem/(10242:10242): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:38:48:722 FileSystem/(10242:10242): File System listo para recibir peticiones del Kernel
+[INFO] 15:39:05:259 FileSystem/(10242:10242): Se conecto un cliente!
+[ERROR] 15:42:32:002 FileSystem/(10242:10242): El cliente se desconecto. Terminando servidor
+[INFO] 15:55:01:596 FileSystem/(10942:10942): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:55:01:596 FileSystem/(10942:10942): File System listo para recibir peticiones del Kernel
+[INFO] 15:55:16:034 FileSystem/(10942:10942): Se conecto un cliente!
+[ERROR] 15:56:21:103 FileSystem/(10942:10942): El cliente se desconecto. Terminando servidor
+[INFO] 15:58:45:204 FileSystem/(11194:11194): El File System se conecto con el modulo Memoria correctamente
+[INFO] 15:58:45:205 FileSystem/(11194:11194): File System listo para recibir peticiones del Kernel
+[INFO] 15:58:59:380 FileSystem/(11194:11194): Se conecto un cliente!
+[ERROR] 15:59:18:421 FileSystem/(11194:11194): El cliente se desconecto. Terminando servidor
+[INFO] 16:00:35:165 FileSystem/(11328:11328): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:00:35:168 FileSystem/(11328:11328): File System listo para recibir peticiones del Kernel
+[INFO] 16:00:50:461 FileSystem/(11328:11328): Se conecto un cliente!
+[ERROR] 16:02:17:924 FileSystem/(11328:11328): El cliente se desconecto. Terminando servidor
+[INFO] 16:08:36:033 FileSystem/(12095:12095): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:08:36:035 FileSystem/(12095:12095): File System listo para recibir peticiones del Kernel
+[INFO] 16:08:55:432 FileSystem/(12095:12095): Se conecto un cliente!
+[ERROR] 16:09:03:165 FileSystem/(12095:12095): El cliente se desconecto. Terminando servidor
+[INFO] 16:09:58:375 FileSystem/(12216:12216): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:09:58:375 FileSystem/(12216:12216): File System listo para recibir peticiones del Kernel
+[INFO] 16:10:11:401 FileSystem/(12216:12216): Se conecto un cliente!
+[ERROR] 16:10:26:461 FileSystem/(12216:12216): El cliente se desconecto. Terminando servidor
+[INFO] 16:11:40:307 FileSystem/(12313:12313): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:11:40:307 FileSystem/(12313:12313): File System listo para recibir peticiones del Kernel
+[INFO] 16:11:52:302 FileSystem/(12313:12313): Se conecto un cliente!
+[ERROR] 16:13:02:176 FileSystem/(12313:12313): El cliente se desconecto. Terminando servidor
+[INFO] 16:16:29:929 FileSystem/(12491:12491): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:16:29:929 FileSystem/(12491:12491): File System listo para recibir peticiones del Kernel
+[INFO] 16:16:40:954 FileSystem/(12491:12491): Se conecto un cliente!
+[ERROR] 16:16:47:172 FileSystem/(12491:12491): El cliente se desconecto. Terminando servidor
+[INFO] 16:17:40:743 FileSystem/(12612:12612): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:17:40:745 FileSystem/(12612:12612): File System listo para recibir peticiones del Kernel
+[INFO] 16:18:00:310 FileSystem/(12612:12612): Se conecto un cliente!
+[ERROR] 16:18:11:113 FileSystem/(12612:12612): El cliente se desconecto. Terminando servidor
+[INFO] 16:18:22:964 FileSystem/(12735:12735): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:18:22:965 FileSystem/(12735:12735): File System listo para recibir peticiones del Kernel
+[INFO] 16:18:43:382 FileSystem/(12735:12735): Se conecto un cliente!
+[ERROR] 16:19:45:180 FileSystem/(12735:12735): El cliente se desconecto. Terminando servidor
+[INFO] 16:29:59:476 FileSystem/(13342:13342): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:29:59:476 FileSystem/(13342:13342): File System listo para recibir peticiones del Kernel
+[INFO] 16:30:14:962 FileSystem/(13342:13342): Se conecto un cliente!
+[ERROR] 16:31:12:648 FileSystem/(13342:13342): El cliente se desconecto. Terminando servidor
+[INFO] 16:32:02:530 FileSystem/(13531:13531): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:32:02:533 FileSystem/(13531:13531): File System listo para recibir peticiones del Kernel
+[INFO] 16:32:13:098 FileSystem/(13531:13531): Se conecto un cliente!
+[ERROR] 16:32:13:314 FileSystem/(13531:13531): El cliente se desconecto. Terminando servidor
+[INFO] 16:32:29:287 FileSystem/(13595:13595): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:32:29:287 FileSystem/(13595:13595): File System listo para recibir peticiones del Kernel
+[INFO] 16:32:42:055 FileSystem/(13595:13595): Se conecto un cliente!
+[ERROR] 16:32:52:992 FileSystem/(13595:13595): El cliente se desconecto. Terminando servidor
+[INFO] 16:33:00:354 FileSystem/(13655:13655): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:33:00:358 FileSystem/(13655:13655): File System listo para recibir peticiones del Kernel
+[INFO] 16:33:08:868 FileSystem/(13655:13655): Se conecto un cliente!
+[ERROR] 16:33:18:433 FileSystem/(13655:13655): El cliente se desconecto. Terminando servidor
+[INFO] 16:35:11:534 FileSystem/(13871:13871): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:35:11:534 FileSystem/(13871:13871): File System listo para recibir peticiones del Kernel
+[INFO] 16:35:22:110 FileSystem/(13871:13871): Se conecto un cliente!
+[ERROR] 16:37:10:795 FileSystem/(13871:13871): El cliente se desconecto. Terminando servidor
+[INFO] 16:37:19:933 FileSystem/(13965:13965): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:37:19:934 FileSystem/(13965:13965): File System listo para recibir peticiones del Kernel
+[INFO] 16:37:52:114 FileSystem/(13965:13965): Se conecto un cliente!
+[ERROR] 16:38:20:785 FileSystem/(13965:13965): El cliente se desconecto. Terminando servidor
+[INFO] 16:38:28:666 FileSystem/(14075:14075): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:38:28:668 FileSystem/(14075:14075): File System listo para recibir peticiones del Kernel
+[INFO] 16:39:02:401 FileSystem/(14133:14133): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:39:02:402 FileSystem/(14133:14133): File System listo para recibir peticiones del Kernel
+[INFO] 16:39:24:010 FileSystem/(14133:14133): Se conecto un cliente!
+[ERROR] 16:40:53:552 FileSystem/(14133:14133): El cliente se desconecto. Terminando servidor
+[INFO] 16:41:05:633 FileSystem/(14260:14260): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:41:05:633 FileSystem/(14260:14260): File System listo para recibir peticiones del Kernel
+[INFO] 16:41:34:905 FileSystem/(14260:14260): Se conecto un cliente!
+[ERROR] 16:42:56:363 FileSystem/(14260:14260): El cliente se desconecto. Terminando servidor
+[INFO] 16:46:07:945 FileSystem/(14558:14558): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:46:07:946 FileSystem/(14558:14558): File System listo para recibir peticiones del Kernel
+[INFO] 16:46:13:925 FileSystem/(14558:14558): Se conecto un cliente!
+[ERROR] 16:46:14:198 FileSystem/(14558:14558): El cliente se desconecto. Terminando servidor
+[INFO] 16:46:26:649 FileSystem/(14592:14592): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:46:26:658 FileSystem/(14592:14592): File System listo para recibir peticiones del Kernel
+[INFO] 16:46:39:231 FileSystem/(14592:14592): Se conecto un cliente!
+[ERROR] 16:46:45:707 FileSystem/(14592:14592): El cliente se desconecto. Terminando servidor
+[INFO] 16:47:20:268 FileSystem/(14686:14686): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:47:20:269 FileSystem/(14686:14686): File System listo para recibir peticiones del Kernel
+[INFO] 16:47:34:089 FileSystem/(14686:14686): Se conecto un cliente!
+[ERROR] 16:47:34:395 FileSystem/(14686:14686): El cliente se desconecto. Terminando servidor
+[INFO] 16:47:57:328 FileSystem/(14752:14752): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:47:57:330 FileSystem/(14752:14752): File System listo para recibir peticiones del Kernel
+[INFO] 16:48:15:629 FileSystem/(14752:14752): Se conecto un cliente!
+[ERROR] 16:48:59:773 FileSystem/(14752:14752): El cliente se desconecto. Terminando servidor
+[INFO] 16:49:35:684 FileSystem/(14851:14851): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:49:35:685 FileSystem/(14851:14851): File System listo para recibir peticiones del Kernel
+[INFO] 16:49:49:262 FileSystem/(14851:14851): Se conecto un cliente!
+[ERROR] 16:49:49:448 FileSystem/(14851:14851): El cliente se desconecto. Terminando servidor
+[INFO] 16:50:03:179 FileSystem/(14914:14914): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:50:03:179 FileSystem/(14914:14914): File System listo para recibir peticiones del Kernel
+[INFO] 16:50:12:365 FileSystem/(14914:14914): Se conecto un cliente!
+[ERROR] 16:50:23:127 FileSystem/(14914:14914): El cliente se desconecto. Terminando servidor
+[INFO] 16:50:32:278 FileSystem/(14972:14972): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:50:32:278 FileSystem/(14972:14972): File System listo para recibir peticiones del Kernel
+[INFO] 16:50:41:059 FileSystem/(14972:14972): Se conecto un cliente!
+[ERROR] 16:50:48:252 FileSystem/(14972:14972): El cliente se desconecto. Terminando servidor
+[INFO] 16:51:46:889 FileSystem/(15093:15093): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:51:46:890 FileSystem/(15093:15093): File System listo para recibir peticiones del Kernel
+[INFO] 16:52:08:845 FileSystem/(15093:15093): Se conecto un cliente!
+[ERROR] 16:52:24:209 FileSystem/(15093:15093): El cliente se desconecto. Terminando servidor
+[INFO] 16:52:32:161 FileSystem/(15209:15209): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:52:32:162 FileSystem/(15209:15209): File System listo para recibir peticiones del Kernel
+[INFO] 16:52:51:552 FileSystem/(15209:15209): Se conecto un cliente!
+[ERROR] 16:55:02:847 FileSystem/(15209:15209): El cliente se desconecto. Terminando servidor
+[INFO] 16:55:59:545 FileSystem/(15342:15342): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:55:59:549 FileSystem/(15342:15342): File System listo para recibir peticiones del Kernel
+[INFO] 16:56:08:211 FileSystem/(15342:15342): Se conecto un cliente!
+[ERROR] 16:56:18:885 FileSystem/(15342:15342): El cliente se desconecto. Terminando servidor
+[INFO] 16:56:26:646 FileSystem/(15420:15420): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:56:26:646 FileSystem/(15420:15420): File System listo para recibir peticiones del Kernel
+[INFO] 16:56:37:144 FileSystem/(15420:15420): Se conecto un cliente!
+[ERROR] 16:56:47:537 FileSystem/(15420:15420): El cliente se desconecto. Terminando servidor
+[INFO] 16:56:55:685 FileSystem/(15485:15485): El File System se conecto con el modulo Memoria correctamente
+[INFO] 16:56:55:685 FileSystem/(15485:15485): File System listo para recibir peticiones del Kernel
+[INFO] 16:57:04:967 FileSystem/(15485:15485): Se conecto un cliente!
+[ERROR] 16:57:11:640 FileSystem/(15485:15485): El cliente se desconecto. Terminando servidor
+[INFO] 17:01:35:888 FileSystem/(15959:15959): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:01:35:888 FileSystem/(15959:15959): File System listo para recibir peticiones del Kernel
+[INFO] 17:01:46:689 FileSystem/(15959:15959): Se conecto un cliente!
+[ERROR] 17:01:53:644 FileSystem/(15959:15959): El cliente se desconecto. Terminando servidor
+[INFO] 17:16:56:444 FileSystem/(16784:16784): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:16:56:444 FileSystem/(16784:16784): File System listo para recibir peticiones del Kernel
+[INFO] 17:17:19:005 FileSystem/(16784:16784): Se conecto un cliente!
+[ERROR] 17:17:51:372 FileSystem/(16784:16784): El cliente se desconecto. Terminando servidor
+[INFO] 17:20:29:333 FileSystem/(17151:17151): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:20:29:333 FileSystem/(17151:17151): File System listo para recibir peticiones del Kernel
+[INFO] 17:20:43:885 FileSystem/(17151:17151): Se conecto un cliente!
+[ERROR] 17:21:27:677 FileSystem/(17151:17151): El cliente se desconecto. Terminando servidor
+[INFO] 17:22:12:990 FileSystem/(17307:17307): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:22:12:991 FileSystem/(17307:17307): File System listo para recibir peticiones del Kernel
+[INFO] 17:22:28:613 FileSystem/(17307:17307): Se conecto un cliente!
+[ERROR] 17:22:28:821 FileSystem/(17307:17307): El cliente se desconecto. Terminando servidor
+[INFO] 17:22:40:918 FileSystem/(17390:17390): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:22:40:918 FileSystem/(17390:17390): File System listo para recibir peticiones del Kernel
+[INFO] 17:22:55:256 FileSystem/(17390:17390): Se conecto un cliente!
+[ERROR] 17:23:07:826 FileSystem/(17390:17390): El cliente se desconecto. Terminando servidor
+[INFO] 17:23:14:973 FileSystem/(17467:17467): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:23:14:973 FileSystem/(17467:17467): File System listo para recibir peticiones del Kernel
+[INFO] 17:23:31:789 FileSystem/(17467:17467): Se conecto un cliente!
+[ERROR] 17:24:38:312 FileSystem/(17467:17467): El cliente se desconecto. Terminando servidor
+[INFO] 17:26:18:957 FileSystem/(17672:17672): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:26:18:959 FileSystem/(17672:17672): File System listo para recibir peticiones del Kernel
+[INFO] 17:26:23:159 FileSystem/(17672:17672): Se conecto un cliente!
+[ERROR] 17:27:45:672 FileSystem/(17672:17672): El cliente se desconecto. Terminando servidor
+[INFO] 17:27:56:521 FileSystem/(17800:17800): El File System se conecto con el modulo Memoria correctamente
+[INFO] 17:27:56:522 FileSystem/(17800:17800): File System listo para recibir peticiones del Kernel
+[INFO] 17:28:07:171 FileSystem/(17800:17800): Se conecto un cliente!
+[ERROR] 17:28:18:076 FileSystem/(17800:17800): El cliente se desconecto. Terminando servidor
+[INFO] 19:09:22:606 FileSystem/(19896:19896): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:09:22:608 FileSystem/(19896:19896): File System listo para recibir peticiones del Kernel
+[INFO] 19:09:27:254 FileSystem/(19896:19896): Se conecto un cliente!
+[ERROR] 19:09:40:919 FileSystem/(19896:19896): El cliente se desconecto. Terminando servidor
+[INFO] 19:26:02:475 FileSystem/(20660:20660): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:26:02:479 FileSystem/(20660:20660): File System listo para recibir peticiones del Kernel
+[INFO] 19:26:14:102 FileSystem/(20660:20660): Se conecto un cliente!
+[ERROR] 19:26:22:187 FileSystem/(20660:20660): El cliente se desconecto. Terminando servidor
+[INFO] 19:28:01:106 FileSystem/(20755:20755): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:28:01:106 FileSystem/(20755:20755): File System listo para recibir peticiones del Kernel
+[INFO] 19:28:16:233 FileSystem/(20755:20755): Se conecto un cliente!
+[ERROR] 19:28:23:175 FileSystem/(20755:20755): El cliente se desconecto. Terminando servidor
+[INFO] 19:28:47:000 FileSystem/(20836:20836): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:28:47:000 FileSystem/(20836:20836): File System listo para recibir peticiones del Kernel
+[INFO] 19:30:32:257 FileSystem/(20836:20836): Se conecto un cliente!
+[ERROR] 19:30:48:274 FileSystem/(20836:20836): El cliente se desconecto. Terminando servidor
+[INFO] 19:33:00:267 FileSystem/(21081:21081): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:33:00:267 FileSystem/(21081:21081): File System listo para recibir peticiones del Kernel
+[INFO] 19:34:25:545 FileSystem/(21081:21081): Se conecto un cliente!
+[ERROR] 19:34:45:398 FileSystem/(21081:21081): El cliente se desconecto. Terminando servidor
+[INFO] 19:36:49:133 FileSystem/(21380:21380): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:36:49:134 FileSystem/(21380:21380): File System listo para recibir peticiones del Kernel
+[INFO] 19:37:04:529 FileSystem/(21380:21380): Se conecto un cliente!
+[ERROR] 19:37:42:303 FileSystem/(21380:21380): El cliente se desconecto. Terminando servidor
+[INFO] 19:38:13:360 FileSystem/(21496:21496): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:38:13:361 FileSystem/(21496:21496): File System listo para recibir peticiones del Kernel
+[INFO] 19:38:41:867 FileSystem/(21496:21496): Se conecto un cliente!
+[ERROR] 19:38:54:645 FileSystem/(21496:21496): El cliente se desconecto. Terminando servidor
+[INFO] 19:39:01:925 FileSystem/(21604:21604): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:39:01:926 FileSystem/(21604:21604): File System listo para recibir peticiones del Kernel
+[INFO] 19:39:15:946 FileSystem/(21604:21604): Se conecto un cliente!
+[ERROR] 19:40:04:983 FileSystem/(21604:21604): El cliente se desconecto. Terminando servidor
+[INFO] 19:42:29:839 FileSystem/(21745:21745): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:42:29:842 FileSystem/(21745:21745): File System listo para recibir peticiones del Kernel
+[INFO] 19:42:41:682 FileSystem/(21745:21745): Se conecto un cliente!
+[ERROR] 19:43:01:974 FileSystem/(21745:21745): El cliente se desconecto. Terminando servidor
+[INFO] 19:43:30:099 FileSystem/(21865:21865): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:43:30:099 FileSystem/(21865:21865): File System listo para recibir peticiones del Kernel
+[INFO] 19:43:43:618 FileSystem/(21865:21865): Se conecto un cliente!
+[ERROR] 19:43:57:596 FileSystem/(21865:21865): El cliente se desconecto. Terminando servidor
+[INFO] 19:44:07:206 FileSystem/(21941:21941): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:44:07:219 FileSystem/(21941:21941): File System listo para recibir peticiones del Kernel
+[INFO] 19:44:19:451 FileSystem/(21941:21941): Se conecto un cliente!
+[ERROR] 19:44:43:675 FileSystem/(21941:21941): El cliente se desconecto. Terminando servidor
+[INFO] 19:50:40:648 FileSystem/(22557:22557): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:50:40:648 FileSystem/(22557:22557): File System listo para recibir peticiones del Kernel
+[INFO] 19:50:53:935 FileSystem/(22557:22557): Se conecto un cliente!
+[ERROR] 19:51:12:130 FileSystem/(22557:22557): El cliente se desconecto. Terminando servidor
+[INFO] 19:58:44:402 FileSystem/(23010:23010): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:58:44:405 FileSystem/(23010:23010): File System listo para recibir peticiones del Kernel
+[INFO] 19:58:57:393 FileSystem/(23010:23010): Se conecto un cliente!
+[ERROR] 19:59:12:506 FileSystem/(23010:23010): El cliente se desconecto. Terminando servidor
+[INFO] 19:59:32:251 FileSystem/(23106:23106): El File System se conecto con el modulo Memoria correctamente
+[INFO] 19:59:32:252 FileSystem/(23106:23106): File System listo para recibir peticiones del Kernel
+[INFO] 20:00:17:126 FileSystem/(23106:23106): Se conecto un cliente!
+[ERROR] 20:00:29:718 FileSystem/(23106:23106): El cliente se desconecto. Terminando servidor
+[INFO] 20:00:36:292 FileSystem/(23194:23194): El File System se conecto con el modulo Memoria correctamente
+[INFO] 20:00:36:293 FileSystem/(23194:23194): File System listo para recibir peticiones del Kernel
+[INFO] 20:00:51:087 FileSystem/(23194:23194): Se conecto un cliente!
+[ERROR] 20:02:08:135 FileSystem/(23194:23194): El cliente se desconecto. Terminando servidor
+[INFO] 20:03:52:350 FileSystem/(23365:23365): El File System se conecto con el modulo Memoria correctamente
+[INFO] 20:03:52:350 FileSystem/(23365:23365): File System listo para recibir peticiones del Kernel
+[INFO] 20:04:03:532 FileSystem/(23365:23365): Se conecto un cliente!
+[ERROR] 20:04:11:435 FileSystem/(23365:23365): El cliente se desconecto. Terminando servidor

@@ -85,6 +85,15 @@ t_paquete* crear_paquete(op_code codigo)
 	return paquete;
 }
 
+void agregar_a_paquete_sin_agregar_tamanio(t_paquete* paquete, void* valor, int tamanio)
+{
+	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio);
+
+	memcpy(paquete->buffer->stream + paquete->buffer->size , &valor, tamanio);
+
+	paquete->buffer->size += tamanio;
+}
+
 void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
 {
 	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio + sizeof(int));

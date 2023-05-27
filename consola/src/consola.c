@@ -207,7 +207,6 @@ void paquete_instruccion(int conexion, t_list* lista_instrucciones)
 	offset+= sizeof(int);
 
 	//Copiado de memoria cada instruccion
-	//int i = lista_length-1; i>= 0; i--
 	for(int i = 0; i< lista_length; i++){
 		t_instruccion* inst = list_get(lista_instrucciones, i);
 

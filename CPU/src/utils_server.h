@@ -19,11 +19,11 @@ extern t_log* logger;
 
 
 typedef struct {
-	uint32_t opcode_lenght;
+	int opcode_lenght;
 	char* opcode;
-	uint32_t parametro1_lenght;
-	uint32_t parametro2_lenght;
-	uint32_t parametro3_lenght;
+	int parametro1_lenght;
+	int parametro2_lenght;
+	int parametro3_lenght;
 	char* parametros[3];
 
 }t_instruccion;
@@ -50,7 +50,7 @@ typedef struct
 	t_list* lista_instrucciones;
 	int program_counter;
 
-	registros_CPU registros_CPU;
+	registros_CPU* registros_CPU;
 
 
 } t_contexto_ejec;
@@ -62,6 +62,7 @@ void* recibir_buffer(int*, int);
 int iniciar_servidor(char* puerto_escucha);
 int esperar_cliente(int);
 t_list* recibir_paquete(int);
+t_contexto_ejec* recibir_paquete_pcb(int socket_cliente);
 void recibir_mensaje(int);
 int recibir_operacion(int);
 void recibir_handshake(int);

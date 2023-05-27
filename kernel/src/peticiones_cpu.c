@@ -1,7 +1,7 @@
 #include "peticiones_cpu.h"
 
 void finalizar_proceso(int socket_cliente){
-	t_list* contexto_ejecucion = recibir_paquete(socket_cliente);
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	//crear estrutura para el contexto de ejecucion
 	// liberar todos los recursos que tenga asignados (aca se usa el free)
 	//free(instrucciones);
@@ -12,7 +12,7 @@ void finalizar_proceso(int socket_cliente){
 }
 
 void bloquear_proceso(int socket_cliente){
-
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	//verificar si es una IO o WAIT
 	// si es una IO obtener el tiempo de espeja junto con el contexto de ejecución
 	// simular I/O
@@ -21,13 +21,14 @@ void bloquear_proceso(int socket_cliente){
 }
 
 void manejar_peticion_al_kernel(int socket_cliente){
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	// verificar que tipo de peticion es
 	//manejar cada peticion según corresponda
 }
 
 void desalojar_proceso(int socket_cliente){
-	t_list* contexto_ejecucion = recibir_paquete(socket_cliente);
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	//crear estrutura para el contexto de ejecucion
 
 	//devolver proceso a la cola de ready

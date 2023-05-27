@@ -27,16 +27,6 @@ typedef struct {
 }planificar_corto_plazo_args;
 
 
-typedef struct
-{
-	int tamanio_lista;
-	t_list* lista_instrucciones;
-	int program_counter;
-
-	registros_CPU* registros_CPU;
-
-
-} t_contexto_ejec;
 
 void *planificar_corto_plazo(void *arg);
 void planificar_corto_plazo_fifo(int socket_cpu);

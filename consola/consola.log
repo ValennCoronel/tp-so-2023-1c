@@ -69,3 +69,105 @@
 [INFO] 18:23:28:979 consola/(9159:9159): codigo 2: SET
 [INFO] 18:23:28:979 consola/(9159:9159): param 2: CX
 [INFO] 18:25:30:159 consola/(9294:9294): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:24:43:637 consola/(3329:3329): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:31:51:553 consola/(3573:3573): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:35:18:768 consola/(3793:3793): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 22:32:48:721 consola/(2940:2940): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 22:50:08:179 consola/(3799:3799): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 22:51:14:503 consola/(3897:3897): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 22:54:09:676 consola/(3957:3957): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 22:54:58:433 consola/(4025:4025): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 22:56:30:519 consola/(4151:4151): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:06:54:133 consola/(4600:4600): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 23:09:39:996 consola/(4710:4710): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 23:12:00:365 consola/(4868:4868): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:14:32:665 consola/(5015:5015): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 23:16:46:885 consola/(5150:5150): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:16:56:829 consola/(5163:5163): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 23:17:42:830 consola/(5263:5263): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 23:19:37:947 consola/(5417:5417): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:20:14:265 consola/(5501:5501): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:20:23:076 consola/(5520:5520): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 23:21:19:858 consola/(5588:5588): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:29:25:314 consola/(5927:5927): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 23:32:03:350 consola/(6055:6055): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 23:34:23:034 consola/(6167:6167): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:34:36:269 consola/(6182:6182): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 23:35:12:091 consola/(6256:6256): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 23:39:26:585 consola/(6416:6416): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:39:42:819 consola/(6430:6430): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:40:12:518 consola/(6488:6488): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:40:18:855 consola/(6501:6501): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 23:40:24:740 consola/(6514:6514): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 23:45:43:927 consola/(6866:6866): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 00:22:47:155 consola/(9038:9038): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 00:24:25:142 consola/(9178:9178): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 00:25:03:219 consola/(9234:9234): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 00:27:37:859 consola/(9369:9369): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:03:32:190 consola/(1940:1940): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:15:40:514 consola/(2230:2230): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:20:13:033 consola/(2422:2422): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:32:23:563 consola/(2819:2819): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:46:58:464 consola/(3948:3948): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 13:48:06:859 consola/(4033:4033): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 13:48:17:777 consola/(4048:4048): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 13:49:01:805 consola/(4125:4125): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 13:51:40:139 consola/(4347:4347): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 13:55:56:794 consola/(4578:4578): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 13:56:38:384 consola/(4655:4655): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 15:29:25:992 consola/(9617:9617): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 15:32:35:541 consola/(9848:9848): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 15:34:53:877 consola/(10056:10056): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 15:35:05:847 consola/(10069:10069): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 15:35:42:244 consola/(10147:10147): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 15:39:11:505 consola/(10323:10323): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 15:55:22:741 consola/(11046:11046): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 15:59:05:302 consola/(11258:11258): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:00:55:972 consola/(11409:11409): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:09:02:968 consola/(12195:12195): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:10:20:510 consola/(12285:12285): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:12:01:085 consola/(12377:12377): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:16:46:734 consola/(12572:12572): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:18:06:380 consola/(12700:12700): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:18:49:223 consola/(12798:12798): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:30:21:379 consola/(13435:13435): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:32:48:512 consola/(13641:13641): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:33:18:019 consola/(13697:13697): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:35:28:716 consola/(13917:13917): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:37:58:946 consola/(14047:14047): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 16:38:15:779 consola/(14061:14061): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:39:32:475 consola/(14196:14196): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:41:41:959 consola/(14341:14341): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:46:45:247 consola/(14656:14656): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:48:35:579 consola/(14812:14812): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:50:18:437 consola/(14958:14958): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:50:47:800 consola/(15016:15016): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:52:16:200 consola/(15193:15193): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:52:59:726 consola/(15269:15269): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 16:56:14:713 consola/(15406:15406): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 16:56:42:786 consola/(15465:15465): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:57:11:204 consola/(15527:15527): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 17:01:53:221 consola/(16010:16010): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 17:17:25:410 consola/(16877:16877): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 17:20:51:253 consola/(17226:17226): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 17:23:02:653 consola/(17452:17452): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 17:23:37:767 consola/(17526:17526): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 17:26:30:488 consola/(17702:17702): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 17:28:12:722 consola/(17865:17865): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:09:35:727 consola/(19926:19926): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:26:22:027 consola/(20723:20723): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:28:23:021 consola/(20820:20820): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:30:39:833 consola/(20954:20954): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:34:34:033 consola/(21228:21228): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:37:11:346 consola/(21443:21443): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 19:38:49:014 consola/(21589:21589): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 19:39:26:302 consola/(21665:21665): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:42:48:944 consola/(21810:21810): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 19:43:52:550 consola/(21926:21926): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 19:44:32:614 consola/(22001:22001): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 19:44:39:486 consola/(22014:22014): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 19:51:02:201 consola/(22618:22618): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 19:59:05:471 consola/(23075:23075): La Consola se conecto con el modulo Kernel correctamente
+[ERROR] 20:00:25:374 consola/(23179:23179): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 20:01:03:139 consola/(23253:23253): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 20:04:10:697 consola/(23407:23407): La Consola se conecto con el modulo Kernel correctamente

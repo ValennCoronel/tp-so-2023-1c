@@ -101,7 +101,6 @@ t_contexto_ejec* recibir_paquete_pcb(int socket_cliente)
 	int program_counter;
 
 	buffer = recibir_buffer(&size, socket_cliente);
-	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
 
 	while(desplazamiento < size )
 	{
@@ -110,49 +109,48 @@ t_contexto_ejec* recibir_paquete_pcb(int socket_cliente)
 		desplazamiento+=sizeof(int);
 
 
-		while (desplazamiento < tamanio_lista )
-	{
-			int tamanio_instruccion;
+		for(int i = 0; i< tamanio_lista; i++){
+			t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 
-			memcpy(&tamanio_instruccion, buffer + desplazamiento, sizeof(int));
+			memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
 			desplazamiento+=sizeof(int);
-			t_instruccion*elemento_lista = malloc(sizeof(t_instruccion));
-			int opcode_lenght;
-			memcpy(&opcode_lenght, buffer + desplazamiento, sizeof(int));
+			instruccion->opcode = malloc(instruccion->opcode_lenght);
+			memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
+			desplazamiento+=instruccion->opcode_lenght;
+
+			memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
 			desplazamiento+=sizeof(int);
+			instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+			memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
+			desplazamiento += instruccion->parametro1_lenght;
 
-			memcpy(&(elemento_lista->opcode), buffer + desplazamiento, opcode_lenght);
-			desplazamiento+=opcode_lenght;
-			int parametro1_lenght;
-			int parametro2_lenght;
-			int parametro3_lenght;
-			memcpy(&parametro1_lenght, buffer + desplazamiento, sizeof(int));
-						desplazamiento+=sizeof(int);
-			memcpy(&parametro2_lenght, buffer + desplazamiento, sizeof(int));
-						desplazamiento+=sizeof(int);
-			memcpy(&parametro3_lenght, buffer + desplazamiento, sizeof(int));
-						desplazamiento+=sizeof(int);
-			//Corregir este error de acá ♥♥♥
-			//elemento_lista->parametros=malloc(3*sizeof(char* ));
-			//Corregir este error de acá ♥♥♥
-			memcpy(&elemento_lista->parametros[0], buffer + desplazamiento, parametro1_lenght);
-			desplazamiento+=parametro1_lenght;
-			memcpy(&elemento_lista->parametros[1], buffer + desplazamiento, parametro2_lenght);
-			desplazamiento+=parametro2_lenght;
-			memcpy(&elemento_lista->parametros[2], buffer + desplazamiento, parametro3_lenght);
-			desplazamiento+=parametro3_lenght;
+			memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+			instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+			memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
+			desplazamiento += instruccion->parametro2_lenght;
 
-			list_add(lista_instrucciones, elemento_lista);
+			memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+			instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+			memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+			desplazamiento += instruccion->parametro3_lenght;
 
-	}
+
+			list_add(lista_instrucciones, instruccion);
+		}
 
 		memcpy(&program_counter, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
+
 	}
 
+	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
 	contexto_ejecucion->tamanio_lista = tamanio_lista;
 	contexto_ejecucion->lista_instrucciones = lista_instrucciones;
 	contexto_ejecucion->program_counter = program_counter;
+	contexto_ejecucion->registros_CPU = malloc(sizeof(registros_CPU));
+
 
 	free(buffer);
 	return contexto_ejecucion;
