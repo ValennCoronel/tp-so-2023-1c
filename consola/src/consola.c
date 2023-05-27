@@ -47,7 +47,7 @@ int main(int argc, char** argv){
 		terminar_programa(conexion_kernel, logger, config);
 	}
 
-	//Realizo la conexion con memoria
+	//Realizo la conexion con kernel
 	int result_conexion = conectar_modulo(&conexion_kernel, ip_kernel, puerto_kernel);
 
 	//Testeo el resultado de la conexion
@@ -66,68 +66,67 @@ int main(int argc, char** argv){
 
 
 	//Inicializar archivo de pseudocodigo
-			FILE* archivo = fopen(argv[2],"r");
+	FILE* archivo = fopen(argv[2],"r");
 
 
-			//Comprobar si el archivo esta vacio
-			if(archivo == NULL){
-				perror("Error en la apertura del archivo");
-				return 1;
-			}
+	//Comprobar si el archivo esta vacio
+	if(archivo == NULL){
+		perror("Error en la apertura del archivo");
+		return 1;
+	}
 
 
-			//Declarar variables a utilizar
+	//Declarar variables a utilizar
 
-			char* cadena;
+	char* cadena;
 
-			t_list* lista_instrucciones = list_create();
+	t_list* lista_instrucciones = list_create();
 
-			//Leer archivo y extraer datos
+	//Leer archivo y extraer datos
 
-			while(feof(archivo) == 0){
-				cadena = malloc(30);
-					fgets(cadena, 30, archivo);
-					//printf("cadena:  %s", cadena);
-					t_instruccion *ptr_inst = malloc(sizeof(t_instruccion)); //Creo la struct y reservo memoria
+	while(feof(archivo) == 0){
+		cadena = malloc(30);
+			fgets(cadena, 30, archivo);
+			//printf("cadena:  %s", cadena);
+			t_instruccion *ptr_inst = malloc(sizeof(t_instruccion)); //Creo la struct y reservo memoria
 
-					char* token = strtok(cadena, " "); // obtiene el primer elemento en token
-					ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
+			char* token = strtok(cadena, " "); // obtiene el primer elemento en token
+			ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
 
-					printf("%s\n", token); // imprime el primer elemento (solo por control)
+			printf("%s\n", token); // imprime el primer elemento (solo por control)
 
-					token = strtok(NULL, " "); // avanza al segundo elemento
-					int i = 0; // Variable local utilizada para cargar el array de parametros
+			token = strtok(NULL, " "); // avanza al segundo elemento
+			int i = 0; // Variable local utilizada para cargar el array de parametros
 
-					    while (token != NULL) { //Ingresa si el parametro no es NULL
+				while (token != NULL) { //Ingresa si el parametro no es NULL
 
-					    	ptr_inst->parametros[i] = token; //Carga el parametro en el array de la struct
-					        token = strtok(NULL, " "); // obtiene el siguiente elemento
-					        i++; //Avanza en el array
+					ptr_inst->parametros[i] = token; //Carga el parametro en el array de la struct
+					token = strtok(NULL, " "); // obtiene el siguiente elemento
+					i++; //Avanza en el array
 
-					    }
+				}
 
 
-					    //Serializo y envio el paquete
-					    ptr_inst->opcode_lenght = strlen(ptr_inst->opcode)+1;
+				//Serializo y envio el paquete
+				ptr_inst->opcode_lenght = strlen(ptr_inst->opcode)+1;
 
-					    if(ptr_inst->parametros[0] != NULL){
-							ptr_inst->parametro1_lenght = strlen(ptr_inst->parametros[0])+1;
-					    } else {
-					    	ptr_inst->parametro1_lenght = 0;
-					    }
-					    if(ptr_inst->parametros[1] != NULL){
-							ptr_inst->parametro2_lenght = strlen(ptr_inst->parametros[1])+1;
-						} else {
-							ptr_inst->parametro2_lenght = 0;
-						}
-					    if(ptr_inst->parametros[2] != NULL){
-							ptr_inst->parametro3_lenght = strlen(ptr_inst->parametros[2])+1;
-						} else {
-							ptr_inst->parametro3_lenght = 0;
-						}
+				if(ptr_inst->parametros[0] != NULL){
+					ptr_inst->parametro1_lenght = strlen(ptr_inst->parametros[0])+1;
+				} else {
+					ptr_inst->parametro1_lenght = 0;
+				}
+				if(ptr_inst->parametros[1] != NULL){
+					ptr_inst->parametro2_lenght = strlen(ptr_inst->parametros[1])+1;
+				} else {
+					ptr_inst->parametro2_lenght = 0;
+				}
+				if(ptr_inst->parametros[2] != NULL){
+					ptr_inst->parametro3_lenght = strlen(ptr_inst->parametros[2])+1;
+				} else {
+					ptr_inst->parametro3_lenght = 0;
+				}
 
-						list_add(lista_instrucciones, ptr_inst);
-
+				list_add(lista_instrucciones, ptr_inst);
 
 			}
 
@@ -275,21 +274,21 @@ void evniar_a_kernel(int conexion, int tamnio_paquete, t_paquete* paquete){
 	void* a_enviar = malloc(tamnio_paquete);
 	int offset = 0; //Reseteamos el offset
 
-		memcpy(a_enviar + offset, &(paquete->codigo_operacion), sizeof(op_code));
+	memcpy(a_enviar + offset, &(paquete->codigo_operacion), sizeof(op_code));
 
-		offset += sizeof(op_code);
-		memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(int));
+	offset += sizeof(op_code);
+	memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(int));
 
-		offset += sizeof(int);
-		memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
+	offset += sizeof(int);
+	memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
 
-		// Enviamos el paquete
-		send(conexion, a_enviar, tamnio_paquete, 0);
+	// Enviamos el paquete
+	send(conexion, a_enviar, tamnio_paquete, 0);
 
-		// se queda en la espera de la finalizacion del proceso por parte del kernel
-		int size;
-		void* buffer_rcv = recibir_buffer(&size, conexion);
+	// se queda en la espera de la finalizacion del proceso por parte del kernel
+	int size;
+	void* buffer_rcv = recibir_buffer(&size, conexion);
 
-		free(a_enviar);
+	free(a_enviar);
 }
 

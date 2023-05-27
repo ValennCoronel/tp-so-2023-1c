@@ -28,7 +28,16 @@ t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int, t_log*, t_config*);
 int conectar_modulo(int conexion, char* ip, char* puerto);
+void ejecutar_instrucciones( int cliente_fd, char* retardo_instruccion );
+
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
-void Codigo_recibido_por_Kernel (int cliente_fd);
+
+void manejar_instruccion_kernel(int cliente_fd, t_contexto_ejec** contexto, char* retardo_instruccion);
+
+void manejar_instruccion_memoria(int cliente_fd, t_contexto_ejec** contexto);
+void manejar_instruccion_filesystem(int cliente_fd, t_contexto_ejec** contexto);
+
+void enviar_mensaje_a_kernel(char* op_code, int cliente_fd, t_contexto_ejec* contexto);
+void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion);
 
 #endif /* CPU_H */
