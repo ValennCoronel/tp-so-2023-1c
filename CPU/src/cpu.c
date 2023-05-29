@@ -170,13 +170,13 @@ void manejar_instruccion_kernel(int cliente_fd, t_contexto_ejec** contexto, int 
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
 	{
-		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, (*contexto));
+		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, contexto);
 		//poner contexto de ejecucion
 
 	}
 	if(strcmp(instruction->opcode,"EXIT")==0)
 	{
-		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, (*contexto));
+		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, contexto);
 
 	}
 	// FIXME esto no es kernel
@@ -201,14 +201,14 @@ void manejar_instruccion_filesystem(int cliente_fd, t_contexto_ejec** contexto)
 	// TODO manejar_instruccion_filesystem
 }
 
-void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contexto){
+void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto){
 
 	t_paquete* paquete = crear_paquete(code);
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete, contexto->tamanio_lista, sizeof(int));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, (*contexto)->tamanio_lista, sizeof(int));
 
-	for(int i =0; i<contexto->tamanio_lista; i++){
-		t_instruccion* instruccion = list_get(contexto->lista_instrucciones, i);
+	for(int i =0; i< (*contexto)->tamanio_lista; i++){
+		t_instruccion* instruccion = list_get( (*contexto)->lista_instrucciones, i);
 
 
 		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght);
@@ -219,22 +219,22 @@ void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contex
 
 	}
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete, contexto->program_counter, sizeof(int));
+	agregar_a_paquete_sin_agregar_tamanio(paquete,  (*contexto)->program_counter, sizeof(int));
 
-	agregar_a_paquete(paquete, contexto->registros_CPU->AX, sizeof(char)*4);
-	agregar_a_paquete(paquete, contexto->registros_CPU->BX, sizeof(char)*4);
-	agregar_a_paquete(paquete, contexto->registros_CPU->CX, sizeof(char)*4);
-	agregar_a_paquete(paquete, contexto->registros_CPU->DX, sizeof(char)*4);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->AX, sizeof(char)*4);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->BX, sizeof(char)*4);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->CX, sizeof(char)*4);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->DX, sizeof(char)*4);
 
-	agregar_a_paquete(paquete, contexto->registros_CPU->EAX, sizeof(char)*8);
-	agregar_a_paquete(paquete, contexto->registros_CPU->EBX, sizeof(char)*8);
-	agregar_a_paquete(paquete, contexto->registros_CPU->ECX, sizeof(char)*8);
-	agregar_a_paquete(paquete, contexto->registros_CPU->EDX, sizeof(char)*8);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EAX, sizeof(char)*8);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EBX, sizeof(char)*8);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->ECX, sizeof(char)*8);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EDX, sizeof(char)*8);
 
-	agregar_a_paquete(paquete, contexto->registros_CPU->RAX, sizeof(char)*16);
-	agregar_a_paquete(paquete, contexto->registros_CPU->RBX, sizeof(char)*16);
-	agregar_a_paquete(paquete, contexto->registros_CPU->RCX, sizeof(char)*16);
-	agregar_a_paquete(paquete, contexto->registros_CPU->RDX, sizeof(char)*16);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RAX, sizeof(char)*16);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RBX, sizeof(char)*16);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RCX, sizeof(char)*16);
+	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RDX, sizeof(char)*16);
 
 
 

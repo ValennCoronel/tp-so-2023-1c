@@ -32,7 +32,7 @@ void ejecutar_instrucciones( int cliente_fd, int retardo_instruccion );
 
 void manejar_peticiones_kernel(t_log* logger, int server_fd);
 
-void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contexto);
+void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto);
 void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion);
 
 void manejar_instruccion_kernel(int cliente_fd, t_contexto_ejec** contexto, int retardo_instruccion);
