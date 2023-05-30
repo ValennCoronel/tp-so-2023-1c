@@ -4,6 +4,7 @@
 #LOGS y settings
 *.log
 *.settings
+*.xml
 
 # Object files
 *.o
