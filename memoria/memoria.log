@@ -869,3 +869,4 @@
 [ERROR] 20:04:11:435 Memoria/(1817:23397): El cliente se desconecto. Terminando servidor
 [ERROR] 20:04:11:666 Memoria/(1817:23371): El cliente se desconecto. Terminando servidor
 [ERROR] 20:10:50:975 Memoria/(1817:23384): El cliente se desconecto. Terminando servidor
+[INFO] 20:58:50:328 Memoria/(25550:25550): Memoria lista para recibir peticiones

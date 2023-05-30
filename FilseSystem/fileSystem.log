@@ -627,3 +627,5 @@
 [INFO] 20:03:52:350 FileSystem/(23365:23365): File System listo para recibir peticiones del Kernel
 [INFO] 20:04:03:532 FileSystem/(23365:23365): Se conecto un cliente!
 [ERROR] 20:04:11:435 FileSystem/(23365:23365): El cliente se desconecto. Terminando servidor
+[ERROR] 18:52:08:465 FileSystem/(12397:12397): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 18:53:41:249 FileSystem/(12480:12480): El File System no se pudo conectar con el modulo Memoria !!
