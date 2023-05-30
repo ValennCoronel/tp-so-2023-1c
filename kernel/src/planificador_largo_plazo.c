@@ -61,10 +61,11 @@ void agregar_proceso_a_ready(int conexion_memoria){
 
 	sem_wait(&m_cola_ready);
 	queue_push(cola_ready, proceso_new_a_ready);
-
 	char *pids = listar_pids_cola_ready();
-	log_info(logger, "Cola Ready FIFO: [%s]", pids);
 	sem_post(&m_cola_ready);
+
+	log_info(logger, "Cola Ready FIFO: [%s]", pids);
+
 
 	sem_post(&consumidor);
 	free(pids);
