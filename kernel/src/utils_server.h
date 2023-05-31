@@ -55,11 +55,15 @@ typedef struct
 
 	double estimado_proxima_rafaga;
 	int64_t tiempo_llegada_rady;
+	int64_t ráfaga_anterior;
+
+	double prioridad;
 
 	t_list* tabla_segmentos;
 	t_list* tabla_archivos;
 
-	t_temporal* temporal;
+	t_temporal* temporal_ready;
+	t_temporal* temporal_ultimo_desalojo;
 } t_pcb;
 
 void* recibir_buffer(int*, int);

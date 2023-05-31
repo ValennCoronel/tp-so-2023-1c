@@ -2,11 +2,13 @@
 
 t_queue* cola_new;
 t_queue* cola_ready;
+t_contexto_ejec* proceso_ejecutando;
 
 sem_t consumidor;
 //TODO cambiar estos por un mutex real
 sem_t m_cola_ready;
 sem_t m_cola_new;
+
 
 
 void inicializar_colas_y_semaforos(){
@@ -55,9 +57,9 @@ void agregar_proceso_a_ready(int conexion_memoria){
 	//proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
 
 	//se calcula tiempo de llegada a ready en milisegundos
-	proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal);
-	temporal_destroy(proceso_new_a_ready->temporal);
-	proceso_new_a_ready->temporal= NULL;
+	proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
+	temporal_destroy(proceso_new_a_ready->temporal_ready);
+	proceso_new_a_ready->temporal_ready= NULL;
 
 	sem_wait(&m_cola_ready);
 	queue_push(cola_ready, proceso_new_a_ready);
@@ -85,7 +87,7 @@ int puede_ir_a_ready(int grado_max_multiprogramacion){
 }
 
 void agregar_cola_new(t_pcb* pcb_proceso){
-	pcb_proceso->temporal = temporal_create();
+	pcb_proceso->temporal_ready = temporal_create();
 	sem_wait(&m_cola_new);
 	queue_push(cola_new, pcb_proceso);
 	sem_post(&m_cola_new);

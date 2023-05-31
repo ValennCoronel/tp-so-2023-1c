@@ -45,6 +45,8 @@ typedef struct {
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
+extern t_contexto_ejec* proceso_ejecutando;
+
 extern sem_t m_cola_ready;
 extern sem_t m_cola_new;
 extern sem_t consumidor;

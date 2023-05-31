@@ -31,5 +31,13 @@ typedef struct {
 void *planificar_corto_plazo(void *arg);
 void planificar_corto_plazo_fifo(int socket_cpu);
 void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu);
+void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code opcode, int socket_cliente);
+
+double calcular_prioridad_con_hrrn(int64_t tiempo_de_espera, double tiempo_proxima_ráfaga );
+double estimar_proxima_ráfaga_proceso(double hrrn_alpha, int64_t anterior_ráfaga, int64_t anterior_estimado );
+int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso);
+void reordenar_cola_ready_hrrn();
+void contexto_ejecucion_destroy(t_contexto_ejec** proceso_a_ejecutar);
+
 
 #endif /* SRC_PLANIFICADOR_CORTO_PLAZO_H_ */
