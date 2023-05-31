@@ -286,3 +286,25 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 	return contexto_ejecucion;
 }
 
+void instruccion_destroy(t_instruccion** instruccion){
+    free((*instruccion)->opcode);
+    free((*instruccion)->parametros[0]);
+
+    free((*instruccion)->parametros[1]);
+
+    free((*instruccion)->parametros[2]);
+    free(*instruccion);
+}
+
+void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion){
+	int lista_length = list_size((*contexto_ejecucion)->lista_instrucciones);
+
+	for(int i = 0; i< lista_length ; i++){
+		t_instruccion* inst = list_get((*contexto_ejecucion)->lista_instrucciones, i);
+		instruccion_destroy(&inst);
+	}
+
+	list_destroy((*contexto_ejecucion)->lista_instrucciones);
+	free((*contexto_ejecucion)->registros_CPU);
+	free(*contexto_ejecucion);
+}

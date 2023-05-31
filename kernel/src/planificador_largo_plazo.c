@@ -2,7 +2,7 @@
 
 t_queue* cola_new;
 t_queue* cola_ready;
-t_contexto_ejec* proceso_ejecutando;
+t_pcb* proceso_ejecutando;
 
 sem_t consumidor;
 //TODO cambiar estos por un mutex real

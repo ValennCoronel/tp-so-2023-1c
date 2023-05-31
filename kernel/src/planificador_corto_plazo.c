@@ -23,6 +23,11 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 
 	sem_wait(&consumidor);
 	sem_wait(&m_cola_ready);
+	if(queue_size(cola_ready) == 0) {
+		sem_post(&consumidor);
+		sem_post(&m_cola_ready);
+		return;
+	}
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
 	sem_post(&m_cola_ready);
 
@@ -37,12 +42,19 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
-	contexto_ejecucion_destroy(&contexto_ejecucion);
+
+	//contexto_ejecucion_destroy(&contexto_ejecucion);
 }
 
 void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 
-	if(queue_size(cola_ready) == 0) return;
+	sem_wait(&consumidor);
+	sem_wait(&m_cola_ready);
+	if(queue_size(cola_ready) == 0) {
+		sem_post(&consumidor);
+		sem_post(&m_cola_ready);
+		return;
+	}
 
 	void _calcular_proxima_rafaga_estimada_cada_proceso(t_pcb* pcb_proceso){
 		int64_t tiempo_de_espera = calcular_tiempo_de_espera(pcb_proceso);
@@ -61,7 +73,7 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 	reordenar_cola_ready_hrrn();
 
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
-
+	sem_post(&m_cola_ready);
 
 	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
 	contexto_ejecucion->lista_instrucciones = proceso_a_ejecutar->instrucciones;
@@ -69,11 +81,11 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
 	contexto_ejecucion->registros_CPU = proceso_a_ejecutar->registros_CPU;
 
-	proceso_ejecutando = contexto_ejecucion;
+	proceso_ejecutando = proceso_a_ejecutar;
 
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
-	contexto_ejecucion_destroy(&contexto_ejecucion);
+	//contexto_ejecucion_destroy(&contexto_ejecucion);
 }
 
 void reordenar_cola_ready_hrrn(){
@@ -141,9 +153,4 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 		enviar_paquete(paquete, socket_cliente);
 
 		eliminar_paquete(paquete);
-}
-
-void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion){
-	// hacer bien este free con valgrind en vs code
-	//free(*contexto_ejecucion);
 }

@@ -307,7 +307,7 @@ context(tests_dispatcher){
 				should_int(queue_size_end) be equal to(queue_size_init -1);
 
 
-				should_int(proceso_ejecutando->tamanio_lista) be equal to(1);
+				should_int(list_size(proceso_ejecutando->instrucciones)) be equal to(1);
 
 		}end
 
@@ -360,7 +360,7 @@ context(tests_dispatcher){
 
 			should_int(size_ready_end) be equal to(size_ready_init-1);
 
-			should_int(proceso_ejecutando->tamanio_lista) be equal to(1);
+			should_int(list_size(proceso_ejecutando->instrucciones)) be equal to(1);
 
 		}end
 	}end
