@@ -18,6 +18,7 @@ typedef enum
 	PAQUETE,
 	//peticiones CPU
 	INSTRUCCIONES,
+	TERMINAR_PROCESO, //Libera la pcb, avisa a memoria y a consola
 	FINALIZAR_PROCESO,
 	BLOQUEAR_PROCESO,
 	PETICION_KERNEL,
