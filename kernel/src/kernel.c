@@ -346,13 +346,13 @@ void terminarProceso(t_pcb* proceso_ejecutando, int socket_memoria, int socket_c
 
 	//Enviar datos necesarios a memoria para liberarla
 	t_buffer buffer;
-	enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
+	//enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
 }
-
+/*
 //Funcion que envia un paquete a memoria con un codigo de operacion
 void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
 	t_paquete paquete;
 	paquete = crear_paquete(codigo);
 }
-
+*/
 

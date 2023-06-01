@@ -31,6 +31,10 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
 	sem_post(&m_cola_ready);
 
+	//frena y elimina el temporal innecesario
+	temporal_stop(proceso_a_ejecutar->temporal_ultimo_desalojo);
+	temporal_destroy(proceso_a_ejecutar->temporal_ultimo_desalojo);
+
 	//creo el contexto de ejecucion
 
 	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
@@ -40,8 +44,10 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 
 	proceso_ejecutando = proceso_a_ejecutar;
 
-	//Lo envio proceso a CPU
+	//inicio cronometro para contar las rafagas del proceco a ejecutar
+	rafaga_proceso_ejecutando = temporal_create();
 
+	//Lo envio proceso a CPU
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
 
@@ -85,6 +91,9 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 
 	proceso_ejecutando = proceso_a_ejecutar;
 
+	//inicio cronometro para contar las rafagas del proceco a ejecutar
+	rafaga_proceso_ejecutando = temporal_create();
+
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
 	//contexto_ejecucion_destroy(&contexto_ejecucion);
@@ -105,6 +114,7 @@ int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso){
 	int64_t tiempo_espera = temporal_gettime(pcb_proceso->temporal_ultimo_desalojo);
 
 	temporal_stop(pcb_proceso->temporal_ultimo_desalojo);
+	temporal_destroy(pcb_proceso->temporal_ultimo_desalojo);
 
 	return tiempo_espera;
 }

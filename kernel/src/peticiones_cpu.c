@@ -1,8 +1,14 @@
 #include "peticiones_cpu.h"
 
+//GENERAL: en algún momento hay que calcular la ráfaga anterior
+//TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
+
 void* simulacion_io(void* arg){
-	int tiempo_io = (int )arg;
+	int tiempo_io = (int) arg;
 	int tiempo_actual = 0;
+
+
+	//espera activa mientras se ejecuta otro en cpu
 
 	t_temporal* temporal_dormido = temporal_create();
 
@@ -15,6 +21,10 @@ void* simulacion_io(void* arg){
 
 	temporal_stop(temporal_dormido);
 	temporal_destroy(temporal_dormido);
+	//TODO luego debe volver a la cola de ready
+
+
+	return NULL;
 }
 
 
@@ -26,6 +36,8 @@ void finalizar_proceso(int socket_cliente){
 	// free(pcb_proceso);
 	// dar aviso al módulo Memoria para que éste libere sus estructuras.
 	// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
+
+	// finalmente pone a ejecutar a otro proceso
 }
 
 
@@ -38,10 +50,16 @@ void bloquear_proceso_IO(int socket_cliente){
 
 	int tiempo_io = atoi(instruccion->parametros[0]);
 
-	pthread_create(&hilo_simulacion, NULL, simulacion_io,tiempo_io);
+	pthread_create(&hilo_simulacion, NULL, simulacion_io, (void *) tiempo_io);
 
 	pthread_detach(hilo_simulacion);
 
+	proceso_ejecutando->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	temporal_stop(rafaga_proceso_ejecutando);
+	temporal_destroy(rafaga_proceso_ejecutando);
+	rafaga_proceso_ejecutando = NULL;
+
+	poner_a_ejecutar_otro_proceso();
 }
 
 
@@ -53,23 +71,24 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
 
 	// si no existe el recurso finaliza
-	if(indice_recurso = -1){
+	if(indice_recurso == -1){
 
 	 	 //llamar a finalizar proceso UwU ♥♥♥
 
 		return;
 	}
 
-
 	if(recurso_disponible[indice_recurso] <= 0){
-		bloquear_proceso_por_recurso(proceso_ejecutando);
+		bloquear_proceso_por_recurso(proceso_ejecutando, recursos[indice_recurso]);
+		poner_a_ejecutar_otro_proceso();
 	} else {
 		recurso_disponible[indice_recurso] -= 1;
 	}
+	// avisa a consola y continua ejecutandose el mismo proceso
+	enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, socket_cliente);
 
+	//TODO destroy contexto_ejecucion
 
-	//recurso_disponible
-	//TODO
 	/*apropiarRecursos() : A la hora de recibir de la CPU un Contexto
 			de Ejecución desplazado por WAIT, el Kernel deberá verificar
 			primero que exista el recurso solicitado y en caso de que exista
@@ -84,6 +103,8 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible){
 
 }
+
+//para manejar otras peticiones de cpu a kernel como crear un segmento de memoria o alguna de file system
 void manejar_peticion_al_kernel(int socket_cliente){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
@@ -99,9 +120,25 @@ void desalojar_proceso(int socket_cliente){
 	//TODO
 
 	//devolver proceso a la cola de ready
+
+	//calcula la ráfaga anterior y lo guarda en el pcb para el hrrn
+	// si es fifo no lo usa
+	proceso_ejecutando->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	temporal_stop(rafaga_proceso_ejecutando);
+	temporal_destroy(rafaga_proceso_ejecutando);
+	rafaga_proceso_ejecutando = NULL;
+
+	poner_a_ejecutar_otro_proceso();
 }
-void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear){
-	//TODO llevarlo a la cola de bloqueados
+
+void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso){
+	//TODO llevarlo a la cola de bloqueados del recurso
+
+	//antes de bloquearse, se calcula las ráfagas anteriores para el hrrn, si es fifo no lo usa
+	proceso_a_bloquear->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	temporal_stop(rafaga_proceso_ejecutando);
+	temporal_destroy(rafaga_proceso_ejecutando);
+	rafaga_proceso_ejecutando = NULL;
 }
 
 // si no lo encuentra devuelve -1
@@ -122,5 +159,15 @@ int obtener_indice_recurso(char** recursos, char* recurso_a_buscar){
 	}
 
 	return indice_recurso;
+}
+
+void poner_a_ejecutar_otro_proceso(){
+	if(rafaga_proceso_ejecutando != NULL){
+		temporal_stop(rafaga_proceso_ejecutando);
+		temporal_destroy(rafaga_proceso_ejecutando);
+	}
+
+	proceso_ejecutando = NULL;
+	sem_post(&consumidor);
 }
 

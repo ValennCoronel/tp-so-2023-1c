@@ -3,6 +3,7 @@
 t_queue* cola_new;
 t_queue* cola_ready;
 t_pcb* proceso_ejecutando;
+t_temporal* rafaga_proceso_ejecutando;
 
 sem_t consumidor;
 //TODO cambiar estos por un mutex real
@@ -48,18 +49,33 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 	return NULL;
 }
 
+// si el proceso no es new, no es necesario el socket de memoria
 void agregar_proceso_a_ready(int conexion_memoria){
 	sem_wait(&m_cola_new);
 	t_pcb* proceso_new_a_ready = queue_pop(cola_new);
 	sem_post(&m_cola_new);
 
-	//TODO descomentar cuando este hecho esta parte de memoria
-	//proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
 
-	//se calcula tiempo de llegada a ready en milisegundos
-	proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
-	temporal_destroy(proceso_new_a_ready->temporal_ready);
-	proceso_new_a_ready->temporal_ready= NULL;
+	//si el proceso es nuevo se calcula tiempo de llegada a ready en milisegundos
+	// y se pide la tabla de segmentos a memoria
+	if(proceso_new_a_ready->tiempo_llegada_rady == 0){
+
+		//TODO descomentar cuando este hecho esta parte de memoria
+		//proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
+
+		proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
+		temporal_stop(proceso_new_a_ready->temporal_ready);
+		temporal_destroy(proceso_new_a_ready->temporal_ready);
+		proceso_new_a_ready->temporal_ready= NULL;
+
+		// si es nuevo no tiene rafaga anterior
+		proceso_new_a_ready->ráfaga_anterior = 0;
+	}
+
+
+	//inicio el cronomitro para el hrrn, si es fifo no lo va a usar
+	proceso_new_a_ready->temporal_ultimo_desalojo = temporal_create();
+
 
 	sem_wait(&m_cola_ready);
 	queue_push(cola_ready, proceso_new_a_ready);
@@ -68,8 +84,10 @@ void agregar_proceso_a_ready(int conexion_memoria){
 
 	log_info(logger, "Cola Ready FIFO: [%s]", pids);
 
-
-	sem_post(&consumidor);
+	//si no hay nadie ejecutandose, lo pone a ejecutar, sino va a quedar en la espera en la cola ready
+	if(proceso_ejecutando == NULL){
+		sem_post(&consumidor);
+	}
 	free(pids);
 }
 
