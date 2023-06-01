@@ -1,5 +1,22 @@
 #include "peticiones_cpu.h"
 
+void* simulacion_io(void* arg){
+	int tiempo_io = (int )arg;
+	int tiempo_actual = 0;
+
+	t_temporal* temporal_dormido = temporal_create();
+
+	while(tiempo_io!=tiempo_actual)
+	{
+
+	tiempo_actual = temporal_gettime(temporal_dormido);
+
+	}
+
+	temporal_stop(temporal_dormido);
+	temporal_destroy(temporal_dormido);
+}
+
 
 void finalizar_proceso(int socket_cliente){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
@@ -27,34 +44,29 @@ void bloquear_proceso_IO(int socket_cliente){
 
 }
 
-void* simulacion_io(void* arg){
-	int tiempo_io = (int )arg;
-	int tiempo_actual = 0;
-
-	t_temporal* temporal_dormido = temporal_create();
-
-	while(tiempo_io!=tiempo_actual)
-	{
-
-	tiempo_actual = temporal_gettime(temporal_dormido);
-
-	}
-
-	temporal_stop(temporal_dormido);
-	temporal_destroy(temporal_dormido);
-}
 
 void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
 
-	if(!existe_recurso(recursos)){
+	int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
+
+	// si no existe el recurso finaliza
+	if(indice_recurso = -1){
 
 	 	 //llamar a finalizar proceso UwU ♥♥♥
 
 		return;
 	}
+
+
+	if(recurso_disponible[indice_recurso] <= 0){
+		bloquear_proceso_por_recurso(proceso_ejecutando);
+	} else {
+		recurso_disponible[indice_recurso] -= 1;
+	}
+
 
 	//recurso_disponible
 	//TODO
@@ -69,14 +81,7 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 
 }
 
-bool existe_recurso(t_instruccion* instruccion, char** recursos){
-
-	if (string_array_size(recursos)==0)
-
-return false;
-}
-
-void desalojar_recursos(cliente_fd, recursos, recurso_disponible){
+void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible){
 
 }
 void manejar_peticion_al_kernel(int socket_cliente){
@@ -86,7 +91,7 @@ void manejar_peticion_al_kernel(int socket_cliente){
 	//manejar cada peticion según corresponda
 }
 
-void desalojar_proceso(int socket_cliente,char** recursos, char** instancias_recursos){
+void desalojar_proceso(int socket_cliente){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	//crear estrutura para el contexto de ejecucion
 
@@ -95,3 +100,27 @@ void desalojar_proceso(int socket_cliente,char** recursos, char** instancias_rec
 
 	//devolver proceso a la cola de ready
 }
+void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear){
+	//TODO llevarlo a la cola de bloqueados
+}
+
+// si no lo encuentra devuelve -1
+int obtener_indice_recurso(char** recursos, char* recurso_a_buscar){
+
+	int indice_recurso = 0;
+	int tamanio_recursos = string_array_size(recursos);
+
+	if(string_array_is_empty(recursos)){
+		return -1;
+	}
+
+	while(indice_recurso < tamanio_recursos && strcmp(recurso_a_buscar, recursos[indice_recurso]) != 0 ){
+		indice_recurso++;
+	}
+	if(indice_recurso == tamanio_recursos){
+		return -1;
+	}
+
+	return indice_recurso;
+}
+

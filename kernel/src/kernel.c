@@ -279,16 +279,14 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 
 void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_recursos){
 
-	int* recurso_disponible;
-	int cantidad_de_recursos;
+	int cantidad_de_recursos = string_array_size(instancias_recursos);
+	int* recursos_disponibles = malloc(sizeof(int)*cantidad_de_recursos);
 
-	cantidad_de_recursos = string_array_size(instancias_recursos);
-
-	if(cantidad_de_recursos!=0)
-
-	//TODO
-
-	//string_array_pop(instancias_recursos);
+	if(cantidad_de_recursos!=0){
+		for(int i = 0; i< cantidad_de_recursos; i++ ){
+			recursos_disponibles[i] = atoi(instancias_recursos[i]);
+		}
+	}
 
 
 	while(1){
@@ -313,17 +311,19 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					manejar_peticion_al_kernel(cliente_fd);
 					break;
 				case APROPIAR_RECURSOS:
-					apropiar_recursos(cliente_fd, recursos, recurso_disponible);
+					apropiar_recursos(cliente_fd, recursos, recursos_disponibles);
 					break;
 				case DESALOJAR_RECURSOS:
-					desalojar_recursos(cliente_fd, recursos, recurso_disponible);
+					desalojar_recursos(cliente_fd, recursos, recursos_disponibles);
 					break;
 				case DESALOJAR_PROCESO:
-					desalojar_proceso(cliente_fd, recursos, instancias_recursos);
+					desalojar_proceso(cliente_fd);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor");
+
+					free(recursos_disponibles);
 					return NULL;
 				default:
 					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata, la operacion es: %d",cod_op );
@@ -354,4 +354,5 @@ void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
 	t_paquete paquete;
 	paquete = crear_paquete(codigo);
 }
+
 

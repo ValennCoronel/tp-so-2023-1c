@@ -48,7 +48,7 @@ void *manejar_peticiones_consola(void *arg);
 void *atender_cliente(void *args);
 void recibir_instrucciones(int socket_cliente, int estimacion_inicial);
 
-void *escuchar_peticiones_cpu(int cliente_fd);
+void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_recursos);
 
 
 
