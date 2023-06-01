@@ -40,9 +40,6 @@ typedef struct {
 } archivo;
 
 
-
-
-
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
 extern t_pcb* proceso_ejecutando;

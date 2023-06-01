@@ -134,7 +134,7 @@ int main(void){
 	pthread_detach(thread_planificador_corto_plazo);
 
 
-	escuchar_peticiones_cpu(conexion_cpu);
+	escuchar_peticiones_cpu(conexion_cpu, recursos, instancias_recursos);
 
 	free(args_consolas);
 	free(args_planificador_largo_plazo);
@@ -277,7 +277,19 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 
 // ---------------------------- Peticiones CPU ----------------------------------------------
 
-void *escuchar_peticiones_cpu(int cliente_fd){
+void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_recursos){
+
+	int* recurso_disponible;
+	int cantidad_de_recursos;
+
+	cantidad_de_recursos = string_array_size(instancias_recursos);
+
+	if(cantidad_de_recursos!=0)
+
+	//TODO
+
+	//string_array_pop(instancias_recursos);
+
 
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
@@ -294,15 +306,20 @@ void *escuchar_peticiones_cpu(int cliente_fd){
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case BLOQUEAR_PROCESO:
-					bloquear_proceso(cliente_fd);
+					bloquear_proceso_IO(cliente_fd);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case PETICION_KERNEL:
 					manejar_peticion_al_kernel(cliente_fd);
-
+					break;
+				case APROPIAR_RECURSOS:
+					apropiar_recursos(cliente_fd, recursos, recurso_disponible);
+					break;
+				case DESALOJAR_RECURSOS:
+					desalojar_recursos(cliente_fd, recursos, recurso_disponible);
 					break;
 				case DESALOJAR_PROCESO:
-					desalojar_proceso(cliente_fd);
+					desalojar_proceso(cliente_fd, recursos, instancias_recursos);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case -1:
