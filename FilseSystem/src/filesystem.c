@@ -56,8 +56,6 @@ int main(void){
 	// levanta los archivos binarios que neceesita y inicializa las estructuras administrativas necesarias
 
 
-	bloques = levantar_archivo_binario(path_bloques);
-
 	fcb = iniciar_fcb(path_fcb);
 
 	if(fcb == NULL){
@@ -73,15 +71,21 @@ int main(void){
 		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 	}
 
-		// creo el bitarray
-		int tamanio_bitmap = superbloque->block_count * superbloque->block_size;
-		char* bits = malloc(tamanio_bitmap);
-		t_bitarray* bitmap_array = bitarray_create_with_mode(bits, tamanio_bitmap, MSB_FIRST);
+	// creo el bitarray
+	int tamanio_bitmap = superbloque->block_count;
+	char* bits = malloc(tamanio_bitmap);
+	t_bitarray* bitmap_array = bitarray_create_with_mode(bits, tamanio_bitmap, MSB_FIRST);
 
-		bitmap = levantar_archivo_binario(path_bitmap);
+	bitmap = levantar_archivo_binario(path_bitmap);
 
-		// guardo los bits en el archivo del bitmap
-		fwrite(&bits,tamanio_bitmap,1, bitmap);
+	// guardo los bits en el archivo del bitmap
+	fwrite(&bits,tamanio_bitmap,1, bitmap);
+
+
+	bloques = levantar_archivo_binario(path_bloques);
+
+	int tamanio_bloques = superbloque->block_count * superbloque->block_size;
+
 
 	//escucho conexiones del Kernel
 	int server_fd = iniciar_servidor(puerto_escucha);
@@ -92,7 +96,6 @@ int main(void){
 
 
 	bitarray_destroy(bitmap_array);
-
 	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
