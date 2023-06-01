@@ -12,6 +12,7 @@
 int mock_server_cpu, mock_cliente_kernel, mock_cliente_cpu;
 int opcode;
 
+
 t_instruccion* crear_mock_instruccion(){
 	t_instruccion* inst = malloc(sizeof(t_instruccion));
 	inst->opcode = malloc(sizeof(char)*3);
@@ -286,9 +287,15 @@ context(tests_dispatcher){
 
 			before{
 				cola_ready = queue_create();
+				sem_init(&m_cola_ready,0,1);
+				sem_init(&m_cola_new, 0, 1);
+				sem_init(&consumidor,0,1);
+
 			} end
 
+			after {
 
+			}end
 
 		it("debe sacar un elemento de la cola de ready (usando la ecuación del hrrn) y enviarlo a CPU"){
 
@@ -308,7 +315,6 @@ context(tests_dispatcher){
 
 
 				should_int(list_size(proceso_ejecutando->instrucciones)) be equal to(1);
-
 		}end
 
 
@@ -416,6 +422,9 @@ context(tests_dispatcher){
 
 		}end
 	}end
+*/
 
-	*/
+
+
 }
+

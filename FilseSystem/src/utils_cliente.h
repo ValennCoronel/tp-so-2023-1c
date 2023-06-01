@@ -18,9 +18,12 @@ typedef enum
 	PAQUETE,
 	//peticiones CPU
 	INSTRUCCIONES,
+	TERMINAR_PROCESO, //Libera la pcb, avisa a memoria y a consola
 	FINALIZAR_PROCESO,
 	BLOQUEAR_PROCESO,
 	PETICION_KERNEL,
+	APROPIAR_RECURSOS,
+	DESALOJAR_RECURSOS,
 	DESALOJAR_PROCESO,
 	PROCESAR_INSTRUCCIONES,
 	//peticiones memoria
@@ -32,6 +35,7 @@ typedef enum
 	LEER_ARCHIVO,
 	ESCRIBIR_ARCHIVO,
 }op_code;
+
 
 typedef struct
 {

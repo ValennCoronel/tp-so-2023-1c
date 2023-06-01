@@ -629,3 +629,54 @@
 [ERROR] 20:04:11:435 FileSystem/(23365:23365): El cliente se desconecto. Terminando servidor
 [ERROR] 18:52:08:465 FileSystem/(12397:12397): El File System no se pudo conectar con el modulo Memoria !!
 [ERROR] 18:53:41:249 FileSystem/(12480:12480): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:31:38:647 FileSystem/(6906:6906): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:31:53:752 FileSystem/(6942:6942): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:33:15:680 FileSystem/(7095:7095): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:47:33:641 FileSystem/(8179:8179): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:48:02:616 FileSystem/(8222:8222): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:48:26:581 FileSystem/(8271:8271): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:49:45:444 FileSystem/(8373:8373): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:50:31:922 FileSystem/(8418:8418): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:52:00:259 FileSystem/(8508:8508): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 15:54:27:718 FileSystem/(8642:8642): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:00:35:089 FileSystem/(9026:9026): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:02:56:942 FileSystem/(9176:9176): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:03:31:973 FileSystem/(9216:9216): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:03:44:453 FileSystem/(9251:9251): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:06:16:703 FileSystem/(9436:9436): El File System no se pudo conectar con el modulo Memoria !!
+[INFO] 16:06:52:478 FileSystem/(9485:9485): El File System se conecto con el modulo Memoria correctamente
+[ERROR] 16:06:52:479 FileSystem/(9485:9485): No existe el archivo con el path: /home/utnso/fs/bitmap.dat
+[ERROR] 16:06:52:479 FileSystem/(9485:9485): No existe el archivo con el path: /home/utnso/fs/bloques.dat
+[INFO] 16:07:57:596 FileSystem/(9563:9563): El File System se conecto con el modulo Memoria correctamente
+[ERROR] 16:07:57:596 FileSystem/(9563:9563): No existe el archivo con el path: /home/utnso/fs/bitmap.dat
+[ERROR] 16:07:57:596 FileSystem/(9563:9563): No existe el archivo con el path: /home/utnso/fs/bloques.dat
+[ERROR] 16:16:15:251 FileSystem/(10310:10310): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:17:29:781 FileSystem/(10404:10404): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:18:08:915 FileSystem/(10451:10451): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:21:38:938 FileSystem/(10601:10601): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:21:51:266 FileSystem/(10641:10641): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:22:21:734 FileSystem/(10685:10685): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:23:29:101 FileSystem/(10745:10745): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:23:57:980 FileSystem/(10795:10795): El File System no se pudo conectar con el modulo Memoria !!
+[INFO] 16:24:37:974 FileSystem/(10957:10957): El File System se conecto con el modulo Memoria correctamente
+[ERROR] 16:24:37:975 FileSystem/(10957:10957): No existe el archivo con el path: /home/utnso/fs/bitmap.dat
+[ERROR] 16:24:37:975 FileSystem/(10957:10957): No existe el archivo con el path: /home/utnso/fs/bloques.dat
+[ERROR] 16:24:37:975 FileSystem/(10957:10957): Falta una de las siguientes propiedades en el archivo del FCB: 'NOMBRE_ARCHIVO', 'TAMANIO_ARCHIVO', 'PUNTERO_DIRECTO', 'PUNTERO_INDIRECTO' 
+[ERROR] 16:26:55:605 FileSystem/(11116:11116): El File System no se pudo conectar con el modulo Memoria !!
+[INFO] 16:27:13:923 FileSystem/(11158:11158): El File System se conecto con el modulo Memoria correctamente
+[ERROR] 16:27:13:923 FileSystem/(11158:11158): No existe el archivo con el path: /home/utnso/fs/bitmap.dat
+[ERROR] 16:27:13:923 FileSystem/(11158:11158): No existe el archivo con el path: /home/utnso/fs/bloques.dat
+[ERROR] 16:27:13:923 FileSystem/(11158:11158): Falta una de las siguientes propiedades en el archivo del FCB: 'NOMBRE_ARCHIVO', 'TAMANIO_ARCHIVO', 'PUNTERO_DIRECTO', 'PUNTERO_INDIRECTO' 
+[ERROR] 16:27:53:628 FileSystem/(11249:11249): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:28:23:662 FileSystem/(11302:11302): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:28:33:135 FileSystem/(11353:11353): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:29:38:408 FileSystem/(11418:11418): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:30:12:958 FileSystem/(11523:11523): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:30:34:952 FileSystem/(11567:11567): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:30:50:024 FileSystem/(11630:11630): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:31:03:315 FileSystem/(11686:11686): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:31:20:941 FileSystem/(11735:11735): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:31:48:358 FileSystem/(11781:11781): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:32:15:068 FileSystem/(11831:11831): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:32:28:996 FileSystem/(11884:11884): El File System no se pudo conectar con el modulo Memoria !!
+[ERROR] 16:45:39:193 FileSystem/(12519:12519): El File System no se pudo conectar con el modulo Memoria !!

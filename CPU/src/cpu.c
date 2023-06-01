@@ -149,7 +149,6 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 				case HANDSHAKE:
 					recibir_handshake(cliente_fd);
 					break;
-
 				case PROCESAR_INSTRUCCIONES:
 					break;
 				case -1:

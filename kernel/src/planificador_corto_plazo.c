@@ -38,6 +38,8 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	contexto_ejecucion->program_counter = proceso_a_ejecutar->program_counter;
 	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
 
+	proceso_ejecutando = proceso_a_ejecutar;
+
 	//Lo envio proceso a CPU
 
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);

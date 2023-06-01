@@ -10,8 +10,11 @@ int main(void){
 	char* path_bloques;
 	char* path_fcb;
 	double retardo_acceso_bloque;
-	int conexion;
+	int socket_memoria;
 	FILE* bitmap;
+	FILE* bloques;
+	t_fcb* fcb;
+	t_superbloque* superbloque;
 
 	logger = iniciar_logger();
 	t_config* config = iniciar_config();
@@ -19,7 +22,7 @@ int main(void){
 	if(config == NULL){
 		log_error(logger, "No se pudo crear el archivo de configuración !!");
 
-		terminar_programa(conexion, logger, config, bitmap);
+		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 	}
 
 	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
@@ -34,34 +37,54 @@ int main(void){
 	if(!ip_memoria || !puerto_memoria || !puerto_escucha || !path_superbloque || !path_bitmap || !path_bloques || !path_fcb || !retardo_acceso_bloque){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'PATH_SUPERBLOQUE', 'PATH_BITMAP', 'PATH_BLOQUES', 'PATH_FCB', 'RETARDO_ACCESO_BLOQUE' ");
 
-		terminar_programa(conexion, logger, config, bitmap);
+		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 	}
 
-	int result_conexion_memoria = conectar_con_memoria(conexion, ip_memoria, puerto_memoria);
+	int result_conexion_memoria = conectar_con_memoria(&socket_memoria, ip_memoria, puerto_memoria);
 
 
 	if(result_conexion_memoria == -1){
 		log_error(logger, "El File System no se pudo conectar con el modulo Memoria !!");
 
-		terminar_programa(conexion, logger, config, bitmap);
+		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 
 	}
 
 	log_info(logger, "El File System se conecto con el modulo Memoria correctamente");
 
-	//TODO DESCOMENTAR ESTO DESPUES Levanto el bitmap
-	//bitmap = fopen(path_bitmap, "w");
-	//administrar_fcb(path_fcb);
+
+	// levanta los archivos binarios que neceesita y inicializa las estructuras administrativas necesarias
+
+	bitmap = levantar_archivo_binario(path_bitmap);
+
+	bloques = levantar_archivo_binario(path_bloques);
+
+	fcb = iniciar_fcb(path_fcb);
+
+	if(fcb == NULL){
+		log_error(logger, "Falta una de las siguientes propiedades en el archivo del FCB: 'NOMBRE_ARCHIVO', 'TAMANIO_ARCHIVO', 'PUNTERO_DIRECTO', 'PUNTERO_INDIRECTO' ");
+
+		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+	}
+
+	superbloque = iniciar_superbloque(path_superbloque);
+	if(fcb == NULL){
+		log_error(logger, "Falta una de las siguientes propiedades en el archivo del superbloque: 'BLOCK_SIZE', 'BLOCK_COUNT' ");
+
+		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+	}
+
+
 
 	//escucho conexiones del Kernel
 	int server_fd = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "File System listo para recibir peticiones del Kernel");
 
-	manejar_peticiones_kernel(logger, server_fd);
+	manejar_peticiones_kernel(logger, server_fd, socket_memoria);
 
 
-	terminar_programa(conexion, logger, config, bitmap);
+	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
 t_log* iniciar_logger(void){
@@ -78,22 +101,23 @@ t_config* iniciar_config(void){
 }
 
 
-void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitmap){
+void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitmap, FILE* bloques){
 	log_destroy(logger);
 	config_destroy(config);
 	close(conexion);
 	fclose(bitmap);
+	fclose(bloques);
 }
 
-int conectar_con_memoria(int conexion, char* ip, char* puerto){
+int conectar_con_memoria(int *conexion, char* ip, char* puerto){
 
-	conexion = crear_conexion(ip, puerto);
+	*conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion);
+	enviar_mensaje("OK", *conexion);
 
 	int size;
-	char* buffer = recibir_buffer(&size, conexion);
+	char* buffer = recibir_buffer(&size, *conexion);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -102,19 +126,34 @@ int conectar_con_memoria(int conexion, char* ip, char* puerto){
 	return 0;
 }
 
-void manejar_peticiones_kernel(t_log* logger, int server_fd){
+void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria){
 
-	int cliente_fd = esperar_cliente(server_fd);
+	int socket_kernel = esperar_cliente(server_fd);
 
 	while (1) {
-			int cod_op = recibir_operacion(cliente_fd);
+			int cod_op = recibir_operacion(socket_kernel);
 
 			switch (cod_op) {
 				case MENSAJE:
-					recibir_mensaje(cliente_fd);
+					recibir_mensaje(socket_kernel);
 					break;
 				case HANDSHAKE:
-					recibir_handshake(cliente_fd);
+					recibir_handshake(socket_kernel);
+					break;
+				case ABRIR_ARCHIVO:
+					abrir_archivo(socket_kernel);
+					break;
+				case CREAR_ARCHIVO:
+					crear_archivo(socket_kernel);
+					break;
+				case TRUNCAR_ARCHIVO:
+					truncar_archivo(socket_kernel);
+						break;
+				case LEER_ARCHIVO:
+					leer_archivo(socket_kernel, socket_memoria);
+					break;
+				case ESCRIBIR_ARCHIVO:
+					escribir_archivo(socket_kernel, socket_memoria);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -128,16 +167,67 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 	return ;
 }
 
-void administrar_fcb(char* path_fcb){
-	FILE* archivo_FCB = fopen(path_fcb, "r");
+// levanta un archivo binario en base al path que recibe y lo devuelve
+// si no existe lo crea
+FILE* levantar_archivo_binario(char* path_archivo){
 
-	// si no existe lo creo
-	if(archivo_FCB == NULL){
-		fclose(archivo_FCB);
-		archivo_FCB = fopen(path_fcb, "w");
+	FILE* archivo = fopen(path_archivo, "ab");
+
+	if(archivo == NULL){
+		log_error(logger, "No existe el archivo con el path: %s",path_archivo);
+		return NULL;
 	}
 
-	//TODO iniciar estructuras del FCB
+	return archivo;
+}
 
-	fclose(archivo_FCB);
+//levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB
+// el archivo de fcb usa el formato de config de las commons
+t_fcb* iniciar_fcb(char* path_fcb){
+	t_config* config_FCB = config_create(path_fcb);
+
+	if(config_FCB == NULL){
+			return NULL;
+	}
+
+	t_fcb *fcb = malloc(sizeof(t_fcb));
+
+	fcb->nombre_archivo = config_get_string_value(config_FCB, "NOMBRE_ARCHIVO");
+	fcb->tamanio_archivo = config_get_int_value(config_FCB, "TAMANIO_ARCHIVO");
+	fcb->puntero_directo = config_get_int_value(config_FCB, "PUNTERO_DIRECTO");
+	fcb->puntero_indirecto = config_get_int_value(config_FCB, "PUNTERO_INDIRECTO");
+
+
+
+	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
+
+		return NULL;
+	}
+
+
+	return fcb;
+}
+
+
+//levanta el archivo de superbloque  y obtiene los datos del archivo para iniciar el superbloque
+// el archivo de superbloque usa el formato de config de las commons
+t_superbloque* iniciar_superbloque(char* path_superbloque){
+	t_config* config_superbloque = config_create(path_superbloque);
+
+	if(config_superbloque == NULL){
+		return NULL;
+	}
+
+	t_superbloque *superbloque = malloc(sizeof(t_superbloque));
+
+	superbloque->block_size = config_get_int_value(config_superbloque, "BLOCK_SIZE");
+	superbloque->block_count = config_get_int_value(config_superbloque, "BLOCK_COUNT");
+
+
+	if(!(superbloque->block_count) || !(superbloque->block_size) ){
+
+		return NULL;
+	}
+
+	return superbloque;
 }
