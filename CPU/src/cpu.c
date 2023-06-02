@@ -3,7 +3,8 @@
 int main(void){
 
 	//Declaracion variables para config
-	int retardo_instruccion;
+	int RETARDO_INSTRUCCION;
+	int TAM_MAX_SEGMENTO;
 	char* ip_memoria;
 	char* puerto_memoria;
 	char* puerto_escucha;
@@ -27,11 +28,13 @@ int main(void){
 
 	//Levantar datos de config a variables
 
-	retardo_instruccion = config_get_int_value(config, "RETARDO_INSTRUCCION");
+	RETARDO_INSTRUCCION = config_get_int_value(config, "RETARDO_INSTRUCCION");
+	TAM_MAX_SEGMENTO = config_get_int_value(config, "TAM_MAX_SEGMENTO");
+
 	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
 	puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
 	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
-	tam_max_segmento = config_get_int_value(config, "TAM_MAX_SEGMENTO");
+
 
 	//Testeo de carga de variables
 	//if(!ip_memoria || !puerto_memoria || !puerto_escucha){
@@ -52,29 +55,29 @@ int main(void){
 
 	log_info(logger, "La CPU se conecto con el modulo Memoria correctamente");
 
-	//Escucho conexiones del Kernel
+	// Escucho conexiones del Kernel
 	int server_fd = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "CPU listo para recibir peticiones del Kernel");
 
-	// Maneja peciciones que recibe desde el kernel
-	manejar_peticiones_kernel(logger, server_fd);
+	//inicializar_colas_y_semaforos();
+	//pthread_t thread_consolas, thread_planificador_largo_plazo, thread_planificador_corto_plazo;
 
+	// Maneja peciciones que recibe desde el kernel
+	//pthread_create(&thread_consolas, NULL, manejar_peticiones_kernel, args_consolas);
 	/**
-	 * Dentro de ejecutar estan las partes de
-	 * fetch, buscar proxima instrucción
-	 * recibir próxima instrucción
-	 * decode, ver que codigo de operación
-	 * ejecutar, respecto del código de operación
+	 * typedef struct {
+	int server_fd;
+	int retardo_instruccion;
+}manejar_peticiones_kernel_args;
+	 *
 	 */
-	ejecutar_instrucciones(server_fd, retardo_instruccion);
+
+	escuchar_peticiones_kernel(logger, server_fd, RETARDO_INSTRUCCION,TAM_MAX_SEGMENTO);
 
 	terminar_programa(conexion_memoria, logger, config);
 
 } //FIN DEL MAIN
-
-
-
 
 //Funciones de inicio de Config y Logger
 t_log* iniciar_logger(void){
@@ -97,9 +100,8 @@ void terminar_programa(int conexion, t_log* logger, t_config* config){
 	close(conexion);
 }
 
-
 //Funcion para crear conexion entre modulos
-int conectar_modulo(int conexion, char* ip, char* puerto){
+int conectar_modulo(int* conexion, char* ip, char* puerto){
 
 	conexion = crear_conexion(ip, puerto);
 
@@ -116,28 +118,10 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 	return 0;
 }
 
-//Busco la prozima instruccion y actualizo el program counter y ejecuto las intrucciones
-void ejecutar_instrucciones( int cliente_fd, int retardo_instruccion )
-{
-	t_contexto_ejec* contexto = recibir_paquete_pcb (cliente_fd);
-	int program_counter = contexto->program_counter;
-	t_list *lista = contexto->lista_instrucciones;
-
-	// Mientras haya instrucciones a ejecutar
-	while( program_counter < lista->elements_count )
-	{
-		manejar_instruccion_kernel(cliente_fd, &contexto, retardo_instruccion);
-
-		contexto->program_counter++; // Actualizar el programCounter para la próxima instrucción
-	}
-	// TODO ¿devolver algo porque ya no tiene mas instrucciones?
-}
-
-//Funcion para manejo de peticiones del kernel
-void manejar_peticiones_kernel(t_log* logger, int server_fd){
+//Funcion para manejo de peticiones del kernel:
+void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO){
 
 	int cliente_fd = esperar_cliente(server_fd);
-
 
 	while (1) {
 			int cod_op = recibir_operacion(cliente_fd);
@@ -149,7 +133,8 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 				case HANDSHAKE:
 					recibir_handshake(cliente_fd);
 					break;
-				case PROCESAR_INSTRUCCIONES:
+				case PETICION_CPU:
+					manejar_peticion_al_cpu(cliente_fd, RETARDO_INSTRUCCION, TAM_MAX_SEGMENTO)
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -162,42 +147,47 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd){
 
 	return ;
 }
-
-void manejar_instruccion_kernel(int cliente_fd, t_contexto_ejec** contexto, int retardo_instruccion)
+/**
+ * Fetch, Decode
+ */
+void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 {
+	t_contexto_ejec* contexto = recibir_paquete_pcb (cliente_fd);
+	int program_counter = contexto->program_counter;
+	t_list *lista = contexto->lista_instrucciones;
+
 	t_instruccion* instruction = list_get((*contexto)->lista_instrucciones, (*contexto)->program_counter-1);
+
+	if(strcmp(instruction->opcode,"SET")==0)
+	{
+		//A modo de simular el tiempo que transcurre en la CPU.
+		sleep(RETARDO_INSTRUCCION);
+		manejar_instruccion_set(contexto, instruction);
+	}
+
+	if(strcmp(instruction->opcode,"MOV_IN")==0)
+	{
+		manejar_instruccion_mov_in(contexto, instruction, TAM_MAX_SEGMENTO);
+	}
+
+	if(strcmp(instruction->opcode,"MOV_OUT")==0)
+	{
+		manejar_instruccion_mov_out(contexto, instruction, TAM_MAX_SEGMENTO);
+	}
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
 	{
 		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, contexto);
 		//poner contexto de ejecucion
-
 	}
 	if(strcmp(instruction->opcode,"EXIT")==0)
 	{
 		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, contexto);
-
 	}
-	// FIXME esto no es kernel
-	if(strcmp(instruction->opcode,"SET")==0)
+	if(strcmp(instruction->opcode,"WAIT")==0)
 	{
-
-		//A modo de simular el tiempo que transcurre en la CPU.
-		sleep(retardo_instruccion);
-		manejar_set(contexto, instruction);
+		enviar_mensaje_a_kernel(APROPIAR_RECURSOS,cliente_fd, contexto);
 	}
-	
-}
-
-
-void manejar_instruccion_memoria(int cliente_fd, t_contexto_ejec** contexto)
-{
-	// TODO manejar_instruccion_memoria
-}
-
-void manejar_instruccion_filesystem(int cliente_fd, t_contexto_ejec** contexto)
-{
-	// TODO manejar_instruccion_filesystem
 }
 
 void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto){
@@ -208,7 +198,6 @@ void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** conte
 
 	for(int i =0; i< (*contexto)->tamanio_lista; i++){
 		t_instruccion* instruccion = list_get( (*contexto)->lista_instrucciones, i);
-
 
 		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght);
 
@@ -235,18 +224,14 @@ void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** conte
 	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RCX, sizeof(char)*16);
 	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RDX, sizeof(char)*16);
 
-
-
 	enviar_paquete(paquete, cliente_fd);
 	eliminar_paquete(paquete);
 }
 
-void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion)
+void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instruccion)
 {
 	char* registro = strdup(instruccion->parametros[0]);
 	char* valor = strdup(instruccion->parametros[1]);
-
-
 
 	if(strcmp(registro,"AX")==0)
 	{
@@ -287,3 +272,40 @@ void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion)
 		strcpy((*contexto)->registros_CPU->RDX,string_substring_until(valor,16));
 	}
 }
+
+void traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
+{
+	int num_segmento = floor(direccion_logica / TAM_MAX_SEGMENTO);
+	int desplazamiento_segmento = direccion_logica % TAM_MAX_SEGMENTO;
+}
+/**
+ * (Registro, Dirección Lógica)
+ * Lee el valor de memoria correspondiente a la Dirección Lógica y lo almacena en el Registro.
+ *
+ */
+void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion)
+{
+	//Dame el contenido de la memoria, y lo pongo en el registro
+	//t_paquete* paquete = crear_paquete(READ_MEMORY);
+	//dir_logica = traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
+	//Armar el paquete con la direccion de la memoria
+	//enviar_paquete(paquete, cliente_fd);
+
+	//FIXME No estoy seguro de esto, deveria devolver el contenido de la memoria
+	//void buffer = recibir_buffer( size, socket_cliente)(*sizeof(int), int socket_cliente );
+	//setear registro con lo devuelto
+}
+/**
+ * (Dirección Lógica, Registro)
+ * Lee el valor del Registro y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica.
+ *
+ */
+void manejar_instruccion_mov_out(contexto, instruction, int cliente_fd, int TAM_MAX_SEGMENTO)
+{
+	//t_paquete* paquete = crear_paquete(WRITE_MEMORY);
+	//enviar_paquete(paquete, cliente_fd);
+	//void buffer = recibir_buffer(*sizeof(int), int socket_cliente); // Debe de decir ok
+}
+
+
+

@@ -273,8 +273,6 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 		desplazamiento+=sizeof(int);
 		memcpy(contexto_ejecucion->registros_CPU->RDX, buffer + desplazamiento,tamanio_registro);
 		desplazamiento+=tamanio_registro;
-
-
 	}
 
 	contexto_ejecucion->lista_instrucciones = lista_instrucciones;

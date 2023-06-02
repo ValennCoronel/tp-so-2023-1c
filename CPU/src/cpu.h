@@ -28,16 +28,14 @@ t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int, t_log*, t_config*);
 int conectar_modulo(int conexion, char* ip, char* puerto);
-void ejecutar_instrucciones( int cliente_fd, int retardo_instruccion );
 
-void manejar_peticiones_kernel(t_log* logger, int server_fd);
-
+void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO);
+void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO);
 void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto);
-void manejar_set(t_contexto_ejec** contexto,t_instruccion* instruccion);
 
-void manejar_instruccion_kernel(int cliente_fd, t_contexto_ejec** contexto, int retardo_instruccion);
-
-void manejar_instruccion_memoria(int cliente_fd, t_contexto_ejec** contexto);
-void manejar_instruccion_filesystem(int cliente_fd, t_contexto_ejec** contexto);
+void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instruccion);
+void traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO);
+void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion);
+void manejar_instruccion_mov_out(contexto, instruction, int cliente_fd, int TAM_MAX_SEGMENTO);
 
 #endif /* CPU_H */
