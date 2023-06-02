@@ -28,6 +28,8 @@ int main(void){
 	t_config* config = iniciar_config();
 	logger = iniciar_logger();
 
+
+
 	// Verificacion de creacion archivo config
 	if(config == NULL){
 		log_error(logger, "No fue posible iniciar el archivo de configuracion !!");
@@ -53,6 +55,7 @@ int main(void){
 	grado_max_multiprogramacion = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
 	recursos = config_get_array_value(config, "RECURSOS");
 	instancias_recursos = config_get_array_value(config, "INSTANCIAS_RECURSOS");
+
 
 	// Control archivo configuracion
 	if(!ip_memoria || !puerto_memoria || !ip_filesystem || !puerto_filesystem || !ip_cpu || !puerto_cpu || !puerto_escucha){
@@ -267,6 +270,7 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->program_counter = 1;
 	pcb_proceso->estimado_proxima_rafaga = estimacion_inicial;
 	pcb_proceso->tiempo_llegada_rady = 0;
+	pcb_proceso->socket_server_id = socket_cliente;
 
 
 	agregar_cola_new(pcb_proceso);
@@ -299,9 +303,9 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 				case HANDSHAKE:
 					manejar_handshake_del_cliente(cliente_fd);
 					break;
-				case FINALIZAR_PROCESO:
-					finalizar_proceso(cliente_fd);
-					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
+				case TERMINAR_PROCESO:
+					terminar_proceso(cliente_fd);
+					// TODO llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case BLOQUEAR_PROCESO:
 					bloquear_proceso_IO(cliente_fd);
@@ -334,25 +338,5 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 	return NULL;
 }
 
-void terminarProceso(t_pcb* proceso_ejecutando, int socket_memoria, int socket_consola){
-	//Liberar PCB
-	free(proceso_ejecutando->instrucciones);
-	free(proceso_ejecutando->registros_CPU);
-	free(proceso_ejecutando->tabla_archivos);
-	free(proceso_ejecutando->tabla_segmentos);
-	free(proceso_ejecutando->temporal_ultimo_desalojo);
-	free(proceso_ejecutando->temporal_ready);
-	free(proceso_ejecutando);
 
-	//Enviar datos necesarios a memoria para liberarla
-	t_buffer buffer;
-	//enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
-}
-/*
-//Funcion que envia un paquete a memoria con un codigo de operacion
-void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
-	t_paquete paquete;
-	paquete = crear_paquete(codigo);
-}
-*/
 

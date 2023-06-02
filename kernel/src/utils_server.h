@@ -48,6 +48,7 @@ typedef struct
 typedef struct
 {
 	int PID;
+	int socket_server_id;
 	t_list* instrucciones;
 	int program_counter;
 

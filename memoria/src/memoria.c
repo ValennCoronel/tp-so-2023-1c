@@ -141,3 +141,6 @@ void crear_nuevo_proceso(int socket_cliente){
 	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernell
 }
 
+void acceder_espacio_ususario(int socket_kernel){
+	enviar_mensaje("OK",socket_kernel);
+}
