@@ -28,6 +28,8 @@ int main(void){
 	t_config* config = iniciar_config();
 	logger = iniciar_logger();
 
+
+
 	// Verificacion de creacion archivo config
 	if(config == NULL){
 		log_error(logger, "No fue posible iniciar el archivo de configuracion !!");
@@ -53,6 +55,7 @@ int main(void){
 	grado_max_multiprogramacion = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
 	recursos = config_get_array_value(config, "RECURSOS");
 	instancias_recursos = config_get_array_value(config, "INSTANCIAS_RECURSOS");
+
 
 	// Control archivo configuracion
 	if(!ip_memoria || !puerto_memoria || !ip_filesystem || !puerto_filesystem || !ip_cpu || !puerto_cpu || !puerto_escucha){
