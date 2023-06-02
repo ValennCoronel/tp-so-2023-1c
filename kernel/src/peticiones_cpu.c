@@ -1,5 +1,6 @@
 #include "peticiones_cpu.h"
 
+
 //GENERAL: en algún momento hay que calcular la ráfaga anterior
 //TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
 
@@ -39,7 +40,6 @@ void finalizar_proceso(int socket_cliente){
 
 	// finalmente pone a ejecutar a otro proceso
 }
-
 
 
 void bloquear_proceso_IO(int socket_cliente){
@@ -131,6 +131,7 @@ void desalojar_proceso(int socket_cliente){
 	poner_a_ejecutar_otro_proceso();
 }
 
+
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso){
 	//TODO llevarlo a la cola de bloqueados del recurso
 
@@ -140,6 +141,7 @@ void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurs
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
 }
+
 
 // si no lo encuentra devuelve -1
 int obtener_indice_recurso(char** recursos, char* recurso_a_buscar){
@@ -169,5 +171,53 @@ void poner_a_ejecutar_otro_proceso(){
 
 	proceso_ejecutando = NULL;
 	sem_post(&consumidor);
+}
+
+
+
+
+void finalizarProceso(int socket_cliente, int socket_memoria, int socket_consola){
+	//crear estrutura para el contexto de ejecucion
+		// liberar todos los recursos que tenga asignados (aca se usa el free)
+		//free(instrucciones);
+		// free(pcb_proceso);
+
+		// dar aviso al módulo Memoria para que éste libere sus estructuras.
+		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
+
+	//TODO enviar socket por PCB
+
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
+
+	//Liberar PCB del proceso actual
+	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones);
+	free(proceso_ejecutando->instrucciones);
+	free(proceso_ejecutando->registros_CPU);
+	free(proceso_ejecutando->tabla_archivos);
+	free(proceso_ejecutando->tabla_segmentos);
+	free(proceso_ejecutando->temporal_ultimo_desalojo);
+	free(proceso_ejecutando->temporal_ready);
+	free(proceso_ejecutando);
+
+	//Enviar datos necesarios a memoria para liberarla
+
+	//TODO decomentar y completar cuando este implementada la funcion en memoria (hasta entonces envio mensaje de prueba)
+	// t_buffer buffer;
+	// enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
+
+	enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
+
+	//Enviar mensaje a Consola informando que finalizo el proceso
+	enviar_mensaje("Proceso actual finalizado", socket_consola, MENSAJE);
+}
+
+
+//Funcion que envia un paquete a memoria con un codigo de operacion
+void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
+	t_paquete paquete;
+	paquete = crear_paquete(codigo);
+
+	//Rellenar y serializar contenido del paquete
+
 }
 
