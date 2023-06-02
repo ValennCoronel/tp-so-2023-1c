@@ -174,9 +174,12 @@ void poner_a_ejecutar_otro_proceso(){
 }
 
 
+void *element_destroyer (void*){
+
+};
 
 
-void finalizarProceso(int socket_cliente, int socket_memoria, int socket_consola){
+void finalizarProceso(int socket_cliente, int socket_memoria){
 	//crear estrutura para el contexto de ejecucion
 		// liberar todos los recursos que tenga asignados (aca se usa el free)
 		//free(instrucciones);
@@ -185,19 +188,26 @@ void finalizarProceso(int socket_cliente, int socket_memoria, int socket_consola
 		// dar aviso al módulo Memoria para que éste libere sus estructuras.
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
-	//TODO enviar socket por PCB
-
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	//Liberar PCB del proceso actual
-	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones);
+	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, element_destroyer());
 	free(proceso_ejecutando->instrucciones);
+	list_destroy_and_destroy_elements(proceso_ejecutando->registros_CPU, element_destroyer());
 	free(proceso_ejecutando->registros_CPU);
+	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, element_destroyer());
 	free(proceso_ejecutando->tabla_archivos);
+	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,element_destroyer());
 	free(proceso_ejecutando->tabla_segmentos);
-	free(proceso_ejecutando->temporal_ultimo_desalojo);
+	temporal_destroy(proceso_ejecutando->temporal_ready);
 	free(proceso_ejecutando->temporal_ready);
-	free(proceso_ejecutando);
+	temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
+	free(proceso_ejecutando->temporal_ultimo_desalojo);
+	free(proceso_ejecutando->PID);
+	free(proceso_ejecutando->estimado_proxima_rafaga);
+	free(proceso_ejecutando->prioridad);
+	free(proceso_ejecutando->program_counter);
+	free(proceso_ejecutando->ráfaga_anterior);
 
 	//Enviar datos necesarios a memoria para liberarla
 
@@ -208,7 +218,8 @@ void finalizarProceso(int socket_cliente, int socket_memoria, int socket_consola
 	enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
 
 	//Enviar mensaje a Consola informando que finalizo el proceso
-	enviar_mensaje("Proceso actual finalizado", socket_consola, MENSAJE);
+	enviar_mensaje("Proceso actual finalizado", proceso_ejecutando->socket_server_id, MENSAJE);
+	free(proceso_ejecutando);
 }
 
 

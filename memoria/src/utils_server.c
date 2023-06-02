@@ -64,7 +64,7 @@ void recibir_mensaje(int socket_cliente)
 	char* buffer = recibir_buffer(&size, socket_cliente);
 	int length_buffer = strlen(buffer);
 	buffer[length_buffer +1] = '\0';
-
+	log_info(logger, "Me llego el mensaje %s", buffer);
 	free(buffer);
 }
 
