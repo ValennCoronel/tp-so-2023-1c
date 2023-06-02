@@ -202,12 +202,6 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	temporal_destroy(proceso_ejecutando->temporal_ready);
 	free(proceso_ejecutando->temporal_ready);
 	temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
-	free(proceso_ejecutando->temporal_ultimo_desalojo);
-	free(proceso_ejecutando->PID);
-	free(proceso_ejecutando->estimado_proxima_rafaga);
-	free(proceso_ejecutando->prioridad);
-	free(proceso_ejecutando->program_counter);
-	free(proceso_ejecutando->ráfaga_anterior);
 
 	//Enviar datos necesarios a memoria para liberarla
 
