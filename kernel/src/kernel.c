@@ -267,6 +267,7 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->program_counter = 1;
 	pcb_proceso->estimado_proxima_rafaga = estimacion_inicial;
 	pcb_proceso->tiempo_llegada_rady = 0;
+	pcb_proceso->socket_server_id = socket_cliente;
 
 
 	agregar_cola_new(pcb_proceso);
