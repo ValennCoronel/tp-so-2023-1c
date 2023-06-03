@@ -307,43 +307,43 @@ void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion){
 	free(*contexto_ejecucion);
 }
 
-void registro_cpu_destroy(registros_CPU* registro){
-    if(registro->AX != NULL){
-        free(registro->AX);
+void registro_cpu_destroy(registros_CPU** registro){
+    if(!string_is_empty( (*registro)->AX)){
+        free((*registro)->AX);
     }
-    if(registro->BX != NULL){
-            free(registro->BX);
+    if(!string_is_empty( (*registro)->BX)){
+            free((*registro)->BX);
         }
-    if(registro->CX != NULL){
-            free(registro->CX);
+    if(!string_is_empty((*registro)->CX)){
+            free((*registro)->CX);
         }
-    if(registro->DX != NULL){
-            free(registro->DX);
+    if(!string_is_empty((*registro)->DX)){
+            free((*registro)->DX);
         }
-    if(registro->EAX != NULL){
-            free(registro->EAX);
+    if(!string_is_empty((*registro)->EAX)){
+            free((*registro)->EAX);
         }
-    if(registro->EBX != NULL){
-            free(registro->EBX);
+    if(!string_is_empty((*registro)->EBX)){
+            free((*registro)->EBX);
         }
-    if(registro->ECX != NULL){
-            free(registro->ECX);
+    if(!string_is_empty((*registro)->ECX)){
+            free((*registro)->ECX);
         }
-    if(registro->EDX != NULL){
-            free(registro->EDX);
+    if(!string_is_empty((*registro)->EDX)){
+            free((*registro)->EDX);
         }
-    if(registro->RAX != NULL){
-            free(registro->RAX);
+    if(!string_is_empty((*registro)->RAX)){
+            free((*registro)->RAX);
         }
-    if(registro->RBX != NULL){
-            free(registro->RBX);
+    if(!string_is_empty((*registro)->RBX)){
+            free((*registro)->RBX);
         }
-    if(registro->RCX != NULL){
-            free(registro->RCX);
+    if(!string_is_empty((*registro)->RCX)){
+            free((*registro)->RCX);
         }
-    if(registro->RDX != NULL){
-            free(registro->RDX);
+    if(!string_is_empty((*registro)->RDX)){
+            free((*registro)->RDX);
         }
-    free(registro);
+    free((*registro));
 }
 

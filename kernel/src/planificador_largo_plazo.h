@@ -60,5 +60,6 @@ void agregar_cola_new(t_pcb* pcb_proceso);
 
 t_list* obtener_tabla_segmentos(int conexion_memoria);
 char* listar_pids_cola_ready(void);
+void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion);
 
 #endif /* SRC_PLANIFICADOR_LARGO_PLAZO_H_ */

@@ -1,5 +1,6 @@
 #include "peticiones_cpu.h"
 
+t_dictionary* recurso_bloqueado;
 
 //GENERAL: en algún momento hay que calcular la ráfaga anterior
 //TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
@@ -102,7 +103,7 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 		recurso_disponible[indice_recurso] += 1;
 
-		t_queue* cola_bloqueados=dictionary_get(recurso_bloqueado,recursos[indice_recurso]);
+		t_queue* cola_bloqueados= (t_queue*) dictionary_get(recurso_bloqueado,recursos[indice_recurso]);
 
 		t_pcb* proceso_desbloqueado = queue_pop(cola_bloqueados);
 
@@ -204,20 +205,24 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
-	void *destructor_instrucciones (void*){}
-	void *destructor_tabla_archivos (void*){}
-	void *destructor_tabla_segmentos (void*){}
+	void destructor_instrucciones (void* arg){
+		t_instruccion* inst = (t_instruccion*) arg;
+
+		instruccion_destroy(&inst);
+	}
+	void destructor_tabla_archivos (void* arg){}
+	void destructor_tabla_segmentos (void* arg){}
 
 	//Liberar PCB del proceso actual
-	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, element_destroyer());
+	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
 	free(proceso_ejecutando->instrucciones);
 
 
-	registro_cpu_destroy(proceso_ejecutando->registros_CPU);
+	registro_cpu_destroy(&(proceso_ejecutando->registros_CPU));
 
-	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, element_destroyer());
+	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, destructor_tabla_archivos);
 	free(proceso_ejecutando->tabla_archivos);
-	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,element_destroyer());
+	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,destructor_tabla_segmentos);
 	free(proceso_ejecutando->tabla_segmentos);
 	temporal_destroy(proceso_ejecutando->temporal_ready);
 	free(proceso_ejecutando->temporal_ready);
