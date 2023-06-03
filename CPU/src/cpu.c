@@ -275,7 +275,7 @@ void enviar_instruccion_a_kernel(op_code code,int cliente_fd,t_instruccion* inst
 {
 	t_paquete* paquete = crear_paquete(code);
 
-	agregar_a_paquete(paquete, code, sizeof(char)*code );
+	agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
 
 	agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
 	agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);

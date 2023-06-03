@@ -284,66 +284,33 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 	return contexto_ejecucion;
 }
 
-void instruccion_destroy(t_instruccion** instruccion){
-    free((*instruccion)->opcode);
-    free((*instruccion)->parametros[0]);
+void instruccion_destroy(t_instruccion* instruccion){
+    free(instruccion->opcode);
+    free(instruccion->parametros[0]);
 
-    free((*instruccion)->parametros[1]);
+    free(instruccion->parametros[1]);
 
-    free((*instruccion)->parametros[2]);
-    free(*instruccion);
+    free(instruccion->parametros[2]);
+    free(instruccion);
 }
 
-void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion){
-	int lista_length = list_size((*contexto_ejecucion)->lista_instrucciones);
+void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion){
 
-	for(int i = 0; i< lista_length ; i++){
-		t_instruccion* inst = list_get((*contexto_ejecucion)->lista_instrucciones, i);
-		instruccion_destroy(&inst);
+	void destructor_instrucciones (void* arg){
+		t_instruccion* inst = (t_instruccion*) arg;
+
+		instruccion_destroy(inst);
 	}
 
-	list_destroy((*contexto_ejecucion)->lista_instrucciones);
-	free((*contexto_ejecucion)->registros_CPU);
-	free(*contexto_ejecucion);
+	list_destroy_and_destroy_elements(contexto_ejecucion->lista_instrucciones, destructor_instrucciones);
+
+	registro_cpu_destroy(contexto_ejecucion->registros_CPU);
+
+	free(contexto_ejecucion);
 }
 
-void registro_cpu_destroy(registros_CPU** registro){
-    if(!string_is_empty( (*registro)->AX)){
-        free((*registro)->AX);
-    }
-    if(!string_is_empty( (*registro)->BX)){
-            free((*registro)->BX);
-        }
-    if(!string_is_empty((*registro)->CX)){
-            free((*registro)->CX);
-        }
-    if(!string_is_empty((*registro)->DX)){
-            free((*registro)->DX);
-        }
-    if(!string_is_empty((*registro)->EAX)){
-            free((*registro)->EAX);
-        }
-    if(!string_is_empty((*registro)->EBX)){
-            free((*registro)->EBX);
-        }
-    if(!string_is_empty((*registro)->ECX)){
-            free((*registro)->ECX);
-        }
-    if(!string_is_empty((*registro)->EDX)){
-            free((*registro)->EDX);
-        }
-    if(!string_is_empty((*registro)->RAX)){
-            free((*registro)->RAX);
-        }
-    if(!string_is_empty((*registro)->RBX)){
-            free((*registro)->RBX);
-        }
-    if(!string_is_empty((*registro)->RCX)){
-            free((*registro)->RCX);
-        }
-    if(!string_is_empty((*registro)->RDX)){
-            free((*registro)->RDX);
-        }
-    free((*registro));
+void registro_cpu_destroy(registros_CPU* registro){
+
+    free(registro);
 }
 

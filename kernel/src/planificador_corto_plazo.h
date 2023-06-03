@@ -37,7 +37,6 @@ double calcular_prioridad_con_hrrn(int64_t tiempo_de_espera, double tiempo_proxi
 double estimar_proxima_rafaga_proceso(double hrrn_alpha, int64_t anterior_rafaga, int64_t anterior_estimado );
 int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso);
 void reordenar_cola_ready_hrrn();
-void contexto_ejecucion_destroy(t_contexto_ejec** proceso_a_ejecutar);
 
 
 #endif /* SRC_PLANIFICADOR_CORTO_PLAZO_H_ */

@@ -1,6 +1,7 @@
 #include "peticiones_cpu.h"
 
 t_dictionary* recurso_bloqueado;
+sem_t esperar_proceso_ejecutando;
 
 //GENERAL: en algún momento hay que calcular la ráfaga anterior
 //TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
@@ -11,11 +12,13 @@ void* simulacion_io(void* arg){
 	int grado_max_multiprogramacion = argumentos->grado_max_multiprogramacion;
 	int tiempo_actual = 0;
 
+	t_pcb* proceso_en_IO = proceso_ejecutando;
+
+	// despierta el semáforo para poner a ejecutar otro proceso
+	sem_post(&esperar_proceso_ejecutando);
 
 	//espera activa mientras se ejecuta otro en cpu
-	t_pcb* proceso_en_IO = proceso_ejecutando;
 	t_temporal* temporal_dormido = temporal_create();
-
 
 	while(tiempo_io!=tiempo_actual)
 	{
@@ -40,6 +43,8 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
 	pthread_t hilo_simulacion;
 
+	sem_init(&esperar_proceso_ejecutando, 0, 0);
+
 	int tiempo_io = atoi(instruccion->parametros[0]);
 	t_argumentos_simular_io* argumentos = malloc(sizeof(t_argumentos_simular_io));
 	argumentos->tiempo_io=tiempo_io;
@@ -48,14 +53,17 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 
 	pthread_detach(hilo_simulacion);
 
+	//se calcula la rafaga anterior para el algoritmo hrrn
 	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
 
+	sem_wait(&esperar_proceso_ejecutando);
 	poner_a_ejecutar_otro_proceso();
 
-
+	//destruyo el contexto de ejecucion
+	contexto_ejecucion_destroy(contexto);
 }
 
 
@@ -82,7 +90,8 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	// avisa a consola y continua ejecutandose el mismo proceso
 	enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, socket_cliente);
 
-	//TODO destroy contexto_ejecucion
+	//destruyo el contexto de ejecucion
+	contexto_ejecucion_destroy(contexto);
 }
 
 void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible, int grado_max_multiprogramacion){
@@ -115,6 +124,8 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 		// avisa a consola y continua ejecutandose el mismo proceso
 		enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, cliente_fd);
 
+		//destruyo el contexto de ejecucion
+		contexto_ejecucion_destroy(contexto);
 
 }
 
@@ -124,14 +135,15 @@ void manejar_peticion_al_kernel(int socket_cliente){
 
 	// verificar que tipo de peticion es
 	//manejar cada peticion según corresponda
+
+	//destruyo el contexto de ejecucion
+	contexto_ejecucion_destroy(contexto);
 }
 
 void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
+	//deserializa el contexto de ejecucion
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
-	//crear estrutura para el contexto de ejecucion
 
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
-	//TODO
 
 	//devolver proceso a la cola de ready
 	//calcula la ráfaga anterior y lo guarda en el pcb para el hrrn
@@ -144,8 +156,8 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
 	poner_a_ejecutar_otro_proceso();
 
-	//
-
+	//destruyo el contexto de ejecucion
+	contexto_ejecucion_destroy(contexto);
 }
 
 
@@ -208,24 +220,24 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	void destructor_instrucciones (void* arg){
 		t_instruccion* inst = (t_instruccion*) arg;
 
-		instruccion_destroy(&inst);
+		instruccion_destroy(inst);
 	}
+	//TODO finalizar el free de estas estructuras
 	void destructor_tabla_archivos (void* arg){}
 	void destructor_tabla_segmentos (void* arg){}
 
 	//Liberar PCB del proceso actual
 	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
-	free(proceso_ejecutando->instrucciones);
 
 
-	registro_cpu_destroy(&(proceso_ejecutando->registros_CPU));
+	registro_cpu_destroy(proceso_ejecutando->registros_CPU);
 
 	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, destructor_tabla_archivos);
-	free(proceso_ejecutando->tabla_archivos);
+
 	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,destructor_tabla_segmentos);
-	free(proceso_ejecutando->tabla_segmentos);
+
 	temporal_destroy(proceso_ejecutando->temporal_ready);
-	free(proceso_ejecutando->temporal_ready);
+
 	temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
 
 	//Enviar datos necesarios a memoria para liberarla
@@ -238,8 +250,10 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso actual finalizado", proceso_ejecutando->socket_server_id, MENSAJE);
 	free(proceso_ejecutando);
-	//TODO contexto_destroy esta creada pero tiene temitas
+
 	poner_a_ejecutar_otro_proceso();
+
+	contexto_ejecucion_destroy(contexto);
 
 }
 

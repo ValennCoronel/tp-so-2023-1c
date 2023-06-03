@@ -2,7 +2,6 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-
 RM := rm -rf
 
 # All of the sources participating in the build are defined here
@@ -15,8 +14,7 @@ endif
 endif
 
 
-
-BUILD_ARTIFACT_NAME := FilseSystem
+BUILD_ARTIFACT_NAME := filesystem
 BUILD_ARTIFACT_EXTENSION :=
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
@@ -27,17 +25,20 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 all: main-build
 
 # Main-build Target
-main-build: FilseSystem
+main-build: filesystem
 
 # Tool invocations
-FilseSystem: $(OBJS) $(USER_OBJS)
+filesystem: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "FilseSystem" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lpthread
+	gcc  -o "filesystem" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons
+	@echo 'Finished building target: $@'
 	@echo ' '
 
+
+
 valgrind: main-build
-	valgrind --leak-check=full --show-leak-kinds=all --log-file=valgrind.log ./FilseSystem
+	valgrind --leak-check=full --show-leak-kinds=all --log-file=valgrind.log ./filesystem
 
 # Other Targets
 clean:
