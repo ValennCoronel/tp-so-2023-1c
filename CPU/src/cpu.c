@@ -103,13 +103,13 @@ void terminar_programa(int conexion, t_log* logger, t_config* config){
 //Funcion para crear conexion entre modulos
 int conectar_modulo(int* conexion, char* ip, char* puerto){
 
-	conexion = crear_conexion(ip, puerto);
+	*conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion, HANDSHAKE);
+	enviar_mensaje("OK", *conexion, HANDSHAKE);
 
 	int size;
-	char* buffer = recibir_buffer(&size, conexion);
+	char* buffer = recibir_buffer(&size, *conexion);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -134,7 +134,7 @@ void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRU
 					recibir_handshake(cliente_fd);
 					break;
 				case PETICION_CPU:
-					manejar_peticion_al_cpu(cliente_fd, RETARDO_INSTRUCCION, TAM_MAX_SEGMENTO)
+					manejar_peticion_al_cpu(cliente_fd, RETARDO_INSTRUCCION, TAM_MAX_SEGMENTO);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -156,37 +156,37 @@ void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MA
 	int program_counter = contexto->program_counter;
 	t_list *lista = contexto->lista_instrucciones;
 
-	t_instruccion* instruction = list_get((*contexto)->lista_instrucciones, (*contexto)->program_counter-1);
+	t_instruccion* instruction = list_get(lista, (contexto)->program_counter-1);
 
 	if(strcmp(instruction->opcode,"SET")==0)
 	{
 		//A modo de simular el tiempo que transcurre en la CPU.
 		sleep(RETARDO_INSTRUCCION);
-		manejar_instruccion_set(contexto, instruction);
+		manejar_instruccion_set(&contexto, instruction);
 	}
 
 	if(strcmp(instruction->opcode,"MOV_IN")==0)
 	{
-		manejar_instruccion_mov_in(contexto, instruction, TAM_MAX_SEGMENTO);
+		manejar_instruccion_mov_in(cliente_fd, &contexto, instruction);
 	}
 
 	if(strcmp(instruction->opcode,"MOV_OUT")==0)
 	{
-		manejar_instruccion_mov_out(contexto, instruction, TAM_MAX_SEGMENTO);
+		manejar_instruccion_mov_out(contexto, instruction,cliente_fd, TAM_MAX_SEGMENTO);
 	}
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
 	{
-		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, contexto);
+		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, &contexto);
 		//poner contexto de ejecucion
 	}
 	if(strcmp(instruction->opcode,"EXIT")==0)
 	{
-		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, contexto);
+		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, &contexto);
 	}
 	if(strcmp(instruction->opcode,"WAIT")==0)
 	{
-		enviar_mensaje_a_kernel(APROPIAR_RECURSOS,cliente_fd, contexto);
+		enviar_mensaje_a_kernel(APROPIAR_RECURSOS,cliente_fd, &contexto);
 	}
 }
 
@@ -300,7 +300,7 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
  * Lee el valor del Registro y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica.
  *
  */
-void manejar_instruccion_mov_out(contexto, instruction, int cliente_fd, int TAM_MAX_SEGMENTO)
+void manejar_instruccion_mov_out(t_contexto_ejec* contexto, t_instruccion* instruction, int cliente_fd, int TAM_MAX_SEGMENTO)
 {
 	//t_paquete* paquete = crear_paquete(WRITE_MEMORY);
 	//enviar_paquete(paquete, cliente_fd);
