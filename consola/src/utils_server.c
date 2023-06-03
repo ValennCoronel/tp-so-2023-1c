@@ -57,14 +57,14 @@ void* recibir_buffer(int* size, int socket_cliente){
 	return buffer;
 }
 
-void recibir_mensaje(int socket_cliente)
+char* recibir_mensaje(int socket_cliente)
 {
 	int size;
 	char* buffer = recibir_buffer(&size, socket_cliente);
 	int length_buffer = strlen(buffer);
 	buffer[length_buffer +1] = '\0';
-	log_info(logger, "Me llego el mensaje %s", buffer);
-	free(buffer);
+	
+	return buffer;
 }
 
 t_list* recibir_paquete(int socket_cliente)

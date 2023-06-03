@@ -1,23 +1,21 @@
 #include "consola.h"
 
-
+//Declaracion variables para test de conexion y socket
+int conexion_kernel;
 
 
 int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argumentos (argc) y un vector de argumentos con el archivo config y el pseudocodigo
 
 
 	//Iniciar logger y config
-
-	t_log* logger = iniciar_logger();
+	//el logger es global pero esta iniciado en otro lado
+	logger = iniciar_logger();
 	t_config* config = iniciar_config(argv[1]);
 
 
 	//Declaracion variables para config
 	char* ip_kernel;
 	char* puerto_kernel;
-
-	//Declaracion variables para test de conexion y socket
-	int conexion_kernel;
 
 
 	//Chequeo que la cantidad de argumentos sea la correcta
@@ -33,7 +31,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	if(config == NULL){
 		log_error(logger, "No se pudo iniciar el archivo de configuración !!");
 
-		terminar_programa(conexion_kernel, logger, config);
+		terminar_programa(config);
 	}
 
 	//Levantar datos de config a variables
@@ -45,17 +43,17 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	if(!ip_kernel || !puerto_kernel ){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'PUERTO_KERNEL', 'IP_KERNEL");
 
-		terminar_programa(conexion_kernel, logger, config);
+		terminar_programa(config);
 	}
 
 	//Realizo la conexion con kernel
-	int result_conexion = conectar_modulo(&conexion_kernel, ip_kernel, puerto_kernel);
+	int result_conexion = conectar_modulo(ip_kernel, puerto_kernel);
 
 	//Testeo el resultado de la conexion
 	if(result_conexion == -1){
 		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
 
-		terminar_programa(conexion_kernel, logger, config);
+		terminar_programa(config);
 
 	}
 
@@ -131,7 +129,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 
 			}
 
-			paquete_instruccion(conexion_kernel, lista_instrucciones); //Serializo la lista y la envio a kernel
+			paquete_instruccion(lista_instrucciones); //Serializo la lista y la envio a kernel
 
 			while(1);
 			free(cadena);
@@ -164,23 +162,23 @@ t_config* iniciar_config(char* archivo){
 
 
 //Funcion para finalizar el programa
-void terminar_programa(int conexion, t_log* logger, t_config* config){
+void terminar_programa(t_config* config){
 	log_destroy(logger);
 	config_destroy(config);
-	close(conexion);
+	close(conexion_kernel);
 }
 
 
 //Funcion para crear conexion entre modulos
-int conectar_modulo(int *conexion, char* ip, char* puerto){
+int conectar_modulo(char* ip, char* puerto){
 
-	*conexion = crear_conexion(ip, puerto);
+	conexion_kernel = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", *conexion);
+	enviar_mensaje("OK", conexion_kernel);
 
 	int size;
-	char* buffer = recibir_buffer(&size, *conexion);
+	char* buffer = recibir_buffer(&size, conexion_kernel);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -191,7 +189,7 @@ int conectar_modulo(int *conexion, char* ip, char* puerto){
 }
 
 //Funcion para serializar, crear y enviar paquete de instruccion
-void paquete_instruccion(int conexion, t_list* lista_instrucciones)
+void paquete_instruccion(t_list* lista_instrucciones)
 {
 	// Declaro las variables a utilizar
 	t_paquete* paquete;
@@ -257,7 +255,7 @@ void paquete_instruccion(int conexion, t_list* lista_instrucciones)
 	paquete->buffer = buffer;
 
 
-	evniar_a_kernel(conexion,sizeof(op_code) + sizeof(int) + buffer->size , paquete);
+	evniar_a_kernel(sizeof(op_code) + sizeof(int) + buffer->size , paquete);
 
 	// Liberamos memoria
 	free(paquete->buffer->stream);
@@ -266,7 +264,7 @@ void paquete_instruccion(int conexion, t_list* lista_instrucciones)
 }
 
 
-void evniar_a_kernel(int conexion, int tamnio_paquete, t_paquete* paquete){
+void evniar_a_kernel(int tamnio_paquete, t_paquete* paquete){
 
 	void* a_enviar = malloc(tamnio_paquete);
 	int offset = 0; //Reseteamos el offset
@@ -280,12 +278,16 @@ void evniar_a_kernel(int conexion, int tamnio_paquete, t_paquete* paquete){
 	memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
 
 	// Enviamos el paquete
-	send(conexion, a_enviar, tamnio_paquete, 0);
+	send(conexion_kernel, a_enviar, tamnio_paquete, 0);
 
 	// se queda en la espera de la finalizacion del proceso por parte del kernel
-	int size;
-	void* buffer_rcv = recibir_buffer(&size, conexion);
+	char* mensaje = recibir_mensaje(conexion_kernel);
 
+	if(strcmp(mensaje, "OK") == 0){
+		log_info(logger, "Proceso finalizado");
+	}
+
+	free(mensaje);
 	free(a_enviar);
 }
 

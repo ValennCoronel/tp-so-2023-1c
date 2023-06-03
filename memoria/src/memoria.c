@@ -100,9 +100,9 @@ void manejar_peticiones(int server_fd ){
 
 	while(1){
 		pthread_t thread;
-		int cliente_fd = esperar_cliente(server_fd);
+		uint64_t cliente_fd = (uint64_t) esperar_cliente(server_fd);
 
-		pthread_create(&thread, NULL, atender_cliente, cliente_fd);
+		pthread_create(&thread, NULL, atender_cliente, (void*) cliente_fd);
 
 		pthread_detach(thread);
 	}
@@ -110,7 +110,7 @@ void manejar_peticiones(int server_fd ){
 }
 
 void* atender_cliente(void *args){
-	int cliente_fd = (int) args;
+	uint64_t cliente_fd = (uint64_t) args;
 
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
