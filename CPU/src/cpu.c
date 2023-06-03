@@ -232,7 +232,10 @@ void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instrucci
 {
 	char* registro = strdup(instruccion->parametros[0]);
 	char* valor = strdup(instruccion->parametros[1]);
-
+	setear_registro(contexto, registro, valor);
+}
+void setear_registro(t_contexto_ejec** contexto,char* registro, char* valor)
+{
 	if(strcmp(registro,"AX")==0)
 	{
 		strcpy((*contexto)->registros_CPU->AX, string_substring_until(valor,4));
@@ -273,10 +276,11 @@ void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instrucci
 	}
 }
 
-void traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
+int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
 {
 	int num_segmento = floor(direccion_logica / TAM_MAX_SEGMENTO);
 	int desplazamiento_segmento = direccion_logica % TAM_MAX_SEGMENTO;
+	return
 }
 /**
  * (Registro, Dirección Lógica)
@@ -286,25 +290,39 @@ void traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
 void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion)
 {
 	//Dame el contenido de la memoria, y lo pongo en el registro
-	//t_paquete* paquete = crear_paquete(READ_MEMORY);
-	//dir_logica = traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
-	//Armar el paquete con la direccion de la memoria
-	//enviar_paquete(paquete, cliente_fd);
+	t_paquete* paquete = crear_paquete(READ_MEMORY);
 
-	//FIXME No estoy seguro de esto, deveria devolver el contenido de la memoria
-	//void buffer = recibir_buffer( size, socket_cliente)(*sizeof(int), int socket_cliente );
+	agregar_a_paquete_sin_agregar_tamanio(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+
+	//Armar el paquete con la direccion de la memoria
+	enviar_paquete(paquete, cliente_fd);
+
+	char* valor = recibir_buffer( sizeof(int), cliente_fd );
+
 	//setear registro con lo devuelto
+	setear_registro(contexto, instruccion->parametros[0], valor);
 }
 /**
  * (Dirección Lógica, Registro)
  * Lee el valor del Registro y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica.
  *
  */
-void manejar_instruccion_mov_out(t_contexto_ejec* contexto, t_instruccion* instruction, int cliente_fd, int TAM_MAX_SEGMENTO)
+void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion)
 {
-	//t_paquete* paquete = crear_paquete(WRITE_MEMORY);
-	//enviar_paquete(paquete, cliente_fd);
-	//void buffer = recibir_buffer(*sizeof(int), int socket_cliente); // Debe de decir ok
+	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+
+	enviar_paquete(paquete, cliente_fd);
+
+	char* buffer = recibir_buffer( sizeof(int), cliente_fd);
+
+	if( strcmp(buffer,"OK") )
+	{
+		//SETEO CORRECTAMENTE
+	}
 }
 
 

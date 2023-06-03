@@ -29,7 +29,6 @@ typedef struct {
 }planificar_nuevos_procesos_largo_plazo_args;
 
 typedef	struct {
-	int id;
 	int direccion_base;
 	int tamano;
 } segmento;
