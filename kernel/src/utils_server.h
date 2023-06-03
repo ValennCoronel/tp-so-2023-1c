@@ -57,7 +57,7 @@ typedef struct
 
 	double estimado_proxima_rafaga;
 	int64_t tiempo_llegada_rady;
-	int64_t ráfaga_anterior;
+	int64_t rafaga_anterior;
 
 	double prioridad;
 

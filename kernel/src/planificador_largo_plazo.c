@@ -68,7 +68,7 @@ void agregar_proceso_a_ready(int conexion_memoria){
 		proceso_new_a_ready->temporal_ready= NULL;
 
 		// si es nuevo no tiene rafaga anterior
-		proceso_new_a_ready->ráfaga_anterior = 0;
+		proceso_new_a_ready->rafaga_anterior = 0;
 	}
 
 

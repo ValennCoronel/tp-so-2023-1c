@@ -67,11 +67,11 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 	void _calcular_proxima_rafaga_estimada_cada_proceso(t_pcb* pcb_proceso){
 		int64_t tiempo_de_espera = calcular_tiempo_de_espera(pcb_proceso);
 
-		double estimado_proxima_ráfaga = estimar_proxima_ráfaga_proceso(hrrn_alpha, pcb_proceso->ráfaga_anterior , pcb_proceso->estimado_proxima_rafaga);
+		double estimado_proxima_rafaga = estimar_proxima_rafaga_proceso(hrrn_alpha, pcb_proceso->rafaga_anterior , pcb_proceso->estimado_proxima_rafaga);
 
-		double prioridad = calcular_prioridad_con_hrrn(tiempo_de_espera, estimado_proxima_ráfaga);
+		double prioridad = calcular_prioridad_con_hrrn(tiempo_de_espera, estimado_proxima_rafaga);
 
-		pcb_proceso->estimado_proxima_rafaga = estimado_proxima_ráfaga;
+		pcb_proceso->estimado_proxima_rafaga = estimado_proxima_rafaga;
 		pcb_proceso->prioridad = prioridad;
 	}
 
@@ -119,12 +119,12 @@ int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso){
 	return tiempo_espera;
 }
 
-double estimar_proxima_ráfaga_proceso(double hrrn_alpha, int64_t anterior_ráfaga, int64_t anterior_estimado ){
-	return hrrn_alpha * anterior_ráfaga + (1 - hrrn_alpha) * anterior_estimado;
+double estimar_proxima_rafaga_proceso(double hrrn_alpha, int64_t anterior_rafaga, int64_t anterior_estimado ){
+	return hrrn_alpha * anterior_rafaga + (1 - hrrn_alpha) * anterior_estimado;
 }
 
-double calcular_prioridad_con_hrrn(int64_t tiempo_de_espera, double tiempo_proxima_ráfaga ){
-	return (tiempo_de_espera + tiempo_proxima_ráfaga) / tiempo_proxima_ráfaga ;
+double calcular_prioridad_con_hrrn(int64_t tiempo_de_espera, double tiempo_proxima_rafaga ){
+	return (tiempo_de_espera + tiempo_proxima_rafaga) / tiempo_proxima_rafaga ;
 }
 
 void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code opcode, int socket_cliente){

@@ -48,7 +48,7 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 
 	pthread_detach(hilo_simulacion);
 
-	proceso_ejecutando->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
@@ -136,7 +136,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	//devolver proceso a la cola de ready
 	//calcula la ráfaga anterior y lo guarda en el pcb para el hrrn
 	// si es fifo no lo usa
-	proceso_ejecutando->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
@@ -152,7 +152,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso){
 
 	//antes de bloquearse, se calcula las ráfagas anteriores para el hrrn, si es fifo no lo usa
-	proceso_a_bloquear->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	proceso_a_bloquear->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
