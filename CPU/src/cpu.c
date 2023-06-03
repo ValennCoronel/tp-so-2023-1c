@@ -174,23 +174,66 @@ void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MA
 	{
 		manejar_instruccion_mov_out(contexto, instruction,cliente_fd, TAM_MAX_SEGMENTO);
 	}
+	if(strcmp(instruction->opcode,"I/O")==0)
+	{
+		enviar_instruccion_a_kernel(BLOQUEAR_PROCESO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_OPEN")==0)
+	{
+		enviar_instruccion_a_kernel(ABRIR_ARCHIVO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_CLOSE")==0)
+	{
+		enviar_instruccion_a_kernel(CERRAR_ARCHIVO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_SEEK")==0)
+	{
+		enviar_instruccion_a_kernel(APUNTAR_ARCHIVO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_READ")==0)
+	{
+		enviar_instruccion_a_kernel(LEER_ARCHIVO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_WRITE")==0)
+	{
+		enviar_instruccion_a_kernel(ESCRIBIR_ARCHIVO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"F_TRUNCATE")==0)
+	{
+		enviar_instruccion_a_kernel(TRUNCAR_ARCHIVO,cliente_fd, instruction );
+	}
+
+	if(strcmp(instruction->opcode,"WAIT")==0)
+	{
+		enviar_instruccion_a_kernel(APROPIAR_RECURSOS,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"SIGNAL")==0)
+	{
+		enviar_instruccion_a_kernel(DESALOJAR_RECURSOS,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"CREATE_SEGMENT")==0)
+	{
+		enviar_instruccion_a_kernel(CREAR_SEGMENTO,cliente_fd, instruction );
+	}
+	if(strcmp(instruction->opcode,"DELETE_SEGMENT")==0)
+	{
+		enviar_instruccion_a_kernel(ELIMINAR_SEGMENTO,cliente_fd, instruction );
+	}
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
 	{
-		enviar_mensaje_a_kernel(DESALOJAR_PROCESO,cliente_fd, &contexto);
+		enviar_contexto_a_kernel(DESALOJAR_PROCESO,cliente_fd, &contexto);
 		//poner contexto de ejecucion
 	}
 	if(strcmp(instruction->opcode,"EXIT")==0)
 	{
-		enviar_mensaje_a_kernel(FINALIZAR_PROCESO,cliente_fd, &contexto);
+		enviar_contexto_a_kernel(FINALIZAR_PROCESO,cliente_fd, &contexto);
 	}
-	if(strcmp(instruction->opcode,"WAIT")==0)
-	{
-		enviar_mensaje_a_kernel(APROPIAR_RECURSOS,cliente_fd, &contexto);
-	}
+
+
 }
 
-void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto){
+void enviar_contexto_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto){
 
 	t_paquete* paquete = crear_paquete(code);
 
@@ -228,6 +271,17 @@ void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** conte
 	eliminar_paquete(paquete);
 }
 
+void enviar_instruccion_a_kernel(op_code code,int cliente_fd,t_instruccion* instruccion )
+{
+	t_paquete* paquete = crear_paquete(code);
+
+	agregar_a_paquete(paquete, code, sizeof(char)*code );
+
+	agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+	agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+	agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+	enviar_paquete(paquete, cliente_fd);
+}
 void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instruccion)
 {
 	char* registro = strdup(instruccion->parametros[0]);
@@ -275,13 +329,13 @@ void setear_registro(t_contexto_ejec** contexto,char* registro, char* valor)
 		strcpy((*contexto)->registros_CPU->RDX,string_substring_until(valor,16));
 	}
 }
-
+/*
 int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO)
 {
 	int num_segmento = floor(direccion_logica / TAM_MAX_SEGMENTO);
 	int desplazamiento_segmento = direccion_logica % TAM_MAX_SEGMENTO;
 	return
-}
+}*/
 /**
  * (Registro, Dirección Lógica)
  * Lee el valor de memoria correspondiente a la Dirección Lógica y lo almacena en el Registro.
@@ -324,6 +378,4 @@ void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_in
 		//SETEO CORRECTAMENTE
 	}
 }
-
-
 
