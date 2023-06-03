@@ -1,5 +1,11 @@
 #include "memoria.h"
 
+// Sockets
+int socket_cpu;
+int socket_kernel;
+int socket_memoria;
+int socket_fs;
+
 int main(void){
 
 	//Declaracion variables para config

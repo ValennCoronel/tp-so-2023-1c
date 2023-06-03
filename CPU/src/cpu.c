@@ -1,5 +1,11 @@
 #include "cpu.h"
 
+// Sockets
+int socket_cpu;
+int socket_kernel;
+int socket_memoria;
+int socket_fs;
+
 int main(void){
 
 	//Declaracion variables para config
@@ -22,7 +28,6 @@ int main(void){
 	//Testeo config
 	if(config == NULL){
 		log_error(logger, "No se pudo iniciar el archivo de configuración !!");
-
 		terminar_programa(conexion_memoria, logger, config);
 	}
 
@@ -44,10 +49,10 @@ int main(void){
 	//}
 
 	//Realizo la conexion con memoria
-	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
+	conexion_memoria = conectar_memoria(ip_memoria, puerto_memoria);
 
 	//Testeo el resultado de la conexion
-	if(result_conexion_memoria == -1){
+	if(conexion_memoria == -1){
 		log_error(logger, "La CPU no se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(conexion_memoria, logger, config);
@@ -56,7 +61,7 @@ int main(void){
 	log_info(logger, "La CPU se conecto con el modulo Memoria correctamente");
 
 	// Escucho conexiones del Kernel
-	int server_fd = iniciar_servidor(puerto_escucha);
+	socket_kernel = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "CPU listo para recibir peticiones del Kernel");
 
@@ -73,7 +78,7 @@ int main(void){
 	 *
 	 */
 
-	escuchar_peticiones_kernel(logger, server_fd, RETARDO_INSTRUCCION,TAM_MAX_SEGMENTO);
+	escuchar_peticiones_kernel(logger, socket_kernel, RETARDO_INSTRUCCION,TAM_MAX_SEGMENTO);
 
 	terminar_programa(conexion_memoria, logger, config);
 
@@ -101,15 +106,15 @@ void terminar_programa(int conexion, t_log* logger, t_config* config){
 }
 
 //Funcion para crear conexion entre modulos
-int conectar_modulo(int* conexion, char* ip, char* puerto){
+int conectar_memoria(char* ip, char* puerto){
 
-	*conexion = crear_conexion(ip, puerto);
+	socket_memoria = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", *conexion, HANDSHAKE);
+	enviar_mensaje("OK", socket_memoria, HANDSHAKE);
 
 	int size;
-	char* buffer = recibir_buffer(&size, *conexion);
+	char* buffer = recibir_buffer(&size, socket_memoria);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;

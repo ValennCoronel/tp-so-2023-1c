@@ -28,6 +28,7 @@
 #include "planificador_corto_plazo.h"
 #include "peticiones_cpu.h"
 
+
 typedef struct {
 	int server_fd;
 	int estimacion_inicial;

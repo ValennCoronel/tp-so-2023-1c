@@ -27,7 +27,7 @@
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int, t_log*, t_config*);
-int conectar_modulo(int* conexion, char* ip, char* puerto);
+int conectar_modulo(char* ip, char* puerto);
 
 void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO);
 void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO);
