@@ -21,12 +21,19 @@
 #include "utils_server.h"
 #include "planificador_largo_plazo.h"
 
-void finalizar_proceso(int socket_cliente);
-void bloquear_proceso(int socket_cliente);
+typedef struct
+{
+	int tiempo_io;
+	int grado_max_multiprogramacion;
+
+} t_argumentos_simular_io;
+
+void finalizarProceso(int socket_cliente,int conexion_memoria);
+void bloquear_proceso(int socket_cliente, int grado_max_multiprogramacion);
 void manejar_peticion_al_kernel(int socket_cliente);
-void desalojar_proceso(int socket_cliente);
+void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion);
 void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible);
-void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible);
+void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,int grado_max_multiprogramacion);
 void bloquear_proceso_IO(int socket_cliente);
 int obtener_indice_recurso(char** recursos, char* recurso_a_buscar);
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso);

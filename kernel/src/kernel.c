@@ -102,6 +102,14 @@ int main(void){
 
 
 	inicializar_colas_y_semaforos();
+	recurso_bloqueado = dictionary_create();
+
+	t_queue* cola_bloqueados;
+	void iterador_recursos(char* nombre_recurso){
+
+	dictionary_put(recurso_bloqueado,nombre_recurso,cola_bloqueados);
+	}
+	string_iterate_lines(recursos,iterador_recursos);
 
 	//inicio hilos
 	pthread_t thread_consolas, thread_planificador_largo_plazo, thread_planificador_corto_plazo;
@@ -137,7 +145,7 @@ int main(void){
 	pthread_detach(thread_planificador_corto_plazo);
 
 
-	escuchar_peticiones_cpu(conexion_cpu, recursos, instancias_recursos);
+	escuchar_peticiones_cpu(conexion_cpu, recursos, instancias_recursos,grado_max_multiprogramacion,conexion_memoria);
 
 	free(args_consolas);
 	free(args_planificador_largo_plazo);
@@ -281,7 +289,8 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 
 // ---------------------------- Peticiones CPU ----------------------------------------------
 
-void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_recursos){
+void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_recursos,int grado_max_multiprogramacion,int conexion_memoria){
+
 
 	int cantidad_de_recursos = string_array_size(instancias_recursos);
 	int* recursos_disponibles = malloc(sizeof(int)*cantidad_de_recursos);
@@ -304,11 +313,11 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					manejar_handshake_del_cliente(cliente_fd);
 					break;
 				case TERMINAR_PROCESO:
-					terminar_proceso(cliente_fd);
+					finalizarProceso(cliente_fd,conexion_memoria);
 					// TODO llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case BLOQUEAR_PROCESO:
-					bloquear_proceso_IO(cliente_fd);
+					bloquear_proceso_IO(cliente_fd,grado_max_multiprogramacion);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case PETICION_KERNEL:
@@ -318,15 +327,14 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					apropiar_recursos(cliente_fd, recursos, recursos_disponibles);
 					break;
 				case DESALOJAR_RECURSOS:
-					desalojar_recursos(cliente_fd, recursos, recursos_disponibles);
+					desalojar_recursos(cliente_fd, recursos, recursos_disponibles,grado_max_multiprogramacion);
 					break;
 				case DESALOJAR_PROCESO:
-					desalojar_proceso(cliente_fd);
+					desalojar_proceso(cliente_fd,grado_max_multiprogramacion);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor");
-
 					free(recursos_disponibles);
 					return NULL;
 				default:

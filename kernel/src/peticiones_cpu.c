@@ -5,13 +5,16 @@
 //TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
 
 void* simulacion_io(void* arg){
-	int tiempo_io = (int) arg;
+	t_argumentos_simular_io* argumentos = (t_argumentos_simular_io* ) arg;
+	int tiempo_io = argumentos->tiempo_io;
+	int grado_max_multiprogramacion = argumentos->grado_max_multiprogramacion;
 	int tiempo_actual = 0;
 
 
 	//espera activa mientras se ejecuta otro en cpu
-
+	t_pcb* proceso_en_IO = proceso_ejecutando;
 	t_temporal* temporal_dormido = temporal_create();
+
 
 	while(tiempo_io!=tiempo_actual)
 	{
@@ -22,35 +25,25 @@ void* simulacion_io(void* arg){
 
 	temporal_stop(temporal_dormido);
 	temporal_destroy(temporal_dormido);
-	//TODO luego debe volver a la cola de ready
 
+	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
 
 	return NULL;
 }
 
 
-void finalizar_proceso(int socket_cliente){
-	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
-	//crear estrutura para el contexto de ejecucion
-	// liberar todos los recursos que tenga asignados (aca se usa el free)
-	//free(instrucciones);
-	// free(pcb_proceso);
-	// dar aviso al módulo Memoria para que éste libere sus estructuras.
-	// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
-	// finalmente pone a ejecutar a otro proceso
-}
-
-
-void bloquear_proceso_IO(int socket_cliente){
+void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
 	pthread_t hilo_simulacion;
 
 	int tiempo_io = atoi(instruccion->parametros[0]);
-
-	pthread_create(&hilo_simulacion, NULL, simulacion_io, (void *) tiempo_io);
+	t_argumentos_simular_io* argumentos = malloc(sizeof(t_argumentos_simular_io));
+	argumentos->tiempo_io=tiempo_io;
+	argumentos->grado_max_multiprogramacion=grado_max_multiprogramacion;
+	pthread_create(&hilo_simulacion, NULL, simulacion_io, (void *) argumentos);
 
 	pthread_detach(hilo_simulacion);
 
@@ -60,6 +53,8 @@ void bloquear_proceso_IO(int socket_cliente){
 	rafaga_proceso_ejecutando = NULL;
 
 	poner_a_ejecutar_otro_proceso();
+
+
 }
 
 
@@ -73,8 +68,7 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	// si no existe el recurso finaliza
 	if(indice_recurso == -1){
 
-	 	 //llamar a finalizar proceso UwU ♥♥♥
-
+	 	 //llamar a finalizarProceso
 		return;
 	}
 
@@ -88,19 +82,38 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, socket_cliente);
 
 	//TODO destroy contexto_ejecucion
-
-	/*apropiarRecursos() : A la hora de recibir de la CPU un Contexto
-			de Ejecución desplazado por WAIT, el Kernel deberá verificar
-			primero que exista el recurso solicitado y en caso de que exista
-			restarle 1 a la cantidad de instancias del mismo. En caso de que el
-			número sea estrictamente menor a 0, el proceso que realizó WAIT se
-			bloqueará en la cola de bloqueados correspondiente al recurso.
-			Si no existe se debe enviar el proceso a EXIT
-	*/
-
 }
 
-void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible){
+void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible, int grado_max_multiprogramacion){
+
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
+
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+
+		int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
+
+		// si no existe el recurso finaliza
+		if(indice_recurso == -1){
+
+		 	 //llamar a finalizarProceso
+
+			return;
+		}
+
+		recurso_disponible[indice_recurso] += 1;
+
+		t_queue* cola_bloqueados=dictionary_get(recurso_bloqueado,recursos[indice_recurso]);
+
+		t_pcb* proceso_desbloqueado = queue_pop(cola_bloqueados);
+
+		if(proceso_desbloqueado!=NULL){
+
+			pasar_a_ready(proceso_desbloqueado,grado_max_multiprogramacion);
+		}
+
+		// avisa a consola y continua ejecutandose el mismo proceso
+		enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, cliente_fd);
+
 
 }
 
@@ -112,7 +125,7 @@ void manejar_peticion_al_kernel(int socket_cliente){
 	//manejar cada peticion según corresponda
 }
 
-void desalojar_proceso(int socket_cliente){
+void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	//crear estrutura para el contexto de ejecucion
 
@@ -120,7 +133,6 @@ void desalojar_proceso(int socket_cliente){
 	//TODO
 
 	//devolver proceso a la cola de ready
-
 	//calcula la ráfaga anterior y lo guarda en el pcb para el hrrn
 	// si es fifo no lo usa
 	proceso_ejecutando->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
@@ -128,18 +140,26 @@ void desalojar_proceso(int socket_cliente){
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
 
+	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
 	poner_a_ejecutar_otro_proceso();
+
+	//
+
 }
 
 
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso){
-	//TODO llevarlo a la cola de bloqueados del recurso
 
 	//antes de bloquearse, se calcula las ráfagas anteriores para el hrrn, si es fifo no lo usa
 	proceso_a_bloquear->ráfaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
+
+	t_queue* cola_bloqueados=dictionary_get(recurso_bloqueado,nombre_recurso);
+
+	queue_push(cola_bloqueados,proceso_a_bloquear);
+
 }
 
 
@@ -174,27 +194,27 @@ void poner_a_ejecutar_otro_proceso(){
 }
 
 
-void *element_destroyer (void*){
-
-};
-
-
 void finalizarProceso(int socket_cliente, int socket_memoria){
 	//crear estrutura para el contexto de ejecucion
 		// liberar todos los recursos que tenga asignados (aca se usa el free)
 		//free(instrucciones);
 		// free(pcb_proceso);
-
 		// dar aviso al módulo Memoria para que éste libere sus estructuras.
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
+	void *destructor_instrucciones (void*){}
+	void *destructor_tabla_archivos (void*){}
+	void *destructor_tabla_segmentos (void*){}
+
 	//Liberar PCB del proceso actual
 	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, element_destroyer());
 	free(proceso_ejecutando->instrucciones);
-	list_destroy_and_destroy_elements(proceso_ejecutando->registros_CPU, element_destroyer());
-	free(proceso_ejecutando->registros_CPU);
+
+
+	registro_cpu_destroy(proceso_ejecutando->registros_CPU);
+
 	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, element_destroyer());
 	free(proceso_ejecutando->tabla_archivos);
 	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,element_destroyer());
@@ -210,16 +230,18 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	// enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
 
 	enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
-
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso actual finalizado", proceso_ejecutando->socket_server_id, MENSAJE);
 	free(proceso_ejecutando);
+	//TODO contexto_destroy esta creada pero tiene temitas
+	poner_a_ejecutar_otro_proceso();
+
 }
 
 
 //Funcion que envia un paquete a memoria con un codigo de operacion
 void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
-	t_paquete paquete;
+	t_paquete* paquete;
 	paquete = crear_paquete(codigo);
 
 	//Rellenar y serializar contenido del paquete

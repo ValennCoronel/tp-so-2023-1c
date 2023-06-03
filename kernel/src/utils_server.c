@@ -306,3 +306,44 @@ void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion){
 	free((*contexto_ejecucion)->registros_CPU);
 	free(*contexto_ejecucion);
 }
+
+void registro_cpu_destroy(registros_CPU* registro){
+    if(registro->AX != NULL){
+        free(registro->AX);
+    }
+    if(registro->BX != NULL){
+            free(registro->BX);
+        }
+    if(registro->CX != NULL){
+            free(registro->CX);
+        }
+    if(registro->DX != NULL){
+            free(registro->DX);
+        }
+    if(registro->EAX != NULL){
+            free(registro->EAX);
+        }
+    if(registro->EBX != NULL){
+            free(registro->EBX);
+        }
+    if(registro->ECX != NULL){
+            free(registro->ECX);
+        }
+    if(registro->EDX != NULL){
+            free(registro->EDX);
+        }
+    if(registro->RAX != NULL){
+            free(registro->RAX);
+        }
+    if(registro->RBX != NULL){
+            free(registro->RBX);
+        }
+    if(registro->RCX != NULL){
+            free(registro->RCX);
+        }
+    if(registro->RDX != NULL){
+            free(registro->RDX);
+        }
+    free(registro);
+}
+

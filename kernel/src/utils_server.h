@@ -79,7 +79,7 @@ void recibir_handshake(int);
 int responder_peticiones(int cliente_fd);
 void manejar_handshake_del_cliente(int);
 t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente);
-
+void registro_cpu_destroy(registros_CPU* registro);
 void contexto_ejecucion_destroy(t_contexto_ejec** contexto_ejecucion);
 void instruccion_destroy(t_instruccion** instruccion);
 

@@ -17,7 +17,7 @@
 #include <commons/collections/queue.h>
 #include <commons/temporal.h>
 #include<semaphore.h>
-
+#include<commons/collections/dictionary.h>
 
 #include "utils_cliente.h"
 #include "utils_server.h"
@@ -39,6 +39,8 @@ typedef struct {
 	int puntero;
 } archivo;
 
+
+extern t_dictionary* recurso_bloqueado;
 
 extern t_queue* cola_new;
 extern t_queue* cola_ready;

@@ -55,7 +55,6 @@ void agregar_proceso_a_ready(int conexion_memoria){
 	t_pcb* proceso_new_a_ready = queue_pop(cola_new);
 	sem_post(&m_cola_new);
 
-
 	//si el proceso es nuevo se calcula tiempo de llegada a ready en milisegundos
 	// y se pide la tabla de segmentos a memoria
 	if(proceso_new_a_ready->tiempo_llegada_rady == 0){
@@ -89,6 +88,22 @@ void agregar_proceso_a_ready(int conexion_memoria){
 		sem_post(&consumidor);
 	}
 	free(pids);
+}
+
+void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion){
+
+	while(1){
+	if(puede_ir_a_ready(grado_max_multiprogramacion)){
+
+		sem_wait(&m_cola_ready);
+		queue_push(cola_ready, proceso_bloqueado);
+		//char *pids = listar_pids_cola_ready();
+		sem_post(&m_cola_ready);
+		break;
+
+	}
+}
+
 }
 
 int puede_ir_a_ready(int grado_max_multiprogramacion){
