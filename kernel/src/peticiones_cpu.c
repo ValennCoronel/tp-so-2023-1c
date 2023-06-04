@@ -3,8 +3,6 @@
 t_dictionary* recurso_bloqueado;
 sem_t esperar_proceso_ejecutando;
 
-//GENERAL: en algún momento hay que calcular la ráfaga anterior
-//TODO para agregar un proceso a ready se puede usar agregar_proceso_a_ready(1); del planificador a largo plazo
 
 void* simulacion_io(void* arg){
 	t_argumentos_simular_io* argumentos = (t_argumentos_simular_io* ) arg;
@@ -259,11 +257,13 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 
 //Funcion que envia un paquete a memoria con un codigo de operacion
-void *enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
+void enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
 	t_paquete* paquete;
 	paquete = crear_paquete(codigo);
 
 	//Rellenar y serializar contenido del paquete
+
+	eliminar_paquete(paquete);
 
 }
 

@@ -51,7 +51,7 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
 
-	//contexto_ejecucion_destroy(&contexto_ejecucion);
+	contexto_ejecucion_destroy(contexto_ejecucion);
 }
 
 void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
@@ -96,7 +96,7 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 
 	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
 
-	//contexto_ejecucion_destroy(&contexto_ejecucion);
+	contexto_ejecucion_destroy(contexto_ejecucion);
 }
 
 void reordenar_cola_ready_hrrn(){
@@ -163,6 +163,7 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 
 
 		enviar_paquete(paquete, socket_cliente);
+
 
 		eliminar_paquete(paquete);
 }

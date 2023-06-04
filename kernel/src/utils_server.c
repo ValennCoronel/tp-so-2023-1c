@@ -296,6 +296,9 @@ void instruccion_destroy(t_instruccion* instruccion){
 
 void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion){
 
+	/*
+	 * no se borra la lista de instrucciones porque sino se borra del pcb tambien
+	 * 	por lo cual solo se va a borar cuando se haga un pcb_destroy();
 	void destructor_instrucciones (void* arg){
 		t_instruccion* inst = (t_instruccion*) arg;
 
@@ -305,12 +308,14 @@ void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion){
 	list_destroy_and_destroy_elements(contexto_ejecucion->lista_instrucciones, destructor_instrucciones);
 
 	registro_cpu_destroy(contexto_ejecucion->registros_CPU);
+	*/
+
 
 	free(contexto_ejecucion);
 }
 
 void registro_cpu_destroy(registros_CPU* registro){
-
+	// no es necesario hacer free de los char[n] porque tienen un tamaño fijo a diferencia de char*
     free(registro);
 }
 

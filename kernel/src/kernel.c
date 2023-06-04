@@ -280,6 +280,8 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->tiempo_llegada_rady = 0;
 	pcb_proceso->socket_server_id = socket_cliente;
 
+	//este malloc para evitar el sementation fault en el envio del contexto de ejecución a cpu
+	pcb_proceso->registros_CPU = malloc(sizeof(registros_CPU));
 
 	agregar_cola_new(pcb_proceso);
 
@@ -314,7 +316,6 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					break;
 				case TERMINAR_PROCESO:
 					finalizarProceso(cliente_fd,conexion_memoria);
-					// TODO llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case BLOQUEAR_PROCESO:
 					bloquear_proceso_IO(cliente_fd,grado_max_multiprogramacion);
