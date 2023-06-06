@@ -39,7 +39,7 @@ t_pcb* crear_mock_pcb(int pid, int64_t llegada_ready, int64_t rafaga_anterior, i
 	pcb_proceso->program_counter = 1;
 	pcb_proceso->estimado_proxima_rafaga = estimado_proxima_rafaga;
 	pcb_proceso->tiempo_llegada_rady = llegada_ready;
-	pcb_proceso->ráfaga_anterior = rafaga_anterior;
+	pcb_proceso->rafaga_anterior = rafaga_anterior;
 
 	pcb_proceso->registros_CPU = malloc(sizeof(registros_CPU));
 
