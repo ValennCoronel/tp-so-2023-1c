@@ -8,8 +8,8 @@ void abrir_archivo(int socket_kernel){
  * archivo y en caso de que exista deberá devolver un OK, caso contrario, deberá informar
  * que el archivo no existe.
  * */
-	enviar_mensaje("OK",socket_kernel);
-	enviar_mensaje("ERROR, NO EXISTE ESE ARCHIVO",socket_kernel);
+	//enviar_mensaje("OK",socket_kernel);
+	//enviar_mensaje("ERROR, NO EXISTE ESE ARCHIVO",socket_kernel);
 }
 void crear_archivo(int socket_kernel){
 /*
@@ -18,7 +18,7 @@ void crear_archivo(int socket_kernel){
 Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK.
  *
  * */
-	enviar_mensaje("OK",socket_kernel);
+	//enviar_mensaje("OK",socket_kernel);
 }
 void truncar_archivo(int socket_kernel){
 /*

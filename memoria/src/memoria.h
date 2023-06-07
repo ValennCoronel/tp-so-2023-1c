@@ -19,8 +19,9 @@
 #include <commons/config.h>
 #include <pthread.h>
 
-#include "utils_server.h"
-#include "utils_cliente.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);

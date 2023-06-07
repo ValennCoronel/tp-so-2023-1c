@@ -13,8 +13,10 @@
 #include <commons/bitarray.h>
 #include <commons/txt.h>
 
-#include "utils_server.h"
-#include "utils_cliente.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
+
 #include "peticiones_kernel.h"
 
 

@@ -8,7 +8,6 @@ int main(void){
 	char* ip_memoria;
 	char* puerto_memoria;
 	char* puerto_escucha;
-	int tam_max_segmento;
 
 	//Declaracion variables para test de conexion
 	int conexion_memoria;
@@ -35,13 +34,12 @@ int main(void){
 	puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
 	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
 
-
 	//Testeo de carga de variables
-	//if(!ip_memoria || !puerto_memoria || !puerto_escucha){
-		//log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'RETARDO_INSTRUCCION', 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'TAM_MAX_SEGMENTO'");
+	if(!ip_memoria || !puerto_memoria || !puerto_escucha){
+		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'RETARDO_INSTRUCCION', 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'TAM_MAX_SEGMENTO'");
 
-		//terminar_programa(conexion_memoria, logger, config);
-	//}
+		terminar_programa(conexion_memoria, logger, config);
+	}
 
 	//Realizo la conexion con memoria
 	int result_conexion_memoria = conectar_modulo(conexion_memoria, ip_memoria, puerto_memoria);
@@ -152,8 +150,9 @@ void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRU
  */
 void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 {
-	t_contexto_ejec* contexto = recibir_paquete_pcb (cliente_fd);
-	int program_counter = contexto->program_counter;
+	//TODO no existe recibir_paquete_pcb
+	t_contexto_ejec* contexto = recibir_paquete_pcb(cliente_fd);
+	int program_counter = contexto->program_counter; // borrar si no se usa
 	t_list *lista = contexto->lista_instrucciones;
 
 	t_instruccion* instruction = list_get(lista, (contexto)->program_counter-1);
@@ -351,7 +350,8 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
 	//Armar el paquete con la direccion de la memoria
 	enviar_paquete(paquete, cliente_fd);
 
-	char* valor = recibir_buffer( sizeof(int), cliente_fd );
+	int size;
+	char* valor = recibir_buffer( &size, cliente_fd );
 
 	//setear registro con lo devuelto
 	setear_registro(contexto, instruccion->parametros[0], valor);
@@ -361,6 +361,8 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
  * Lee el valor del Registro y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica.
  *
  */
+
+//TODO resolver error
 void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion)
 {
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
@@ -371,7 +373,8 @@ void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_in
 
 	enviar_paquete(paquete, cliente_fd);
 
-	char* buffer = recibir_buffer( sizeof(int), cliente_fd);
+	int size;
+	char* buffer = recibir_buffer( &size, cliente_fd);
 
 	if( strcmp(buffer,"OK") )
 	{

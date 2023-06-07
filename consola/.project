@@ -3,6 +3,7 @@
 	<name>consola</name>
 	<comment></comment>
 	<projects>
+		<project>global</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

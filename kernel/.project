@@ -3,6 +3,7 @@
 	<name>kernel</name>
 	<comment></comment>
 	<projects>
+		<project>global</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

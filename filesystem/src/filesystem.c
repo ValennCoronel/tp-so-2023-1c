@@ -126,7 +126,7 @@ int conectar_con_memoria(int *conexion, char* ip, char* puerto){
 	*conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", *conexion);
+	enviar_mensaje("OK", *conexion, HANDSHAKE);
 
 	int size;
 	char* buffer = recibir_buffer(&size, *conexion);

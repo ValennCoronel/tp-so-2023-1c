@@ -15,8 +15,10 @@
 #include <netdb.h>
 #include <commons/string.h>
 #include <commons/collections/queue.h>
-#include "utils_cliente.h"
-#include "utils_server.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
+
 #include "planificador_largo_plazo.h"
 
 

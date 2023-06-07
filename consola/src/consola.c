@@ -175,7 +175,7 @@ int conectar_modulo(char* ip, char* puerto){
 	conexion_kernel = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion_kernel);
+	enviar_mensaje("OK", conexion_kernel, HANDSHAKE);
 
 	int size;
 	char* buffer = recibir_buffer(&size, conexion_kernel);

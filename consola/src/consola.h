@@ -12,20 +12,10 @@
 #include <commons/string.h>
 #include <commons/config.h>
 
-#include "utils_cliente.h"
-#include "utils_server.h"
-
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
 // Estructuras y variables de psudocodigo
-
-	 typedef struct {
-		int opcode_lenght;
-		char* opcode;
-		int parametro1_lenght;
-		int parametro2_lenght;
-		int parametro3_lenght;
-		char* parametros[3];
-
-	}t_instruccion;
 
 
 
