@@ -131,7 +131,9 @@ int conectar_con_memoria( char* ip, char* puerto){
 	socket_memoria = crear_conexion(ip, puerto);
 
 	//enviar handshake
+
 	enviar_mensaje("OK", socket_memoria);
+
 
 	int size;
 	char* buffer = recibir_buffer(&size, socket_memoria);

@@ -22,8 +22,10 @@
 #include <commons/collections/queue.h>
 #include <pthread.h>
 
-#include "utils_cliente.h"
-#include "utils_server.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
+
 #include "planificador_largo_plazo.h"
 #include "planificador_corto_plazo.h"
 #include "peticiones_cpu.h"

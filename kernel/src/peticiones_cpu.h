@@ -19,7 +19,8 @@
 #include <commons/collections/dictionary.h>
 #include <pthread.h>
 
-#include "utils_server.h"
+#include <global.h>
+#include <utils/utils_server.h>
 #include "planificador_largo_plazo.h"
 #include "planificador_corto_plazo.h"
 

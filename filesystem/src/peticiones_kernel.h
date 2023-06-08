@@ -1,8 +1,9 @@
 #ifndef PETICIONES_KERNEL_H_
 #define PETICIONES_KERNEL_H_
 
-#include "utils_cliente.h"
-#include "utils_server.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
 
 void abrir_archivo(int socket_kernel);
 void crear_archivo(int socket_kernel);

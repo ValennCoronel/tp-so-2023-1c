@@ -88,7 +88,7 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 	conexion = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", conexion);
+	enviar_mensaje("OK", conexion, HANDSHAKE);
 
 	int size;
 	char* buffer = recibir_buffer(&size, conexion);
@@ -148,5 +148,5 @@ void crear_nuevo_proceso(int socket_cliente){
 }
 
 void acceder_espacio_ususario(int socket_kernel){
-	enviar_mensaje("OK",socket_kernel);
+	enviar_mensaje("OK",socket_kernel, MENSAJE);
 }

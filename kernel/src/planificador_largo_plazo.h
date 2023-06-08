@@ -19,8 +19,9 @@
 #include<semaphore.h>
 #include<commons/collections/dictionary.h>
 
-#include "utils_cliente.h"
-#include "utils_server.h"
+#include <global.h>
+#include <utils/utils_cliente.h>
+#include <utils/utils_server.h>
 
 
 typedef struct {
