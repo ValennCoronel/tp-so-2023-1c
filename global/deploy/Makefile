@@ -6,6 +6,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/utils/subdir.mk
 -include src/subdir.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C_DEPS)),)
@@ -15,9 +16,9 @@ endif
 
 
 
-BUILD_ARTIFACT_NAME := CPU
-BUILD_ARTIFACT_EXTENSION :=
-BUILD_ARTIFACT_PREFIX :=
+BUILD_ARTIFACT_NAME := global
+BUILD_ARTIFACT_EXTENSION := so
+BUILD_ARTIFACT_PREFIX := lib
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
@@ -26,26 +27,20 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 all: main-build
 
 # Main-build Target
-main-build: CPU
+main-build: libglobal.so
 
 # Tool invocations
-CPU: $(OBJS) $(USER_OBJS)
+libglobal.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" -o "CPU" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lglobal -lpthread
+	gcc -shared -o "libglobal.so" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-valgrind: main-build
-	valgrind --leak-check=full --show-leak-kinds=all --log-file=valgrind.log ./CPU
-
 # Other Targets
 clean:
-	-$(RM) CPU
-	-$(RM) valgrind.log
-	-$(RM) cpu.log
+	-$(RM) libglobal.so
 	-@echo ' '
 
 .PHONY: all clean dependents main-build
 
--include ../makefile.targets

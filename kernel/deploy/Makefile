@@ -35,7 +35,7 @@ main-build: kernel
 kernel: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "kernel" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lcspecs
+	gcc -L"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" -o "kernel" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lglobal
 	@echo 'Finished building target: $@'
 	@echo ' '
 

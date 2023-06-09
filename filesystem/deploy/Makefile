@@ -2,6 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
+
 RM := rm -rf
 
 # All of the sources participating in the build are defined here
@@ -28,10 +29,10 @@ all: main-build
 main-build: filesystem
 
 # Tool invocations
-filesystem: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
+filesystem: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "filesystem" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons
+	gcc -L"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" -o "filesystem" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lglobal
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -42,9 +43,10 @@ valgrind: main-build
 
 # Other Targets
 clean:
-	-$(RM) FilseSystem
+	-$(RM) filesystem
 	-$(RM) valgrind.log
 	-$(RM) fileSystem.log
 	-@echo ' '
 
 .PHONY: all clean dependents main-build
+
