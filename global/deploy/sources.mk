@@ -2,10 +2,17 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-# Add inputs and outputs from these tool invocations to the build variables 
-O_SRCS += \
-../obj/memoria.o \
+ASM_SRCS := 
+C_SRCS := 
+OBJ_SRCS := 
+O_SRCS := 
+S_UPPER_SRCS := 
+C_DEPS := 
+LIBRARIES := 
+OBJS := 
 
-
-# Each subdirectory must supply rules for building sources it contributes
+# Every subdirectory with source files must be described here
+SUBDIRS := \
+src \
+src/utils \
 

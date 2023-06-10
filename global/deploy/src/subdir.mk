@@ -4,23 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/consola.c \
-
+../src/global.c 
 
 C_DEPS += \
-./src/consola.d \
-
+./src/global.d 
 
 OBJS += \
-./src/consola.o \
-
+./src/global.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 src/%.o: ../src/%.c src/subdir.mk
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -I"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/src" -Icommons -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	gcc -O0 -g3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -28,7 +25,7 @@ src/%.o: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/consola.d ./src/consola.o
+	-$(RM) ./src/global.d ./src/global.o
 
 .PHONY: clean-src
 

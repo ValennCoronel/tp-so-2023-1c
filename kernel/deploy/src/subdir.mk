@@ -9,8 +9,6 @@ C_SRCS += \
 ../src/peticiones_cpu.c \
 ../src/planificador_corto_plazo.c \
 ../src/planificador_largo_plazo.c \
-../src/utils_cliente.c \
-../src/utils_server.c 
 
 C_DEPS += \
 ./src/kernel.d \
@@ -18,8 +16,6 @@ C_DEPS += \
 ./src/peticiones_cpu.d \
 ./src/planificador_corto_plazo.d \
 ./src/planificador_largo_plazo.d \
-./src/utils_cliente.d \
-./src/utils_server.d 
 
 OBJS += \
 ./src/kernel.o \
@@ -27,15 +23,13 @@ OBJS += \
 ./src/peticiones_cpu.o \
 ./src/planificador_corto_plazo.o \
 ./src/planificador_largo_plazo.o \
-./src/utils_cliente.o \
-./src/utils_server.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 src/%.o: ../src/%.c src/subdir.mk
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -Icommons -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	gcc -I"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/src" -Icommons -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -43,7 +37,7 @@ src/%.o: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/kernel.d ./src/kernel.o ./src/mock_envio_cpu.d ./src/mock_envio_cpu.o ./src/peticiones_cpu.d ./src/peticiones_cpu.o ./src/planificador_corto_plazo.d ./src/planificador_corto_plazo.o ./src/planificador_largo_plazo.d ./src/planificador_largo_plazo.o ./src/utils_cliente.d ./src/utils_cliente.o ./src/utils_server.d ./src/utils_server.o
-
+	-$(RM) ./src/kernel.d ./src/kernel.o ./src/mock_envio_cpu.d ./src/mock_envio_cpu.o ./src/peticiones_cpu.d ./src/peticiones_cpu.o ./src/planificador_corto_plazo.d ./src/planificador_corto_plazo.o ./src/planificador_largo_plazo.d ./src/planificador_largo_plazo.o
+	
 .PHONY: clean-src
 

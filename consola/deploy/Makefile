@@ -32,7 +32,7 @@ main-build: consola
 consola: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "consola" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lpthread
+	gcc -L"/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" -o "consola" $(OBJS) $(USER_OBJS) $(LIBS) -lcommons -lglobal -lpthread
 	@echo 'Finished building target: $@'
 	@echo ' '
 
