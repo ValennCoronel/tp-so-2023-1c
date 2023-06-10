@@ -10,6 +10,11 @@ sem_t consumidor;
 sem_t m_cola_ready;
 sem_t m_cola_new;
 
+// Sockets
+int socket_cpu;
+int socket_kernel;
+int socket_memoria;
+
 
 
 void inicializar_colas_y_semaforos(){

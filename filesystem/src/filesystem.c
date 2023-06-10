@@ -1,5 +1,11 @@
 #include "filesystem.h"
 
+
+int socket_cpu;
+int socket_kernel;
+int socket_memoria;
+int socket_fs;
+
 int main(void){
 
 	char* ip_memoria;
@@ -10,7 +16,6 @@ int main(void){
 	char* path_bloques;
 	char* path_fcb;
 	double retardo_acceso_bloque;
-	int socket_memoria;
 	FILE* bitmap;
 	FILE* bloques;
 	t_fcb* fcb;
@@ -40,7 +45,7 @@ int main(void){
 		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 	}
 
-	int result_conexion_memoria = conectar_con_memoria(&socket_memoria, ip_memoria, puerto_memoria);
+	int result_conexion_memoria = conectar_con_memoria(ip_memoria, puerto_memoria);
 
 
 	if(result_conexion_memoria == -1){
@@ -88,20 +93,23 @@ int main(void){
 
 
 	//escucho conexiones del Kernel
-	int server_fd = iniciar_servidor(puerto_escucha);
+	socket_kernel = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "File System listo para recibir peticiones del Kernel");
 
-	manejar_peticiones_kernel(logger, server_fd, socket_memoria);
+	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria);
 
 
 	bitarray_destroy(bitmap_array);
 	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
+
+
+
 t_log* iniciar_logger(void){
 
-	t_log* nuevo_logger = log_create("fileSystem.log", "FileSystem", true, LOG_LEVEL_INFO);
+	t_log* nuevo_logger = log_create("filesystem.log", "FileSystem", true, LOG_LEVEL_INFO);
 
 	return nuevo_logger;
 }
@@ -121,15 +129,17 @@ void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitm
 	fclose(bloques);
 }
 
-int conectar_con_memoria(int *conexion, char* ip, char* puerto){
+int conectar_con_memoria( char* ip, char* puerto){
 
-	*conexion = crear_conexion(ip, puerto);
+	socket_memoria = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", *conexion, HANDSHAKE);
+
+	enviar_mensaje("OK", socket_memoria, MENSAJE);
+
 
 	int size;
-	char* buffer = recibir_buffer(&size, *conexion);
+	char* buffer = recibir_buffer(&size, socket_memoria);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;

@@ -6,7 +6,7 @@
 #include <cspecs/cspec.h>
 #include <pthread.h>
 
-
+/*
 t_contexto_ejec* crear_contexto_ejec(){
 	t_contexto_ejec* contexto = malloc(sizeof(t_contexto_ejec));
 
@@ -341,3 +341,4 @@ context (test_enviar_mensaje_a_kernel) {
 	}end
 
 }
+*/

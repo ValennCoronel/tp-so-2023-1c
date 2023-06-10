@@ -1,5 +1,10 @@
 #include "kernel.h"
 
+int socket_cpu;
+int socket_kernel;
+int socket_memoria;
+int socket_fs;
+
 int main(void){
 
 	//Declaraciones de variables para config:
@@ -66,8 +71,8 @@ int main(void){
 
 	// Realizar las conexiones y probarlas
 
-	int result_conexion_memoria = conectar_modulo(&conexion_memoria, ip_memoria, puerto_memoria);
-	if(result_conexion_memoria == -1){
+	conexion_memoria = conectar_memoria(ip_memoria, puerto_memoria);
+	if(conexion_memoria == -1){
 		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
@@ -76,8 +81,8 @@ int main(void){
 
 
 
-	int result_conexion_filesystem = conectar_modulo(&conexion_filesystem, ip_filesystem, puerto_filesystem);
-	if(result_conexion_filesystem == -1){
+	conexion_filesystem = conectar_fs(ip_filesystem, puerto_filesystem);
+	if(conexion_filesystem == -1){
 		log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
 		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
@@ -85,8 +90,8 @@ int main(void){
 	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 
 
-	int result_conexion_cpu = conectar_modulo(&conexion_cpu, ip_cpu, puerto_cpu);
-	if(result_conexion_cpu == -1){
+	conexion_cpu = conectar_cpu(ip_cpu, puerto_cpu);
+	if(conexion_cpu == -1){
 		log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
 		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
@@ -187,15 +192,15 @@ t_config* iniciar_config(void){
 
 // CREAR CONEXIONES --------------------------------------------------------------------
 
-int conectar_modulo(int* conexion, char* ip, char* puerto){
+int conectar_memoria(char* ip, char* puerto){
 
-	*conexion = crear_conexion(ip, puerto);
+	socket_memoria = crear_conexion(ip, puerto);
 
 	//enviar handshake
-	enviar_mensaje("OK", *conexion, HANDSHAKE);
+	enviar_mensaje("OK", socket_memoria, HANDSHAKE);
 
 	int size;
-	char* buffer = recibir_buffer(&size, *conexion);
+	char* buffer = recibir_buffer(&size, socket_memoria);
 
 	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
 		return -1;
@@ -204,6 +209,39 @@ int conectar_modulo(int* conexion, char* ip, char* puerto){
 	return 0;
 }
 
+int conectar_fs(char* ip, char* puerto){
+
+	socket_fs = crear_conexion(ip, puerto);
+
+	//enviar handshake
+	enviar_mensaje("OK", socket_fs, HANDSHAKE);
+
+	int size;
+	char* buffer = recibir_buffer(&size, socket_fs);
+
+	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+		return -1;
+	}
+
+	return 0;
+}
+
+int conectar_cpu(char* ip, char* puerto){
+
+	socket_cpu = crear_conexion(ip, puerto);
+
+	//enviar handshake
+	enviar_mensaje("OK", socket_cpu, HANDSHAKE);
+
+	int size;
+	char* buffer = recibir_buffer(&size, socket_cpu);
+
+	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+		return -1;
+	}
+
+	return 0;
+}
 
 // Menejo de peticiones de consola
 

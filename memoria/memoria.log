@@ -1,2 +1,38 @@
 [INFO] 19:09:51:453 Memoria/(2656:2656): Memoria lista para recibir peticiones
 [INFO] 19:42:44:681 Memoria/(3743:3743): Memoria lista para recibir peticiones
+[INFO] 08:33:19:732 Memoria/(28866:28866): Memoria lista para recibir peticiones
+[INFO] 08:43:01:906 Memoria/(28866:28866): Se conecto un cliente!
+[INFO] 08:51:30:698 Memoria/(28866:28866): Se conecto un cliente!
+[ERROR] 08:51:30:907 Memoria/(28866:30674): El cliente se desconecto. Terminando servidor
+[INFO] 08:52:03:785 Memoria/(28866:28866): Se conecto un cliente!
+[ERROR] 08:52:03:936 Memoria/(28866:30705): El cliente se desconecto. Terminando servidor
+[INFO] 10:19:23:173 Memoria/(34092:34092): Memoria lista para recibir peticiones
+[INFO] 10:22:36:397 Memoria/(34092:34092): Se conecto un cliente!
+[ERROR] 10:22:36:528 Memoria/(34092:34127): El cliente se desconecto. Terminando servidor
+[INFO] 11:24:21:283 Memoria/(35006:35006): Memoria lista para recibir peticiones
+[INFO] 11:28:41:512 Memoria/(35006:35006): Se conecto un cliente!
+[INFO] 11:29:00:828 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:29:00:957 Memoria/(35006:35197): El cliente se desconecto. Terminando servidor
+[INFO] 11:29:37:847 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:29:37:969 Memoria/(35006:35242): El cliente se desconecto. Terminando servidor
+[INFO] 11:31:45:109 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:31:45:224 Memoria/(35006:35327): El cliente se desconecto. Terminando servidor
+[INFO] 11:32:18:570 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:32:18:685 Memoria/(35006:35353): El cliente se desconecto. Terminando servidor
+[INFO] 11:32:21:410 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:32:21:528 Memoria/(35006:35365): El cliente se desconecto. Terminando servidor
+[INFO] 11:32:46:716 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:32:49:139 Memoria/(35006:35431): El cliente se desconecto. Terminando servidor
+[INFO] 11:34:09:647 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:34:15:409 Memoria/(35006:35521): El cliente se desconecto. Terminando servidor
+[INFO] 11:34:23:903 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:34:24:026 Memoria/(35006:35538): El cliente se desconecto. Terminando servidor
+[INFO] 11:34:54:567 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:35:03:581 Memoria/(35006:35583): El cliente se desconecto. Terminando servidor
+[INFO] 11:40:11:784 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:40:15:177 Memoria/(35006:36020): El cliente se desconecto. Terminando servidor
+[INFO] 11:41:06:862 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:41:08:900 Memoria/(35006:36086): El cliente se desconecto. Terminando servidor
+[INFO] 11:42:24:181 Memoria/(35006:35006): Se conecto un cliente!
+[ERROR] 11:44:34:783 Memoria/(35006:36158): El cliente se desconecto. Terminando servidor
+[INFO] 11:44:41:064 Memoria/(35006:35006): Se conecto un cliente!
