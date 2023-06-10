@@ -8,6 +8,7 @@ int socket_fs;
 
 int main(void){
 
+
 	//Declaracion variables para config
 	int RETARDO_INSTRUCCION;
 	int TAM_MAX_SEGMENTO;

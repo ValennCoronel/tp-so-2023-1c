@@ -104,9 +104,12 @@ int main(void){
 	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
+
+
+
 t_log* iniciar_logger(void){
 
-	t_log* nuevo_logger = log_create("fileSystem.log", "FileSystem", true, LOG_LEVEL_INFO);
+	t_log* nuevo_logger = log_create("filesystem.log", "FileSystem", true, LOG_LEVEL_INFO);
 
 	return nuevo_logger;
 }
@@ -132,7 +135,7 @@ int conectar_con_memoria( char* ip, char* puerto){
 
 	//enviar handshake
 
-	enviar_mensaje("OK", socket_memoria);
+	enviar_mensaje("OK", socket_memoria, MENSAJE);
 
 
 	int size;
