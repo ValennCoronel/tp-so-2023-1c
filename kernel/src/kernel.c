@@ -334,6 +334,17 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					desalojar_proceso(cliente_fd,grado_max_multiprogramacion);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
+				case CREAR_SEGMENTO:
+					//enviar_a_memoria leer word
+					create_segment(--);
+					break;
+				case ELIMINAR_SEGMENTO:
+					//enviar_a_memoria leer word
+					delete_segment(--);
+					break;
+				case COMPACTAR_MEMORIA:
+					compactar_memoria(--);
+					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor");
 					free(recursos_disponibles);

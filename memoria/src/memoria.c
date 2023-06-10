@@ -123,7 +123,16 @@ void* atender_cliente(void *args){
 					recibir_handshake(cliente_fd);
 					break;
 				case NUEVO_PROCESO_MEMORIA:
-					crear_nuevo_proceso(cliente_fd);
+					crear_nuevo_proceso_memoria();
+					break;
+				case FINALIZAR_PROCESO_MEMORIA:
+					finalizar_proceso_memoria();
+					break;
+				case CREAR_SEGMENTO:
+					create_segment(--);
+					break;
+				case ELIMINAR_SEGMENTO:
+					delete_segment(--);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -144,3 +153,7 @@ void crear_nuevo_proceso(int socket_cliente){
 void acceder_espacio_ususario(int socket_kernel){
 	enviar_mensaje("OK",socket_kernel, MENSAJE);
 }
+
+
+
+

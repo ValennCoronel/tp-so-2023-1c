@@ -32,9 +32,11 @@ typedef enum
 	PROCESAR_INSTRUCCIONES,
 	CREAR_SEGMENTO,
 	ELIMINAR_SEGMENTO,
+	COMPACTAR_MEMORIA,
 	PETICION_CPU,
 	//peticiones memoria
 	NUEVO_PROCESO_MEMORIA,
+	FINALIZAR_PROCESO_MEMORIA,
 	READ_MEMORY,
 	WRITE_MEMORY,
 	// filesystem
@@ -106,6 +108,23 @@ typedef struct
 	t_temporal* temporal_ready;
 	t_temporal* temporal_ultimo_desalojo;
 } t_pcb;
+
+
+typedef	struct {
+	uint32_t direccion_base;
+	uint32_t tamano;
+}t_segmento;
+
+typedef	struct {
+	uint32_t id_segmento;
+	uint32_t tamano_segmento;
+}t_segmento_parametro;
+
+typedef struct {
+	int archivo_id;
+	int puntero;
+} archivo;
+
 
 
 

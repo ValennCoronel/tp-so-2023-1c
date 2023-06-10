@@ -29,16 +29,6 @@ typedef struct {
 	int conexion_memoria;
 }planificar_nuevos_procesos_largo_plazo_args;
 
-typedef	struct {
-	int direccion_base;
-	int tamano;
-} segmento;
-
-typedef struct {
-	int archivo_id;
-	int puntero;
-} archivo;
-
 
 extern t_dictionary* recurso_bloqueado;
 
