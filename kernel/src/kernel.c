@@ -5,6 +5,7 @@ int socket_kernel;
 int socket_memoria;
 int socket_fs;
 
+
 int main(void){
 
 	//Declaraciones de variables para config:
@@ -108,6 +109,8 @@ int main(void){
 
 	inicializar_colas_y_semaforos();
 	recurso_bloqueado = dictionary_create();
+	colas_de_procesos_bloqueados_para_cada_archivo = dictionary_create();
+
 
 	t_queue* cola_bloqueados;
 	void iterador_recursos(char* nombre_recurso){
@@ -382,6 +385,20 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					break;
 				case COMPACTAR_MEMORIA:
 					compactar_memoria(--);
+					break;
+				case ABRIR_ARCHIVO:
+					break;
+				case CERRAR_ARCHIVO:
+					break;
+				case TRUNCAR_ARCHIVO:
+					break;
+				case APUNTAR_ARCHIVO:
+					break;
+				case LEER_ARCHIVO:
+					break;
+				case ESCRIBIR_ARCHIVO:
+					break;
+				case CREAR_ARCHIVO:
 					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor");

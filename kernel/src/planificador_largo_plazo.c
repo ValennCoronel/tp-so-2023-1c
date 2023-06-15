@@ -32,7 +32,10 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 	int grado_max_multiprogramacion = args->grado_max_multiprogramacion;
 	int conexion_memoria = args->conexion_memoria;
 
+
+
 	while(1){
+
 		sem_wait(&m_cola_ready);
 		int tamanio_cola_ready = queue_size(cola_ready);
 		sem_post(&m_cola_ready);

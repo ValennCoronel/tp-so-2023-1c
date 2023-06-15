@@ -25,6 +25,15 @@
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
+
+
+typedef struct {
+
+	char* algoritmo_asignacion;
+	uint64_t cliente_fd;
+
+}t_arg_atender_cliente;
+
 void terminar_programa(t_log* logger, t_config* config);
 int conectar_con_memoria(int conexion, char* ip, char* puerto);
 void manejar_peticiones(int server_fd);

@@ -46,7 +46,7 @@ typedef enum
 	TRUNCAR_ARCHIVO,
 	LEER_ARCHIVO,
 	ESCRIBIR_ARCHIVO,
-	CREAR_ARCHIVO
+	CREAR_ARCHIVO,
 }op_code;
 
 
@@ -103,7 +103,7 @@ typedef struct
 	double prioridad;
 
 	t_list* tabla_segmentos;
-	t_list* tabla_archivos;
+	t_list* tabla_archivos_abiertos_del_proceso;
 
 	t_temporal* temporal_ready;
 	t_temporal* temporal_ultimo_desalojo;

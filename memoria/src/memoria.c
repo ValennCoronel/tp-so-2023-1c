@@ -6,6 +6,7 @@ int socket_kernel;
 int socket_memoria;
 int socket_fs;
 
+
 int main(void){
 
 	//Declaracion variables para config
@@ -47,12 +48,13 @@ int main(void){
 		terminar_programa(logger, config);
 	}
 
+
 	//Escucho conexiones del Kernel, CPU y File System
 	int server_fd = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones(server_fd);
+	manejar_peticiones(server_fd,algoritmo_asignacion);
 
 
 
@@ -102,11 +104,12 @@ int conectar_modulo(int conexion, char* ip, char* puerto){
 
 
 //Funcion para manejo de peticiones
-void manejar_peticiones(int server_fd ){
+void manejar_peticiones(int server_fd,char* algoritmo_asignacion ){
 
 	while(1){
 		pthread_t thread;
 		uint64_t cliente_fd = (uint64_t) esperar_cliente(server_fd);
+
 
 		pthread_create(&thread, NULL, atender_cliente, (void*) cliente_fd);
 
@@ -117,6 +120,10 @@ void manejar_peticiones(int server_fd ){
 
 void* atender_cliente(void *args){
 	uint64_t cliente_fd = (uint64_t) args;
+	t_arg_atender_cliente* argumentos = (t_arg_atender_cliente*) args;
+
+	char* algoritmo_asignacion = argumentos->algoritmo_asignacion;
+	uint64_t cliente_fd = argumentos->cliente_fd;
 
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
@@ -135,7 +142,7 @@ void* atender_cliente(void *args){
 					finalizar_proceso_memoria();
 					break;
 				case CREAR_SEGMENTO:
-					create_segment(--);
+					create_segment(algoritmo_asignacion,cliente_fd);
 					break;
 				case ELIMINAR_SEGMENTO:
 					delete_segment(--);
@@ -151,6 +158,26 @@ void* atender_cliente(void *args){
 
 	return NULL;
 }
+
+create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
+
+	if(strcmp(algoritmo_asignacion,"FIRST")==0){
+
+	}
+	else if(strcmp(algoritmo_asignacion,"WORST")==0){
+
+	}
+	else if(strcmp(algoritmo_asignacion,"BEST")==0){
+	}
+
+}
+
+
+
+
+
+
+
 
 void crear_nuevo_proceso(int socket_cliente){
 	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernell

@@ -32,6 +32,8 @@ typedef struct {
 
 extern t_dictionary* recurso_bloqueado;
 
+extern t_dictionary* colas_de_procesos_bloqueados_para_cada_archivo;
+
 extern t_queue* cola_new;
 extern t_queue* cola_ready;
 extern t_pcb* proceso_ejecutando;
