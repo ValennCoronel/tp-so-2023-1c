@@ -427,10 +427,81 @@ t_list* recibir_tablas_de_segmentos(){
 
 
 void delete_segment(){
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+
+	// busco el segmento a borrar por id de la tabla de segmentos del proceso ejecutando
+	t_segmento_parametro* segmento_a_eliminar = malloc(sizeof(t_segmento_parametro));
+	segmento_a_eliminar->id_segmento = atoi(instruccion_peticion->parametros[0]);
+
+	t_paquete* paquete = crear_paquete(ELIMINAR_SEGMENTO);
+
+	//serializo el tamaño del segmento y el id del segmento
+	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(segmento_a_eliminar->id_segmento),sizeof(uint32_t) );
+
+	//se envía a memoria
+	//enviar_a_memoria(paquete);
+
+	// continuo con las siguientes instrucciones del proceso
+	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+
+	// espero a la respuesta de memoria
+	int cod_op = recibir_operacion(socket_memoria);
+
+	if(cod_op == ELIMINAR_SEGMENTO){
+		// se recibe la tabla de segmentos actualizada del proceso ejecutando
+		t_tabla_de_segmento* tabla_de_segmentos_actualizada = (t_tabla_de_segmento*) recibir_tabla_de_segmentos();
+
+		//y actualizar la tabla de segmentos del proceso ejecutando
+
+		// libero la tabla anterior
+		destroy_tabla_de_segmentos(proceso_ejecutando->tabla_segmentos);
+
+		// seteo con la nueva tabla actualizada
+		proceso_ejecutando->tabla_segmentos = tabla_de_segmentos_actualizada;
+	}
 
 }
 
 void compactar_memoria(){
+
+}
+
+t_tabla_de_segmento* recibir_tabla_de_segmentos(){
+	t_tabla_de_segmento* tabla_de_segmento = malloc(sizeof(t_tabla_de_segmento));
+	int size;
+	int desplazamiento = 0;
+	void* buffer =  recibir_buffer(&size, socket_memoria);
+
+	while(desplazamiento<size){
+		memcpy(&(tabla_de_segmento->cantidad_segmentos), buffer+desplazamiento, sizeof(uint32_t));
+		desplazamiento+= sizeof(uint32_t);
+
+		memcpy(&(tabla_de_segmento->pid), buffer+desplazamiento, sizeof(uint32_t));
+		desplazamiento+= sizeof(uint32_t);
+
+		int tamano_segmentos;
+		memcpy(&tamano_segmentos, buffer + desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+
+		for(int j =0; j<tamano_segmentos; j++){
+			t_segmento* segmento = malloc(sizeof(t_segmento*));
+
+			memcpy(&(segmento->id_segmento), buffer + desplazamiento, sizeof(uint32_t));
+			desplazamiento+= sizeof(uint32_t);
+
+			memcpy(&(segmento->direccion_base), buffer + desplazamiento, sizeof(uint32_t));
+			desplazamiento+= sizeof(uint32_t);
+
+			memcpy(&(segmento->tamano), buffer + desplazamiento, sizeof(uint32_t));
+			desplazamiento+= sizeof(uint32_t);
+
+			list_add_in_index(tabla_de_segmento->segmentos,segmento->id_segmento ,segmento);
+		}
+	}
+
+	free(buffer);
+	return tabla_de_segmento;
 
 }
 

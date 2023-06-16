@@ -52,5 +52,6 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas);
 void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pcb* proceso_a_actualizar);
 t_list* recibir_tablas_de_segmentos();
+t_tabla_de_segmento* recibir_tabla_de_segmentos();
 
 #endif /* SRC_PETICIONES_CPU_H_ */
