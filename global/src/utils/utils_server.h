@@ -22,5 +22,6 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente);
 void registro_cpu_destroy(registros_CPU* registro);
 void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion);
 void instruccion_destroy(t_instruccion* instruccion);
+void destroy_tabla_de_segmentos(t_tabla_de_segmento* tabla_a_borrar);
 
 #endif /* UTILS_SERVER_H_ */

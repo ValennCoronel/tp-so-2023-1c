@@ -5,15 +5,13 @@ t_queue* cola_ready;
 t_pcb* proceso_ejecutando;
 t_temporal* rafaga_proceso_ejecutando;
 
+
 sem_t consumidor;
 //TODO cambiar estos por un mutex real
 sem_t m_cola_ready;
 sem_t m_cola_new;
 
-// Sockets
-int socket_cpu;
-int socket_kernel;
-int socket_memoria;
+t_dictionary* colas_de_procesos_bloqueados_para_cada_archivo;
 
 
 

@@ -39,6 +39,7 @@ typedef enum
 	FINALIZAR_PROCESO_MEMORIA,
 	READ_MEMORY,
 	WRITE_MEMORY,
+	OUT_OF_MEMORY,
 	// filesystem
 	ABRIR_ARCHIVO,
 	CERRAR_ARCHIVO,
@@ -87,6 +88,33 @@ typedef struct
 
 } t_contexto_ejec;
 
+
+
+
+typedef	struct {
+	uint32_t id_segmento;
+	uint32_t direccion_base;
+	uint32_t tamano;
+}t_segmento;
+
+typedef	struct {
+	uint32_t id_segmento;
+	uint32_t tamano_segmento;
+}t_segmento_parametro;
+
+// este struct es para que la memoria a devuelva una lista de las talas de todos los procesos luego de compactar
+typedef struct {
+	uint32_t cantidad_segmentos;
+	t_list* segmentos;
+	uint32_t pid;
+} t_tabla_de_segmento;
+
+
+typedef struct {
+	int archivo_id;
+	int puntero;
+} archivo;
+
 typedef struct
 {
 	int PID;
@@ -102,30 +130,12 @@ typedef struct
 
 	double prioridad;
 
-	t_list* tabla_segmentos;
+	t_tabla_de_segmento* tabla_segmentos;
 	t_list* tabla_archivos_abiertos_del_proceso;
 
 	t_temporal* temporal_ready;
 	t_temporal* temporal_ultimo_desalojo;
 } t_pcb;
-
-
-typedef	struct {
-	uint32_t direccion_base;
-	uint32_t tamano;
-}t_segmento;
-
-typedef	struct {
-	uint32_t id_segmento;
-	uint32_t tamano_segmento;
-}t_segmento_parametro;
-
-typedef struct {
-	int archivo_id;
-	int puntero;
-} archivo;
-
-
 
 
 #endif /* GLOBAL_H_ */

@@ -40,7 +40,7 @@ int main(void){
 	if(config == NULL){
 		log_error(logger, "No fue posible iniciar el archivo de configuracion !!");
 
-		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(logger, config);
 	}
 
 	// Carga de datos de config en variable y archivo
@@ -67,7 +67,7 @@ int main(void){
 	if(!ip_memoria || !puerto_memoria || !ip_filesystem || !puerto_filesystem || !ip_cpu || !puerto_cpu || !puerto_escucha){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA'");
 
-		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(logger, config);
 	}
 
 	// Realizar las conexiones y probarlas
@@ -76,7 +76,7 @@ int main(void){
 	if(conexion_memoria == -1){
 		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
 
-		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(logger, config);
 	}
 	log_info(logger, "El KerneL se conecto con el modulo Memoria correctamente");
 
@@ -86,7 +86,7 @@ int main(void){
 	if(conexion_filesystem == -1){
 		log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
-		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(logger, config);
 	}
 	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 
@@ -95,7 +95,7 @@ int main(void){
 	if(conexion_cpu == -1){
 		log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
-		terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+		terminar_programa(logger, config);
 	}
 	log_info(logger, "El KerneL se conecto con el modulo CPU correctamente");
 
@@ -160,7 +160,7 @@ int main(void){
 	free(args_planificador_corto_plazo->algoritmo_planificacion);
 	free(args_planificador_corto_plazo);
 
-	terminar_programa(conexion_memoria, conexion_filesystem, conexion_cpu, logger, config);
+	terminar_programa(logger, config);
 } // Fin del MAIN
 
 
@@ -184,12 +184,12 @@ t_config* iniciar_config(void){
 
 //Finalizar el programa
 
- void terminar_programa(int conexion, int conexion2, int conexion3, t_log* logger, t_config* config){
+ void terminar_programa(t_log* logger, t_config* config){
 	log_destroy(logger);
 	config_destroy(config);
-	close(conexion);
-	close(conexion2);
-	close(conexion3);
+	close(socket_cpu);
+	close(socket_fs);
+	close(socket_memoria);
 }
 
 
@@ -377,14 +377,14 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					break;
 				case CREAR_SEGMENTO:
 					//enviar_a_memoria leer word
-					create_segment(--);
+					create_segment();
 					break;
 				case ELIMINAR_SEGMENTO:
 					//enviar_a_memoria leer word
-					delete_segment(--);
+					delete_segment();
 					break;
 				case COMPACTAR_MEMORIA:
-					compactar_memoria(--);
+					compactar_memoria();
 					break;
 				case ABRIR_ARCHIVO:
 					break;

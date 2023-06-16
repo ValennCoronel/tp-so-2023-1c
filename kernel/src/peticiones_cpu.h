@@ -23,6 +23,7 @@
 #include <utils/utils_server.h>
 #include "planificador_largo_plazo.h"
 #include "planificador_corto_plazo.h"
+#include "kernel.h"
 
 typedef struct
 {
@@ -41,5 +42,15 @@ void bloquear_proceso_IO(int socket_cliente, int grado_max_multiprogramacion);
 int obtener_indice_recurso(char** recursos, char* recurso_a_buscar);
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso);
 void poner_a_ejecutar_otro_proceso();
+
+void create_segment();
+void delete_segment();
+void compactar_memoria();
+void destroy_proceso_ejecutando();
+
+void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento);
+void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas);
+void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pcb* proceso_a_actualizar);
+t_list* recibir_tablas_de_segmentos();
 
 #endif /* SRC_PETICIONES_CPU_H_ */

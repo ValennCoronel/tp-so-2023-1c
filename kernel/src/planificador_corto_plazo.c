@@ -131,7 +131,7 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 
 	t_paquete* paquete = crear_paquete(opcode);
 
-		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) proceso_a_ejecutar->tamanio_lista, sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->tamanio_lista), sizeof(int));
 
 		for(int i =0; i<proceso_a_ejecutar->tamanio_lista; i++){
 			t_instruccion* instruccion = list_get(proceso_a_ejecutar->lista_instrucciones, i);
@@ -144,7 +144,7 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 
 		}
 
-		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) proceso_a_ejecutar->program_counter, sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->program_counter), sizeof(int));
 
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->AX, sizeof(char)*4);
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->BX, sizeof(char)*4);

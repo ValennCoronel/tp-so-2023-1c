@@ -30,6 +30,11 @@
 #include "planificador_corto_plazo.h"
 #include "peticiones_cpu.h"
 
+extern int socket_cpu;
+extern int socket_kernel;
+extern int socket_memoria;
+extern int socket_fs;
+
 
 typedef struct {
 	int server_fd;
@@ -44,8 +49,12 @@ typedef struct {
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
-void terminar_programa(int conexion, int conexion2, int conexion3, t_log* logger, t_config* config);
+void terminar_programa(t_log* logger, t_config* config);
 int conectar_modulo(int *conexion, char* ip, char* puerto);
+
+int conectar_memoria(char* ip, char* puerto);
+int conectar_fs(char* ip, char* puerto);
+int conectar_cpu(char* ip, char* puerto);
 
 void *manejar_peticiones_consola(void *arg);
 void *atender_cliente(void *args);

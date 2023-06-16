@@ -215,41 +215,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
-	void destructor_instrucciones (void* arg){
-		t_instruccion* inst = (t_instruccion*) arg;
-
-		instruccion_destroy(inst);
-	}
-	//TODO finalizar el free de estas estructuras
-	void destructor_tabla_archivos (void* arg){}
-	void destructor_tabla_segmentos (void* arg){}
-
-	//Liberar PCB del proceso actual
-	list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
-
-
-	registro_cpu_destroy(proceso_ejecutando->registros_CPU);
-
-	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos, destructor_tabla_archivos);
-
-	list_destroy_and_destroy_elements(proceso_ejecutando->tabla_segmentos,destructor_tabla_segmentos);
-
-	temporal_destroy(proceso_ejecutando->temporal_ready);
-
-	temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
-
-	//Enviar datos necesarios a memoria para liberarla
-
-	//TODO decomentar y completar cuando este implementada la funcion en memoria (hasta entonces envio mensaje de prueba)
-	// t_buffer buffer;
-	// enviar_a_memoria(TERMINAR_PROCESO, socket_memoria, buffer);
-
-	enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
-	//Enviar mensaje a Consola informando que finalizo el proceso
-	enviar_mensaje("Proceso actual finalizado", proceso_ejecutando->socket_server_id, MENSAJE);
-	free(proceso_ejecutando);
-
-	poner_a_ejecutar_otro_proceso();
+	destroy_proceso_ejecutando();
 
 	contexto_ejecucion_destroy(contexto);
 
@@ -267,3 +233,244 @@ void enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
 
 }
 
+void create_segment(){
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+
+	t_segmento_parametro* peticion_segmento = (t_segmento_parametro*) malloc(sizeof(t_segmento_parametro));
+
+	peticion_segmento->id_segmento = atoi(instruccion_peticion->parametros[0]);
+	peticion_segmento->tamano_segmento = atoi(instruccion_peticion->parametros[1]);
+
+	// serializo segmento_parámetro
+
+	t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(peticion_segmento->id_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+
+	// enviar paquete serializado
+	//enviar_a_memoria(paquete);
+
+	// escuha y maneja en cualquiera de los 3 posibles casos de la respuesta de memoria
+	escuchar_respuesta_memoria(contexto, peticion_segmento);
+
+	contexto_ejecucion_destroy(contexto);
+}
+
+void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
+		while(1){
+			int cod_op = recibir_operacion(socket_memoria);
+
+			switch (cod_op) {
+				case OUT_OF_MEMORY:
+					// si no hay espacio disponible, ya sea contiguo o no contiguo,
+					//finalizo el proceso
+					destroy_proceso_ejecutando();
+					poner_a_ejecutar_otro_proceso();
+					break;
+				case CREAR_SEGMENTO:
+					// en caso de que pudo crear el segmento,
+					// se recibe la dirección base de memoria
+					uint32_t direccion_base;
+					int size;
+					void *  buffer = recibir_buffer(&size, socket_memoria);
+					memcpy(&direccion_base, buffer, sizeof(uint32_t));
+
+					// creo el nuevo segmento
+					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
+
+					segmento_nuevo->id_segmento = peticion_segmento->id_segmento;
+					segmento_nuevo->tamano = peticion_segmento->tamano_segmento;
+					segmento_nuevo->direccion_base = direccion_base;
+
+
+
+					// lo agrego en al tabla de segmentos, indexado por el id del segmento
+					list_add_in_index(proceso_ejecutando->tabla_segmentos->segmentos, (int) peticion_segmento->id_segmento, segmento_nuevo);
+
+					// actualizo la cantidad de segmentos de la tabla
+					proceso_ejecutando->tabla_segmentos->cantidad_segmentos += 1;
+
+					// continuo con las siguientes instrucciones del proceso
+					enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+					break;
+				case COMPACTAR_MEMORIA:
+					// se solicita compactar la memoria
+					enviar_mensaje("Compacta!!",socket_memoria, COMPACTAR_MEMORIA);
+
+					// luego se recibe las tablas de segmentos actualizadas
+					t_list* tablas_de_segmentos_actualizadas = (t_list*) recibir_tablas_de_segmentos();
+
+					//y actualizar la tabla de segmentos de cada proceso en la cola de ready
+					acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
+
+					// luego solicita a memoria otra vez de crear el segmento
+					t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
+
+					agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(peticion_segmento->id_segmento), sizeof(uint32_t));
+					agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+
+					// enviar paquete serializado
+					//enviar_a_memoria(paquete);
+
+					// de forma recursiva escucho y manejo las peticiones de memoria
+					// 	la recursión se rompe en un out_of_memory o con el segmento creado
+					escuchar_respuesta_memoria(contexto, peticion_segmento);
+
+					break;
+				case -1:
+					log_error(logger, "Memoria se desconecto. Terminando servidor");
+					return ;
+					break;
+				default:
+					log_warning(logger,"Memoria Operacion desconocida. No quieras meter la pata" );
+					break;
+			}
+		}
+}
+
+void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
+
+	int tamanio_tablas = list_size(tablas_de_segmentos_actualizadas);
+
+	// actualizo las tablas de cada proceso de la cola new
+	for(int i = 0; i< tamanio_tablas ; i++){
+		sem_wait(&m_cola_ready);
+		t_pcb* proceso_N = (t_pcb*) list_get(cola_ready->elements,i);
+		sem_post(&m_cola_ready);
+
+
+		actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_N);
+	}
+
+	// actualizo la tabla del proceso ejecutando actualmente
+	actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_ejecutando);
+
+}
+
+void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pcb* proceso_a_actualizar){
+
+	// busco la tabla de segmentos del proceso en base a su PID
+	void *_encontrar_tabla_del_proceso(void*tabla_1, void* tabla_2){
+		t_tabla_de_segmento* tabla_actual = (t_tabla_de_segmento*) tabla_1;
+		t_tabla_de_segmento* tabla_siguiente = (t_tabla_de_segmento*) tabla_2;
+
+		if(tabla_actual->pid == proceso_a_actualizar->PID){
+			return tabla_actual;
+		}
+
+		return tabla_siguiente;
+	}
+
+	// si no encuentra la tabla de segmentos del proceso, devuelve la última tabla de la lista
+	t_tabla_de_segmento* tabla_actualizada = list_fold1(tablas_de_segmentos_actualizadas, _encontrar_tabla_del_proceso);
+
+	// si no lo encuentra no la actualiza y la deja como estaba
+	if(tabla_actualizada->pid == proceso_a_actualizar->PID){
+		// libero la tabla anterior
+		destroy_tabla_de_segmentos(proceso_a_actualizar->tabla_segmentos);
+
+		// seteo con la nueva tabla actualizada
+		proceso_a_actualizar->tabla_segmentos = tabla_actualizada;
+	}
+}
+
+t_list* recibir_tablas_de_segmentos(){
+	int size;
+	void* buffer = recibir_buffer(&size, socket_memoria);
+
+	t_list* tablas_de_segmentos = list_create();
+	int desplazamiento = 0;
+
+	while(desplazamiento < size){
+		int lista_length = 0;
+		memcpy(&lista_length, buffer + desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+
+		for(int i = 0; i< lista_length; i++){
+			t_tabla_de_segmento* tabla_de_segmento = malloc(sizeof(t_tabla_de_segmento));
+
+
+			memcpy(&(tabla_de_segmento->cantidad_segmentos), buffer+desplazamiento, sizeof(uint32_t));
+			desplazamiento+= sizeof(uint32_t);
+
+			memcpy(&(tabla_de_segmento->pid), buffer+desplazamiento, sizeof(uint32_t));
+			desplazamiento+= sizeof(uint32_t);
+
+			int tamano_segmentos;
+			memcpy(&tamano_segmentos, buffer + desplazamiento, sizeof(int));
+			desplazamiento+=sizeof(int);
+
+			for(int j =0; j<tamano_segmentos; j++){
+				t_segmento* segmento = malloc(sizeof(t_segmento*));
+
+				memcpy(&(segmento->id_segmento), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento+= sizeof(uint32_t);
+
+				memcpy(&(segmento->direccion_base), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento+= sizeof(uint32_t);
+
+				memcpy(&(segmento->tamano), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento+= sizeof(uint32_t);
+
+				list_add_in_index(tabla_de_segmento->segmentos,segmento->id_segmento ,segmento);
+			}
+
+			list_add(tablas_de_segmentos, tabla_de_segmento);
+		}
+	}
+
+	free(buffer);
+	return tablas_de_segmentos;
+}
+
+
+void delete_segment(){
+
+}
+
+void compactar_memoria(){
+
+}
+
+
+void destroy_proceso_ejecutando(){
+
+	void destructor_instrucciones (void* arg){
+		t_instruccion* inst = (t_instruccion*) arg;
+
+		instruccion_destroy(inst);
+	}
+		//TODO finalizar el free de estas estructuras cuando se definan
+		void destructor_tabla_archivos (void* arg){}
+
+		//Liberar PCB del proceso actual
+		list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
+
+		registro_cpu_destroy(proceso_ejecutando->registros_CPU);
+
+		list_destroy_and_destroy_elements(proceso_ejecutando->tabla_archivos_abiertos_del_proceso, destructor_tabla_archivos);
+
+		destroy_tabla_de_segmentos(proceso_ejecutando->tabla_segmentos);
+
+		temporal_destroy(proceso_ejecutando->temporal_ready);
+
+		temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
+
+		//Enviar datos necesarios a memoria para liberarla
+
+		//TODO decomentar y completar cuando este implementada la funcion en memoria
+		// t_paquete* paquete = crear_paquete(TERMINAR_PROCESO);
+		// enviar_a_memoria(paquete);
+
+		// mensaje de prueba, borrarlo cuando este hecho lo de arriba
+		enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
+
+		//Enviar mensaje a Consola informando que finalizo el proceso
+		enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+		free(proceso_ejecutando);
+
+		poner_a_ejecutar_otro_proceso();
+}
