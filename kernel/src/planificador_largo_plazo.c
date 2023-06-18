@@ -42,6 +42,7 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 		sem_post(&m_cola_new);
 
 		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 ){
+
 			agregar_proceso_a_ready(conexion_memoria);
 
 		} else if(tamanio_cola_new != 0){
@@ -65,8 +66,8 @@ void agregar_proceso_a_ready(int conexion_memoria){
 	// y se pide la tabla de segmentos a memoria
 	if(proceso_new_a_ready->tiempo_llegada_rady == 0){
 
-		//TODO descomentar cuando este hecho esta parte de memoria
-		//proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
+
+		proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
 
 		proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
 		temporal_stop(proceso_new_a_ready->temporal_ready);

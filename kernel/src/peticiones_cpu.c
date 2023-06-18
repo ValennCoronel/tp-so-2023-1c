@@ -224,8 +224,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 //Funcion que envia un paquete a memoria con un codigo de operacion
 void enviar_a_memoria(op_code codigo, int socket_memoria, void valor){
-	t_paquete* paquete;
-	paquete = crear_paquete(codigo);
+	t_paquete* paquete = crear_paquete(codigo);
 	paquete->buffer = valor;
 	enviar_paquete(paquete, socket_memoria);
 
@@ -550,3 +549,5 @@ void destroy_proceso_ejecutando(){
 
 		poner_a_ejecutar_otro_proceso();
 }
+
+
