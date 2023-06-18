@@ -209,25 +209,25 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	//crear estrutura para el contexto de ejecucion
 		// liberar todos los recursos que tenga asignados (aca se usa el free)
 		//free(instrucciones);
-		// free(pcb_proceso);
+		//free(pcb_proceso);
 		// dar aviso al módulo Memoria para que éste libere sus estructuras.
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
-
+	t_pcb* pcb_proceso;
+	int socket_consola = pcb_proceso->socket_server_id;
 	destroy_proceso_ejecutando();
-
 	contexto_ejecucion_destroy(contexto);
-
+	return;
 }
 
 
 //Funcion que envia un paquete a memoria con un codigo de operacion
-void enviar_a_memoria(op_code codigo, int socket_memoria, t_buffer buffer){
+void enviar_a_memoria(op_code codigo, int socket_memoria, void valor){
 	t_paquete* paquete;
 	paquete = crear_paquete(codigo);
-
-	//Rellenar y serializar contenido del paquete
+	paquete->buffer = valor;
+	enviar_paquete(paquete, socket_memoria);
 
 	eliminar_paquete(paquete);
 
@@ -516,6 +516,11 @@ void destroy_proceso_ejecutando(){
 		//TODO finalizar el free de estas estructuras cuando se definan
 		void destructor_tabla_archivos (void* arg){}
 
+		t_paquete paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+		agregar_a_paquete_sin_agregar_tamanio(paquete, proceso_ejecutando->tabla_segmentos,1);
+		serializar_paquete(paquete,sizeof(proceso_ejecutando->tabla_segmentos));
+		enviar_paquete(paquete, socket_memoria);
+		//enviar_mensaje("LIBERAR ESTRUCTURAS",socket_memoria,FINALIZAR_PROCESO_MEMORIA);
 		//Liberar PCB del proceso actual
 		list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
 
@@ -529,7 +534,7 @@ void destroy_proceso_ejecutando(){
 
 		temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
 
-		//Enviar datos necesarios a memoria para liberarla
+
 
 		//TODO decomentar y completar cuando este implementada la funcion en memoria
 		// t_paquete* paquete = crear_paquete(TERMINAR_PROCESO);
