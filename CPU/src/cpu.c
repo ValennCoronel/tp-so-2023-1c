@@ -156,6 +156,7 @@ void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRU
  */
 void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 {
+
 	//TODO no existe recibir_paquete_pcb
 	t_contexto_ejec* contexto = recibir_paquete_pcb(cliente_fd);
 	int program_counter = contexto->program_counter; // borrar si no se usa
@@ -179,50 +180,51 @@ void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MA
 	{
 		manejar_instruccion_mov_out(contexto, instruction,cliente_fd, TAM_MAX_SEGMENTO);
 	}
+
 	if(strcmp(instruction->opcode,"I/O")==0)
 	{
-		enviar_instruccion_a_kernel(BLOQUEAR_PROCESO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(BLOQUEAR_PROCESO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_OPEN")==0)
 	{
-		enviar_instruccion_a_kernel(ABRIR_ARCHIVO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(ABRIR_ARCHIVO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_CLOSE")==0)
 	{
-		enviar_instruccion_a_kernel(CERRAR_ARCHIVO,cliente_fd, instruction );
+		enviar_instruccion_a_kernel(CERRAR_ARCHIVO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_SEEK")==0)
 	{
-		enviar_instruccion_a_kernel(APUNTAR_ARCHIVO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(APUNTAR_ARCHIVO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_READ")==0)
 	{
-		enviar_instruccion_a_kernel(LEER_ARCHIVO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(LEER_ARCHIVO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_WRITE")==0)
 	{
-		enviar_instruccion_a_kernel(ESCRIBIR_ARCHIVO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(ESCRIBIR_ARCHIVO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"F_TRUNCATE")==0)
 	{
-		enviar_instruccion_a_kernel(TRUNCAR_ARCHIVO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(TRUNCAR_ARCHIVO,cliente_fd, &contexto );
 	}
 
 	if(strcmp(instruction->opcode,"WAIT")==0)
 	{
-		enviar_instruccion_a_kernel(APROPIAR_RECURSOS,cliente_fd, instruction );
+		enviar_contexto_a_kernel(APROPIAR_RECURSOS,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"SIGNAL")==0)
 	{
-		enviar_instruccion_a_kernel(DESALOJAR_RECURSOS,cliente_fd, instruction );
+		enviar_contexto_a_kernel(DESALOJAR_RECURSOS,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"CREATE_SEGMENT")==0)
 	{
-		enviar_instruccion_a_kernel(CREAR_SEGMENTO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(CREAR_SEGMENTO,cliente_fd, &contexto );
 	}
 	if(strcmp(instruction->opcode,"DELETE_SEGMENT")==0)
 	{
-		enviar_instruccion_a_kernel(ELIMINAR_SEGMENTO,cliente_fd, instruction );
+		enviar_contexto_a_kernel(ELIMINAR_SEGMENTO,cliente_fd, &contexto );
 	}
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
