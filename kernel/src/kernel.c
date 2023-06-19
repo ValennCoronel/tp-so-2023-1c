@@ -5,6 +5,9 @@ int socket_kernel;
 int socket_memoria;
 int socket_fs;
 
+//Tablas del FS
+t_list tabla_gaa;
+
 
 int main(void){
 
@@ -28,6 +31,8 @@ int main(void){
 	int conexion_memoria;
 	int conexion_filesystem;
 	int conexion_cpu;
+
+
 
 	// Iniciar archivos de log y configuracion:
 
@@ -164,7 +169,7 @@ int main(void){
 } // Fin del MAIN
 
 
-// DECLARACION DE FUNCIONES
+// DECLARACION DE FUNCIONES ====================================================================================================
 
 //Iniciar archivo de log y de config
 
@@ -387,6 +392,7 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					compactar_memoria();
 					break;
 				case ABRIR_ARCHIVO:
+					f_open(cliente_fd);
 					break;
 				case CERRAR_ARCHIVO:
 					break;
@@ -412,6 +418,73 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 
 	return NULL;
 }
+
+	// -------------------------------- Peticiones FS ------------------------------------------------------------
+
+//Envia la peticion con el codigo de operacion y la instruccion a realizar al file system
+	void enviar_peticion_fs(op_code code,t_instruccion* instruccion ){
+		t_paquete* paquete = crear_paquete(code);
+
+			agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+
+			agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+			agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+			agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+			enviar_paquete(paquete, socket_fs);
+	}
+
+	//Busca un archivo en la tabla global, si existe lo abre, si no existe le solicita al FS que lo busque o lo cree
+	void f_open(int cliente_fd){
+		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
+
+		//busco si la instruccion esta en la tabla global de archivos
+		tabla_global_de_archivos_abiertos archivo = list_find(tabla_gaa, criterio_archivos()); // TODO esta funcion esta mal utilizada
+
+		if(archivo != NULL){
+			//Enviar a la cola de bloqueados esperando la apertura del archivo
+
+		}else{
+			//(si no esta en la tabla) enviar a FS peticion para que verifique, lo cree y lo añada a ambas tablas
+			enviar_peticion_fs(ABRIR_ARCHIVO, instruccion);
+		}
+	}
+
+	//Cierra la instancia de un archivo abierto, si ya no hay mas procesos solicitando el archivo lo saca de la tabla global, sino reduce el contador de archivos abiertos
+	void f_close(int cliente_fd){
+		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
+
+		tabla_global_de_archivos_abiertos archivo = list_find(tabla_gaa, criterio_archivos());  //TODO esta funcion esta mal utilizada
+
+		if(archivo != NULL && archivo.open == 1){
+			//Cerrar archivo y eliminarlo de la tabla global y la tabla de archivos por proceso
+			fclose(archivo.file);
+			list_remove_element(tabla_gaa, archivo);
+			list_remove_element();
+		}
+
+	}
+
+	void f_seek(int cliente_fd){
+		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
+
+	}
+
+	int criterio_archivos(t_instruccion a, t_instruccion b)
+	{
+		if(a.parametros[0] == b.parametros[0])
+			return 1;
+		else
+			return 0;
+	}
+
+
+	void enviar_cola_archivos_bloqueados(t_instruccion instruccion){
+
+	}
+
 
 
 

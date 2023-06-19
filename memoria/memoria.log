@@ -36,3 +36,5 @@
 [INFO] 11:42:24:181 Memoria/(35006:35006): Se conecto un cliente!
 [ERROR] 11:44:34:783 Memoria/(35006:36158): El cliente se desconecto. Terminando servidor
 [INFO] 11:44:41:064 Memoria/(35006:35006): Se conecto un cliente!
+[INFO] 13:45:17:114 Memoria/(22133:22133): Memoria lista para recibir peticiones
+[INFO] 13:48:54:646 Memoria/(22133:22133): Se conecto un cliente!
