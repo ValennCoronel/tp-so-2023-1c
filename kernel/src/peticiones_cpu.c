@@ -216,6 +216,12 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 	t_pcb* pcb_proceso;
 	int socket_consola = pcb_proceso->socket_server_id;
+	t_paquete paquete;
+	crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+	agregar_a_paquete(paquete,socket_consola,sizeof(int));
+	serializar_paquete(paquete,sizeof(int));
+	enviar_paquete(paquete,socket_memoria);
+	eliminar_paquete(paquete);
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
 	return;
