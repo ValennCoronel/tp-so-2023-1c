@@ -19,8 +19,8 @@
 #include <utils/utils_cliente.h>
 #include <utils/utils_server.h>
 
-#include "planificador_largo_plazo.h"
 
+#include "planificador_largo_plazo.h"
 
 typedef struct {
 	char* algoritmo_planificacion;

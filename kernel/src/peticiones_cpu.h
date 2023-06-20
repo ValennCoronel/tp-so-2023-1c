@@ -21,9 +21,11 @@
 
 #include <global.h>
 #include <utils/utils_server.h>
+#include "kernel.h"
 #include "planificador_largo_plazo.h"
 #include "planificador_corto_plazo.h"
-#include "kernel.h"
+
+
 
 typedef struct
 {

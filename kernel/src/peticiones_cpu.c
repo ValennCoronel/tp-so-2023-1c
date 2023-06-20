@@ -1,5 +1,7 @@
 #include "peticiones_cpu.h"
 
+
+
 t_dictionary* recurso_bloqueado;
 sem_t esperar_proceso_ejecutando;
 
@@ -229,7 +231,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 
 //Funcion que envia un paquete a memoria con un codigo de operacion
-void enviar_a_memoria(op_code codigo, int socket_memoria, void valor){
+void enviar_a_memoria(op_code codigo, int socket_memoria, void* valor){
 	t_paquete* paquete = crear_paquete(codigo);
 	paquete->buffer = valor;
 	enviar_paquete(paquete, socket_memoria);
@@ -255,7 +257,7 @@ void create_segment(){
 	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
 
 	// enviar paquete serializado
-	//enviar_a_memoria(paquete);
+	enviar_paquete(paquete,socket_memoria);
 
 	// escuha y maneja en cualquiera de los 3 posibles casos de la respuesta de memoria
 	escuchar_respuesta_memoria(contexto, peticion_segmento);
@@ -263,6 +265,7 @@ void create_segment(){
 	contexto_ejecucion_destroy(contexto);
 }
 
+// escucha las respuestas de memoria pero es solo luego de intentar de crear el segmento
 void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
 		while(1){
 			int cod_op = recibir_operacion(socket_memoria);
@@ -317,7 +320,7 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 					agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
 
 					// enviar paquete serializado
-					//enviar_a_memoria(paquete);
+					enviar_paquete(paquete, socket_memoria);
 
 					// de forma recursiva escucho y manejo las peticiones de memoria
 					// 	la recursión se rompe en un out_of_memory o con el segmento creado
@@ -335,6 +338,8 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 		}
 }
 
+// acutaliza las tablas de segmentos de todos los procesos que están en ready
+// 	incluido el del proceso ejecutandose actualmente en CPU
 void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 
 	int tamanio_tablas = list_size(tablas_de_segmentos_actualizadas);
@@ -354,6 +359,8 @@ void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 
 }
 
+// dada una lista de tablas de segmentos y un pcb, actualiza la tabla de segmentos del pcb con la tabla
+// 		que se encuentra en la lista de tablas que se recibe por parámetros
 void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pcb* proceso_a_actualizar){
 
 	// busco la tabla de segmentos del proceso en base a su PID
@@ -445,7 +452,7 @@ void delete_segment(){
 	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(segmento_a_eliminar->id_segmento),sizeof(uint32_t) );
 
 	//se envía a memoria
-	//enviar_a_memoria(paquete);
+	enviar_paquete(paquete, socket_memoria);
 
 	// continuo con las siguientes instrucciones del proceso
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
@@ -521,7 +528,7 @@ void destroy_proceso_ejecutando(){
 		//TODO finalizar el free de estas estructuras cuando se definan
 		void destructor_tabla_archivos (void* arg){}
 
-		t_paquete paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
 		agregar_a_paquete_sin_agregar_tamanio(paquete, proceso_ejecutando->tabla_segmentos,1);
 		serializar_paquete(paquete,sizeof(proceso_ejecutando->tabla_segmentos));
 		enviar_paquete(paquete, socket_memoria);

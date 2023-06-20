@@ -65,8 +65,6 @@ void agregar_proceso_a_ready(int conexion_memoria){
 	//si el proceso es nuevo se calcula tiempo de llegada a ready en milisegundos
 	// y se pide la tabla de segmentos a memoria
 	if(proceso_new_a_ready->tiempo_llegada_rady == 0){
-
-
 		proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
 
 		proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
@@ -135,12 +133,47 @@ void agregar_cola_new(t_pcb* pcb_proceso){
 	log_info(logger, "Se crea el proceso %d en NEW", pcb_proceso->PID);
 }
 
-t_list* obtener_tabla_segmentos(int conexion_memoria){
+t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria){
 	enviar_mensaje("Iniciar estructuras", conexion_memoria, NUEVO_PROCESO_MEMORIA);
 
-	t_list* tabla_sementos = recibir_paquete(conexion_memoria);
+	t_tabla_de_segmento* tabla_segmentos = malloc(sizeof(t_tabla_de_segmento));
 
-	return tabla_sementos;
+
+	int cod_op = recibir_operacion(conexion_memoria);
+
+	if(cod_op == NUEVO_PROCESO_MEMORIA){
+		int size, tam_segmentos;
+		int desplazamiento = 0;
+
+		void* buffer = recibir_buffer(&size, conexion_memoria);
+
+		while(desplazamiento < size){
+			memcpy(&(tabla_segmentos->pid),buffer + desplazamiento, sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+			memcpy(&(tabla_segmentos->cantidad_segmentos), buffer + desplazamiento, sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+
+			memcpy(&(tam_segmentos),buffer + desplazamiento, sizeof(int));
+			desplazamiento += sizeof(int);
+
+			for(int i=0; i<tam_segmentos; i++){
+
+				t_segmento* segmento_n = malloc(sizeof(t_segmento));
+
+				memcpy(&(segmento_n->direccion_base), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento += sizeof(uint32_t);
+				memcpy(&(segmento_n->id_segmento), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento += sizeof(uint32_t);
+				memcpy(&(segmento_n->tamano), buffer + desplazamiento, sizeof(uint32_t));
+				desplazamiento += sizeof(uint32_t);
+
+				list_add(tabla_segmentos->segmentos, segmento_n);
+			}
+		}
+
+	}
+
+	return tabla_segmentos;
 }
 
 char* listar_pids_cola_ready(void){
