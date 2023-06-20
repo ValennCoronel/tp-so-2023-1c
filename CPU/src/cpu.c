@@ -67,16 +67,6 @@ int main(void){
 	//inicializar_colas_y_semaforos();
 	//pthread_t thread_consolas, thread_planificador_largo_plazo, thread_planificador_corto_plazo;
 
-	// Maneja peciciones que recibe desde el kernel
-	//pthread_create(&thread_consolas, NULL, manejar_peticiones_kernel, args_consolas);
-	/**
-	 * typedef struct {
-	int server_fd;
-	int retardo_instruccion;
-}manejar_peticiones_kernel_args;
-	 *
-	 */
-
 	escuchar_peticiones_kernel(logger, socket_kernel, RETARDO_INSTRUCCION,TAM_MAX_SEGMENTO);
 
 	terminar_programa(conexion_memoria, logger, config);
@@ -84,7 +74,7 @@ int main(void){
 } //FIN DEL MAIN
 
 //Funciones de inicio de Config y Logger
-t_log* iniciar_logger(void){
+t_log* iniciar_logger(){
 
 	t_log* nuevo_logger = log_create("cpu.log", "CPU", true, LOG_LEVEL_INFO);
 
@@ -158,8 +148,7 @@ void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MA
 {
 
 	//TODO no existe recibir_paquete_pcb
-	t_contexto_ejec* contexto = recibir_paquete_pcb(cliente_fd);
-	int program_counter = contexto->program_counter; // borrar si no se usa
+	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(cliente_fd);
 	t_list *lista = contexto->lista_instrucciones;
 
 	t_instruccion* instruction = list_get(lista, (contexto)->program_counter-1);
@@ -178,106 +167,107 @@ void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MA
 
 	if(strcmp(instruction->opcode,"MOV_OUT")==0)
 	{
-		manejar_instruccion_mov_out(contexto, instruction,cliente_fd, TAM_MAX_SEGMENTO);
+		manejar_instruccion_mov_out(cliente_fd, contexto, instruction, TAM_MAX_SEGMENTO);
 	}
 
 	if(strcmp(instruction->opcode,"I/O")==0)
 	{
-		enviar_contexto_a_kernel(BLOQUEAR_PROCESO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(BLOQUEAR_PROCESO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_OPEN")==0)
 	{
-		enviar_contexto_a_kernel(ABRIR_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(ABRIR_ARCHIVO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_CLOSE")==0)
 	{
-		enviar_instruccion_a_kernel(CERRAR_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(CERRAR_ARCHIVO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_SEEK")==0)
 	{
-		enviar_contexto_a_kernel(APUNTAR_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(APUNTAR_ARCHIVO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_READ")==0)
 	{
-		enviar_contexto_a_kernel(LEER_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(LEER_ARCHIVO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_WRITE")==0)
 	{
-		enviar_contexto_a_kernel(ESCRIBIR_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(ESCRIBIR_ARCHIVO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"F_TRUNCATE")==0)
 	{
-		enviar_contexto_a_kernel(TRUNCAR_ARCHIVO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(TRUNCAR_ARCHIVO,cliente_fd, contexto );
 	}
 
 	if(strcmp(instruction->opcode,"WAIT")==0)
 	{
-		enviar_contexto_a_kernel(APROPIAR_RECURSOS,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(APROPIAR_RECURSOS,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"SIGNAL")==0)
 	{
-		enviar_contexto_a_kernel(DESALOJAR_RECURSOS,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(DESALOJAR_RECURSOS,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"CREATE_SEGMENT")==0)
 	{
-		enviar_contexto_a_kernel(CREAR_SEGMENTO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(CREAR_SEGMENTO,cliente_fd, contexto );
 	}
 	if(strcmp(instruction->opcode,"DELETE_SEGMENT")==0)
 	{
-		enviar_contexto_a_kernel(ELIMINAR_SEGMENTO,cliente_fd, &contexto );
+		enviar_contexto_a_kernel(ELIMINAR_SEGMENTO,cliente_fd, contexto );
 	}
 
 	if(strcmp(instruction->opcode,"YIELD")==0)
 	{
-		enviar_contexto_a_kernel(DESALOJAR_PROCESO,cliente_fd, &contexto);
+		enviar_contexto_a_kernel(DESALOJAR_PROCESO,cliente_fd, contexto);
 		//poner contexto de ejecucion
 	}
 	if(strcmp(instruction->opcode,"EXIT")==0)
 	{
-		enviar_contexto_a_kernel(FINALIZAR_PROCESO,cliente_fd, &contexto);
+		enviar_contexto_a_kernel(FINALIZAR_PROCESO,cliente_fd, contexto);
 	}
 
 
 }
+void enviar_contexto_a_kernel(op_code opcode,int socket_cliente,t_contexto_ejec* proceso_a_ejecutar ){
 
-void enviar_contexto_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** contexto){
+	t_paquete* paquete = crear_paquete(opcode);
 
-	t_paquete* paquete = crear_paquete(code);
+		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->tamanio_lista), sizeof(int));
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete, (*contexto)->tamanio_lista, sizeof(int));
+		for(int i =0; i<proceso_a_ejecutar->tamanio_lista; i++){
+			t_instruccion* instruccion = list_get(proceso_a_ejecutar->lista_instrucciones, i);
 
-	for(int i =0; i< (*contexto)->tamanio_lista; i++){
-		t_instruccion* instruccion = list_get( (*contexto)->lista_instrucciones, i);
+			agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght);
 
-		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght);
+			agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+			agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+			agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
 
-		agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
-		agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
-		agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+		}
 
-	}
+		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->program_counter), sizeof(int));
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete,  (*contexto)->program_counter, sizeof(int));
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->AX, sizeof(char)*4);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->BX, sizeof(char)*4);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->CX, sizeof(char)*4);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->DX, sizeof(char)*4);
 
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->AX, sizeof(char)*4);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->BX, sizeof(char)*4);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->CX, sizeof(char)*4);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->DX, sizeof(char)*4);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->EAX, sizeof(char)*8);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->EBX, sizeof(char)*8);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->ECX, sizeof(char)*8);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->EDX, sizeof(char)*8);
 
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EAX, sizeof(char)*8);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EBX, sizeof(char)*8);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->ECX, sizeof(char)*8);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->EDX, sizeof(char)*8);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RAX, sizeof(char)*16);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RBX, sizeof(char)*16);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RCX, sizeof(char)*16);
+		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RDX, sizeof(char)*16);
 
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RAX, sizeof(char)*16);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RBX, sizeof(char)*16);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RCX, sizeof(char)*16);
-	agregar_a_paquete(paquete,  (*contexto)->registros_CPU->RDX, sizeof(char)*16);
 
-	enviar_paquete(paquete, cliente_fd);
-	eliminar_paquete(paquete);
+		enviar_paquete(paquete, socket_cliente);
+
+
+		eliminar_paquete(paquete);
 }
-
 void enviar_instruccion_a_kernel(op_code code,int cliente_fd,t_instruccion* instruccion )
 {
 	t_paquete* paquete = crear_paquete(code);
@@ -371,7 +361,7 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
  */
 
 //TODO resolver error
-void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion)
+void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
 {
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
 
