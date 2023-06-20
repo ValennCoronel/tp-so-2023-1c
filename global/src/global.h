@@ -135,7 +135,20 @@ typedef struct
 
 	t_temporal* temporal_ready;
 	t_temporal* temporal_ultimo_desalojo;
+
+	tabla_de_archivos_por_proceso archivos_abiertos;
 } t_pcb;
 
+typedef struct {
+	int fileDescriptor;
+	char file;
+	int open;
+}tabla_global_de_archivos_abiertos;
+
+typedef struct {
+	char file;
+	char permiso;
+	int puntero;
+}tabla_de_archivos_por_proceso;
 
 #endif /* GLOBAL_H_ */
