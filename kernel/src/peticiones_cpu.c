@@ -216,6 +216,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
+	/*
 	t_pcb* pcb_proceso;
 	int socket_consola = pcb_proceso->socket_server_id;
 	t_paquete paquete;
@@ -224,6 +225,12 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	serializar_paquete(paquete,sizeof(int));
 	enviar_paquete(paquete,socket_memoria);
 	eliminar_paquete(paquete);
+	*/
+
+	//Enviar mensaje a Consola informando que finalizo el proceso
+	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+	free(proceso_ejecutando);
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
 	return;
@@ -274,6 +281,10 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 				case OUT_OF_MEMORY:
 					// si no hay espacio disponible, ya sea contiguo o no contiguo,
 					//finalizo el proceso
+
+					//TODO pedir_finalizar_las_estructuras_de_memoria();
+					enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
 					destroy_proceso_ejecutando();
 					poner_a_ejecutar_otro_proceso();
 					break;
@@ -293,9 +304,9 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 					segmento_nuevo->direccion_base = direccion_base;
 
 
+					// lo agrego en al tabla de segmentos, pero no lo indexo por el id del segmento
+					list_add(proceso_ejecutando->tabla_segmentos->segmentos, segmento_nuevo);
 
-					// lo agrego en al tabla de segmentos, indexado por el id del segmento
-					list_add_in_index(proceso_ejecutando->tabla_segmentos->segmentos, (int) peticion_segmento->id_segmento, segmento_nuevo);
 
 					// actualizo la cantidad de segmentos de la tabla
 					proceso_ejecutando->tabla_segmentos->cantidad_segmentos += 1;
@@ -342,17 +353,25 @@ void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro*
 // 	incluido el del proceso ejecutandose actualmente en CPU
 void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 
-	int tamanio_tablas = list_size(tablas_de_segmentos_actualizadas);
+	// el -1 es porque descuento el proceso ejecutando de la lista
+	int tamanio_tablas = list_size(tablas_de_segmentos_actualizadas) -1;
 
-	// actualizo las tablas de cada proceso de la cola new
-	for(int i = 0; i< tamanio_tablas ; i++){
-		sem_wait(&m_cola_ready);
-		t_pcb* proceso_N = (t_pcb*) list_get(cola_ready->elements,i);
-		sem_post(&m_cola_ready);
+	sem_wait(&m_cola_ready);
+	int tamanio_cola_ready = queue_size(cola_ready);
+	sem_post(&m_cola_ready);
+
+	if(tamanio_cola_ready > 0){
+		// actualizo las tablas de cada proceso de la cola new
+		for(int i = 0; i< tamanio_tablas ; i++){
+			sem_wait(&m_cola_ready);
+			t_pcb* proceso_N = (t_pcb*) list_get(cola_ready->elements,i);
+			sem_post(&m_cola_ready);
 
 
-		actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_N);
+			actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_N);
+		}
 	}
+
 
 	// actualizo la tabla del proceso ejecutando actualmente
 	actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_ejecutando);
@@ -362,6 +381,12 @@ void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 // dada una lista de tablas de segmentos y un pcb, actualiza la tabla de segmentos del pcb con la tabla
 // 		que se encuentra en la lista de tablas que se recibe por parámetros
 void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pcb* proceso_a_actualizar){
+
+	int cantidad_de_tablas_actualizadas = list_size(tablas_de_segmentos_actualizadas);
+
+	if(cantidad_de_tablas_actualizadas == 0){
+		return;
+	}
 
 	// busco la tabla de segmentos del proceso en base a su PID
 	void *_encontrar_tabla_del_proceso(void*tabla_1, void* tabla_2){
@@ -380,8 +405,11 @@ void actualizar_tabla_del_proceso(t_list* tablas_de_segmentos_actualizadas, t_pc
 
 	// si no lo encuentra no la actualiza y la deja como estaba
 	if(tabla_actualizada->pid == proceso_a_actualizar->PID){
-		// libero la tabla anterior
-		destroy_tabla_de_segmentos(proceso_a_actualizar->tabla_segmentos);
+		if(proceso_a_actualizar->tabla_segmentos != NULL){
+			// libero la tabla anterior
+			destroy_tabla_de_segmentos(proceso_a_actualizar->tabla_segmentos);
+		}
+
 
 		// seteo con la nueva tabla actualizada
 		proceso_a_actualizar->tabla_segmentos = tabla_actualizada;
@@ -528,11 +556,7 @@ void destroy_proceso_ejecutando(){
 		//TODO finalizar el free de estas estructuras cuando se definan
 		void destructor_tabla_archivos (void* arg){}
 
-		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
-		agregar_a_paquete_sin_agregar_tamanio(paquete, proceso_ejecutando->tabla_segmentos,1);
-		serializar_paquete(paquete,sizeof(proceso_ejecutando->tabla_segmentos));
-		enviar_paquete(paquete, socket_memoria);
-		//enviar_mensaje("LIBERAR ESTRUCTURAS",socket_memoria,FINALIZAR_PROCESO_MEMORIA);
+
 		//Liberar PCB del proceso actual
 		list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
 
@@ -547,20 +571,7 @@ void destroy_proceso_ejecutando(){
 		temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
 
 
-
-		//TODO decomentar y completar cuando este implementada la funcion en memoria
-		// t_paquete* paquete = crear_paquete(TERMINAR_PROCESO);
-		// enviar_a_memoria(paquete);
-
-		// mensaje de prueba, borrarlo cuando este hecho lo de arriba
-		enviar_mensaje("Mensaje de prueba para desalojar memoria", socket_memoria, MENSAJE);
-
-		//Enviar mensaje a Consola informando que finalizo el proceso
-		enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
-
 		free(proceso_ejecutando);
-
-		poner_a_ejecutar_otro_proceso();
 }
 
 

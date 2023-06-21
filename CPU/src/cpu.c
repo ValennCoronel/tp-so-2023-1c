@@ -147,7 +147,6 @@ void escuchar_peticiones_kernel(t_log* logger, int server_fd, int RETARDO_INSTRU
 void manejar_peticion_al_cpu(int cliente_fd, int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 {
 
-	//TODO no existe recibir_paquete_pcb
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(cliente_fd);
 	t_list *lista = contexto->lista_instrucciones;
 
@@ -360,7 +359,6 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
  *
  */
 
-//TODO resolver error
 void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
 {
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
