@@ -1,5 +1,6 @@
 #include "kernel.h"
 
+
 int socket_cpu;
 int socket_kernel;
 int socket_memoria;

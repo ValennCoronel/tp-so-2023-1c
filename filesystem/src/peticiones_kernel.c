@@ -1,7 +1,7 @@
 #include "peticiones_kernel.h"
 
 
-// TODO responder con mensajes genéricos
+
 void abrir_archivo(int socket_kernel){
 /*
  * Esta operación consistirá en verificar que exista el FCB correspondiente al

@@ -50,7 +50,7 @@ void agregar_proceso_a_ready(int conexion_memoria);
 int puede_ir_a_ready(int grado_max_multiprogramacion);
 void agregar_cola_new(t_pcb* pcb_proceso);
 
-t_list* obtener_tabla_segmentos(int conexion_memoria);
+t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria);
 char* listar_pids_cola_ready(void);
 void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion);
 

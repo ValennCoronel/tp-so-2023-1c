@@ -136,7 +136,6 @@ typedef struct
 	t_temporal* temporal_ready;
 	t_temporal* temporal_ultimo_desalojo;
 
-	tabla_de_archivos_por_proceso archivos_abiertos;
 } t_pcb;
 
 typedef struct {
