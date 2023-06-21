@@ -260,8 +260,8 @@ void create_segment(){
 
 	t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(peticion_segmento->id_segmento), sizeof(uint32_t));
-	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
 
 	// enviar paquete serializado
 	enviar_paquete(paquete,socket_memoria);
@@ -272,82 +272,105 @@ void create_segment(){
 	contexto_ejecucion_destroy(contexto);
 }
 
+void manejar_escucha_out_of_memory(){
+	// si no hay espacio disponible, ya sea contiguo o no contiguo,
+	//finalizo el proceso
+
+	//recibo el texto, a pesar de que no lo uso para evitar errores de codigo de operación
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_memoria);
+	char* mensaje = malloc(size);
+	memcpy(mensaje, buffer,size);
+
+	//TODO pedir_finalizar_las_estructuras_de_memoria();
+	enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+	destroy_proceso_ejecutando();
+	poner_a_ejecutar_otro_proceso();
+}
+
+void manejar_escucha_crear_segmento(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
+	// en caso de que pudo crear el segmento,
+	// se recibe la dirección base de memoria
+	uint32_t direccion_base;
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_memoria);
+	memcpy(&direccion_base, buffer, sizeof(uint32_t));
+
+	// creo el nuevo segmento
+	t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
+
+	segmento_nuevo->id_segmento = peticion_segmento->id_segmento;
+	segmento_nuevo->tamano = peticion_segmento->tamano_segmento;
+	segmento_nuevo->direccion_base = direccion_base;
+
+
+	// lo agrego en al tabla de segmentos, pero no lo indexo por el id del segmento
+	list_add(proceso_ejecutando->tabla_segmentos->segmentos, segmento_nuevo);
+
+
+	// actualizo la cantidad de segmentos de la tabla
+	proceso_ejecutando->tabla_segmentos->cantidad_segmentos += 1;
+
+	// continuo con las siguientes instrucciones del proceso
+	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+}
+
+void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
+
+	//recibo el texto, a pesar de que no lo uso para evitar errores de codigo de operación
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_memoria);
+	char* mensaje = malloc(size);
+	memcpy(mensaje, buffer,size);
+
+	// se solicita compactar la memoria
+	enviar_mensaje("Compacta!!",socket_memoria, COMPACTAR_MEMORIA);
+
+	// luego se recibe las tablas de segmentos actualizadas
+	t_list* tablas_de_segmentos_actualizadas = (t_list*) recibir_tablas_de_segmentos();
+
+	//y actualizar la tabla de segmentos de cada proceso en la cola de ready
+	acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
+
+	// luego solicita a memoria otra vez de crear el segmento
+	t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+
+	// enviar paquete serializado
+	enviar_paquete(paquete, socket_memoria);
+
+	// de forma recursiva escucho y manejo las peticiones de memoria
+	// 	la recursión se rompe en un out_of_memory o con el segmento creado
+	escuchar_respuesta_memoria(contexto, peticion_segmento);
+}
+
 // escucha las respuestas de memoria pero es solo luego de intentar de crear el segmento
 void escuchar_respuesta_memoria(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
-		while(1){
 			int cod_op = recibir_operacion(socket_memoria);
 
 			switch (cod_op) {
 				case OUT_OF_MEMORY:
-					// si no hay espacio disponible, ya sea contiguo o no contiguo,
-					//finalizo el proceso
-
-					//TODO pedir_finalizar_las_estructuras_de_memoria();
-					enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
-
-					destroy_proceso_ejecutando();
-					poner_a_ejecutar_otro_proceso();
+					manejar_escucha_out_of_memory();
 					break;
 				case CREAR_SEGMENTO:
-					// en caso de que pudo crear el segmento,
-					// se recibe la dirección base de memoria
-					uint32_t direccion_base;
-					int size;
-					void *  buffer = recibir_buffer(&size, socket_memoria);
-					memcpy(&direccion_base, buffer, sizeof(uint32_t));
-
-					// creo el nuevo segmento
-					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
-
-					segmento_nuevo->id_segmento = peticion_segmento->id_segmento;
-					segmento_nuevo->tamano = peticion_segmento->tamano_segmento;
-					segmento_nuevo->direccion_base = direccion_base;
-
-
-					// lo agrego en al tabla de segmentos, pero no lo indexo por el id del segmento
-					list_add(proceso_ejecutando->tabla_segmentos->segmentos, segmento_nuevo);
-
-
-					// actualizo la cantidad de segmentos de la tabla
-					proceso_ejecutando->tabla_segmentos->cantidad_segmentos += 1;
-
-					// continuo con las siguientes instrucciones del proceso
-					enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+					manejar_escucha_crear_segmento(contexto, peticion_segmento);
 					break;
 				case COMPACTAR_MEMORIA:
-					// se solicita compactar la memoria
-					enviar_mensaje("Compacta!!",socket_memoria, COMPACTAR_MEMORIA);
-
-					// luego se recibe las tablas de segmentos actualizadas
-					t_list* tablas_de_segmentos_actualizadas = (t_list*) recibir_tablas_de_segmentos();
-
-					//y actualizar la tabla de segmentos de cada proceso en la cola de ready
-					acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
-
-					// luego solicita a memoria otra vez de crear el segmento
-					t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
-
-					agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(peticion_segmento->id_segmento), sizeof(uint32_t));
-					agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
-
-					// enviar paquete serializado
-					enviar_paquete(paquete, socket_memoria);
-
-					// de forma recursiva escucho y manejo las peticiones de memoria
-					// 	la recursión se rompe en un out_of_memory o con el segmento creado
-					escuchar_respuesta_memoria(contexto, peticion_segmento);
-
+					manejar_escucha_compactar(contexto, peticion_segmento);
 					break;
 				case -1:
 					log_error(logger, "Memoria se desconecto. Terminando servidor");
 					return ;
 					break;
 				default:
-					log_warning(logger,"Memoria Operacion desconocida. No quieras meter la pata" );
+					log_warning(logger,"Memoria Operacion desconocida. No quieras meter la pata!!" );
 					break;
 			}
-		}
 }
+
 
 // acutaliza las tablas de segmentos de todos los procesos que están en ready
 // 	incluido el del proceso ejecutandose actualmente en CPU
@@ -477,13 +500,10 @@ void delete_segment(){
 	t_paquete* paquete = crear_paquete(ELIMINAR_SEGMENTO);
 
 	//serializo el tamaño del segmento y el id del segmento
-	agregar_a_paquete_sin_agregar_tamanio(paquete, (void*) &(segmento_a_eliminar->id_segmento),sizeof(uint32_t) );
+	agregar_a_paquete_sin_agregar_tamanio(paquete,&(segmento_a_eliminar->id_segmento),sizeof(uint32_t) );
 
 	//se envía a memoria
 	enviar_paquete(paquete, socket_memoria);
-
-	// continuo con las siguientes instrucciones del proceso
-	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 
 	// espero a la respuesta de memoria
 	int cod_op = recibir_operacion(socket_memoria);
@@ -501,6 +521,8 @@ void delete_segment(){
 		proceso_ejecutando->tabla_segmentos = tabla_de_segmentos_actualizada;
 	}
 
+	// continuo con las siguientes instrucciones del proceso
+	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 }
 
 void compactar_memoria(){

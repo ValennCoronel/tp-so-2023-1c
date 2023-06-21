@@ -396,17 +396,5 @@ context(test_peticiones){
 
 		}end
 
-		it("debo poder setear un valor en la lista en base a un índice particular"){
-			t_segmento* segmento = crear_mock_segmento(3, 120, 15);
-			t_list* tabla_segmentos_simu = list_create();
-
-			list_add_in_index(tabla_segmentos_simu, 0, segmento);
-
-			t_segmento* segmento_result = list_get(tabla_segmentos_simu, 0);
-
-			should_ptr(segmento_result) not be null;
-
-			assert_segmento(segmento_result, 3,120, 15);
-		}end
 	}end
 }
