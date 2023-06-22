@@ -182,6 +182,9 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 	while(desplazamiento < size )
 	{
 
+		memcpy(&(contexto_ejecucion->pid), buffer+desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+
 		memcpy(&tamanio_lista, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 
@@ -271,6 +274,31 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 		desplazamiento+=sizeof(int);
 		memcpy(contexto_ejecucion->registros_CPU->RDX, buffer + desplazamiento,tamanio_registro);
 		desplazamiento+=tamanio_registro;
+
+		// recibo tabla de segmentos
+
+		memcpy(&(contexto_ejecucion->tabla_de_segmentos->pid), buffer+desplazamiento, sizeof(uint32_t));
+		desplazamiento+=sizeof(uint32_t);
+		memcpy(&(contexto_ejecucion->tabla_de_segmentos->cantidad_segmentos), buffer+desplazamiento, sizeof(uint32_t));
+		desplazamiento+=sizeof(uint32_t);
+
+		int tamanio_sementos;
+		memcpy(&(tamanio_sementos), buffer+desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+
+		for(int i =0; i<tamanio_sementos; i++){
+			t_segmento* segmento = malloc(sizeof(t_segmento));
+
+			memcpy(&(segmento->direccion_base), buffer+desplazamiento, sizeof(uint32_t));
+			desplazamiento+=sizeof(uint32_t);
+			memcpy(&(segmento->id_segmento), buffer+desplazamiento, sizeof(uint32_t));
+			desplazamiento+=sizeof(uint32_t);
+			memcpy(&(segmento->tamano), buffer+desplazamiento, sizeof(uint32_t));
+			desplazamiento+=sizeof(uint32_t);
+
+			list_add(contexto_ejecucion->tabla_de_segmentos->segmentos, segmento);
+		}
+
 	}
 
 	contexto_ejecucion->lista_instrucciones = lista_instrucciones;
@@ -282,13 +310,28 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 	return contexto_ejecucion;
 }
 
+
 void instruccion_destroy(t_instruccion* instruccion){
     free(instruccion->opcode);
-    free(instruccion->parametros[0]);
 
-    free(instruccion->parametros[1]);
+    if(instruccion->parametro1_lenght != 0 && instruccion->parametro2_lenght != 0 && instruccion->parametro3_lenght != 0){
 
-    free(instruccion->parametros[2]);
+    	free(instruccion->parametros[0]);
+		free(instruccion->parametros[1]);
+		free(instruccion->parametros[2]);
+
+    } else if(instruccion->parametro1_lenght != 0 && instruccion->parametro2_lenght != 0 ){
+
+    	free(instruccion->parametros[0]);
+		free(instruccion->parametros[1]);
+
+    } else if(instruccion->parametro1_lenght != 0 ){
+
+    	free(instruccion->parametros[0]);
+
+    }
+
+
     free(instruccion);
 }
 

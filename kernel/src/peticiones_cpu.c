@@ -6,6 +6,25 @@ t_dictionary* recurso_bloqueado;
 sem_t esperar_proceso_ejecutando;
 
 
+void manejar_seg_fault(int socket_cliente){
+	// si se escribe en un segmento inválido
+	//finalizo el proceso
+
+	//recibo el contexto de cpu, a pesar de que no lo uso para evitar errores de codigo de operación
+	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
+
+	//TODO pedir_finalizar_las_estructuras_de_memoria();
+
+	enviar_mensaje("SEG_FAULT !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+	log_info(logger, "FInaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
+
+	contexto_ejecucion_destroy(contexto);
+	destroy_proceso_ejecutando();
+	poner_a_ejecutar_otro_proceso();
+}
+
+
 void* simulacion_io(void* arg){
 	t_argumentos_simular_io* argumentos = (t_argumentos_simular_io* ) arg;
 	int tiempo_io = argumentos->tiempo_io;
@@ -60,6 +79,9 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	rafaga_proceso_ejecutando = NULL;
 
 	sem_wait(&esperar_proceso_ejecutando);
+
+	log_info(logger, "PID: %d - Ejecuta IO: %d", contexto->pid,tiempo_io);
+
 	poner_a_ejecutar_otro_proceso();
 
 	//destruyo el contexto de ejecucion
@@ -67,7 +89,7 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 }
 
 
-void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible){
+void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible, int cantidad_de_recursos){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
@@ -77,7 +99,14 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	// si no existe el recurso finaliza
 	if(indice_recurso == -1){
 
-	 	 //llamar a finalizarProceso
+		//TODO pedir_finalizar_las_estructuras_de_memoria();
+		enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+		log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
+
+		contexto_ejecucion_destroy(contexto);
+		destroy_proceso_ejecutando();
+		poner_a_ejecutar_otro_proceso();
+
 		return;
 	}
 
@@ -87,14 +116,20 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	} else {
 		recurso_disponible[indice_recurso] -= 1;
 	}
-	// avisa a consola y continua ejecutandose el mismo proceso
-	enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, socket_cliente);
+
+	char* recursos_disponibles_string = listar_recursos_disponibles(recurso_disponible, cantidad_de_recursos);
+	log_info(logger, "PID: %d - Wait: %s - Instancias: [%s]", contexto->pid,recursos[indice_recurso], recursos_disponibles_string);
+
+	free(recursos_disponibles_string);
+
+	// continua ejecutandose el mismo proceso
+	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cliente);
 
 	//destruyo el contexto de ejecucion
 	contexto_ejecucion_destroy(contexto);
 }
 
-void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible, int grado_max_multiprogramacion){
+void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible, int grado_max_multiprogramacion, int cantidad_de_recursos){
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
 
@@ -105,8 +140,13 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 		// si no existe el recurso finaliza
 		if(indice_recurso == -1){
 
-		 	 //llamar a finalizarProceso
+			//TODO pedir_finalizar_las_estructuras_de_memoria();
+			enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+			log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 
+			contexto_ejecucion_destroy(contexto);
+			destroy_proceso_ejecutando();
+			poner_a_ejecutar_otro_proceso();
 			return;
 		}
 
@@ -121,24 +161,19 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 			pasar_a_ready(proceso_desbloqueado,grado_max_multiprogramacion);
 		}
 
-		// avisa a consola y continua ejecutandose el mismo proceso
-		enviar_contexto_de_ejecucion_a(contexto, PROCESAR_INSTRUCCIONES, cliente_fd);
+
+		char* recursos_disponibles_string = listar_recursos_disponibles(recurso_disponible, cantidad_de_recursos);
+		log_info(logger, "PID: %d - Signal: %s - Instancias: [%s]", contexto->pid,recursos[indice_recurso], recursos_disponibles_string);
+
+		free(recursos_disponibles_string);
+		//continua ejecutandose el mismo proceso
+		enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, cliente_fd);
 
 		//destruyo el contexto de ejecucion
 		contexto_ejecucion_destroy(contexto);
 
 }
 
-//para manejar otras peticiones de cpu a kernel como crear un segmento de memoria o alguna de file system
-void manejar_peticion_al_kernel(int socket_cliente){
-	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
-
-	// verificar que tipo de peticion es
-	//manejar cada peticion según corresponda
-
-	//destruyo el contexto de ejecucion
-	contexto_ejecucion_destroy(contexto);
-}
 
 void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	//deserializa el contexto de ejecucion
@@ -230,6 +265,8 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
+	log_info(logger, "FInaliza el proceso %d - Motivo: SUCCESS", proceso_ejecutando->PID);
+
 	free(proceso_ejecutando);
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
@@ -237,15 +274,6 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 }
 
 
-//Funcion que envia un paquete a memoria con un codigo de operacion
-void enviar_a_memoria(op_code codigo, int socket_memoria, void* valor){
-	t_paquete* paquete = crear_paquete(codigo);
-	paquete->buffer = valor;
-	enviar_paquete(paquete, socket_memoria);
-
-	eliminar_paquete(paquete);
-
-}
 
 void create_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
@@ -266,6 +294,8 @@ void create_segment(){
 	// enviar paquete serializado
 	enviar_paquete(paquete,socket_memoria);
 
+	log_info(logger, "PID: %d - Crear Segmento - Id: %d - Tamaño: %d", contexto->pid, peticion_segmento->id_segmento, peticion_segmento->tamano_segmento);
+
 	// escuha y maneja en cualquiera de los 3 posibles casos de la respuesta de memoria
 	escuchar_respuesta_memoria(contexto, peticion_segmento);
 
@@ -284,6 +314,8 @@ void manejar_escucha_out_of_memory(){
 
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 	enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+	log_info(logger, "FInaliza el proceso %d - Motivo: OUT_OF_MEMORY", proceso_ejecutando->PID);
 
 	destroy_proceso_ejecutando();
 	poner_a_ejecutar_otro_proceso();
@@ -505,6 +537,10 @@ void delete_segment(){
 	//se envía a memoria
 	enviar_paquete(paquete, socket_memoria);
 
+
+	log_info(logger, "PID: %d - Eliminar Segmento - Id Segmento: %d", contexto->pid, segmento_a_eliminar->id_segmento);
+
+
 	// espero a la respuesta de memoria
 	int cod_op = recibir_operacion(socket_memoria);
 
@@ -596,4 +632,28 @@ void destroy_proceso_ejecutando(){
 		free(proceso_ejecutando);
 }
 
+char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_recursos){
+
+		char** recursos_disponibles_string_array = string_array_new();
+		char* recursos_disponibles_string = string_new();
+
+
+		for(int i =0; i< cantidad_de_recursos; i++){
+			int diponibilidad_recurso_n = recursos_disponibles[i];
+
+			string_array_push(&recursos_disponibles_string_array, string_itoa(diponibilidad_recurso_n));
+		}
+
+
+		void crear_string(char *recurso_disponible_string){
+		    string_append(&recursos_disponibles_string, recurso_disponible_string);
+		    string_append(&recursos_disponibles_string, ",");
+		}
+
+		string_iterate_lines(recursos_disponibles_string_array,crear_string);
+
+		string_array_destroy(recursos_disponibles_string_array);
+
+		return recursos_disponibles_string ;
+}
 

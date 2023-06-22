@@ -361,21 +361,18 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 				case HANDSHAKE:
 					manejar_handshake_del_cliente(cliente_fd);
 					break;
-				case TERMINAR_PROCESO:
+				case FINALIZAR_PROCESO:
 					finalizarProceso(cliente_fd,conexion_memoria);
 					break;
 				case BLOQUEAR_PROCESO:
 					bloquear_proceso_IO(cliente_fd,grado_max_multiprogramacion);
 					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
-				case PETICION_KERNEL:
-					manejar_peticion_al_kernel(cliente_fd);
-					break;
 				case APROPIAR_RECURSOS:
-					apropiar_recursos(cliente_fd, recursos, recursos_disponibles);
+					apropiar_recursos(cliente_fd, recursos, recursos_disponibles, cantidad_de_recursos);
 					break;
 				case DESALOJAR_RECURSOS:
-					desalojar_recursos(cliente_fd, recursos, recursos_disponibles,grado_max_multiprogramacion);
+					desalojar_recursos(cliente_fd, recursos, recursos_disponibles,grado_max_multiprogramacion, cantidad_de_recursos);
 					break;
 				case DESALOJAR_PROCESO:
 					desalojar_proceso(cliente_fd,grado_max_multiprogramacion);
@@ -406,6 +403,9 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 				case ESCRIBIR_ARCHIVO:
 					break;
 				case CREAR_ARCHIVO:
+					break;
+				case SEG_FAULT:
+					manejar_seg_fault();
 					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor");

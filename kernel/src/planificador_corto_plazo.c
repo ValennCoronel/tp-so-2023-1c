@@ -41,6 +41,8 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	contexto_ejecucion->lista_instrucciones = proceso_a_ejecutar->instrucciones;
 	contexto_ejecucion->program_counter = proceso_a_ejecutar->program_counter;
 	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
+	contexto_ejecucion->pid = proceso_a_ejecutar->PID;
+	contexto_ejecucion->tabla_de_segmentos = proceso_a_ejecutar->tabla_segmentos;
 
 	proceso_ejecutando = proceso_a_ejecutar;
 
@@ -88,6 +90,9 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 	contexto_ejecucion->program_counter = proceso_a_ejecutar->program_counter;
 	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
 	contexto_ejecucion->registros_CPU = proceso_a_ejecutar->registros_CPU;
+	contexto_ejecucion->pid = proceso_a_ejecutar->PID;
+
+	contexto_ejecucion->tabla_de_segmentos = proceso_a_ejecutar->tabla_segmentos;
 
 	proceso_ejecutando = proceso_a_ejecutar;
 
@@ -131,7 +136,9 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 
 	t_paquete* paquete = crear_paquete(opcode);
 
-		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->tamanio_lista), sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->pid), sizeof(int));
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->tamanio_lista), sizeof(int));
 
 		for(int i =0; i<proceso_a_ejecutar->tamanio_lista; i++){
 			t_instruccion* instruccion = list_get(proceso_a_ejecutar->lista_instrucciones, i);
@@ -144,7 +151,7 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 
 		}
 
-		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->program_counter), sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->program_counter), sizeof(int));
 
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->AX, sizeof(char)*4);
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->BX, sizeof(char)*4);
@@ -161,6 +168,23 @@ void enviar_contexto_de_ejecucion_a(t_contexto_ejec* proceso_a_ejecutar, op_code
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RCX, sizeof(char)*16);
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RDX, sizeof(char)*16);
 
+
+		// agrego la tabla de segmentos
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->tabla_de_segmentos->pid), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->tabla_de_segmentos->cantidad_segmentos), sizeof(uint32_t));
+
+		int tamanio_tabla = list_size(proceso_a_ejecutar->tabla_de_segmentos->segmentos);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tamanio_tabla), sizeof(int));
+
+		for(int i =0; i<tamanio_tabla ; i++){
+			t_segmento* segmento = list_get(proceso_a_ejecutar->tabla_de_segmentos->segmentos,i);
+
+
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->direccion_base), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->id_segmento), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->tamano), sizeof(uint32_t));
+		}
 
 		enviar_paquete(paquete, socket_cliente);
 
