@@ -7,7 +7,7 @@ int socket_memoria;
 int socket_fs;
 
 //Tablas del FS
-t_list tabla_gaa;
+t_list* tabla_gaa;
 
 
 int main(void){
@@ -393,7 +393,7 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					compactar_memoria();
 					break;
 				case ABRIR_ARCHIVO:
-					f_open(cliente_fd);
+					f_open();
 					break;
 				case CERRAR_ARCHIVO:
 					break;
@@ -434,15 +434,21 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 			enviar_paquete(paquete, socket_fs);
 	}
 
-	//Busca un archivo en la tabla global, si existe lo abre, si no existe le solicita al FS que lo busque o lo cree
-	void f_open(int cliente_fd){
-		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
+
+	void f_open(){
+		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
 
 		//busco si la instruccion esta en la tabla global de archivos
-		tabla_global_de_archivos_abiertos archivo = list_find(tabla_gaa, criterio_archivos()); // TODO esta funcion esta mal utilizada
 
-		if(archivo != NULL){
+		bool buscar_archivo(void* element){
+			tabla_global_de_archivos_abiertos* aux = (tabla_global_de_archivos_abiertos*)element;
+			return aux->file == instruccion->parametros[0];
+		}
+
+		tabla_global_de_archivos_abiertos* resultado = list_find(tabla_gaa, buscar_archivo);
+
+		if(resultado != NULL){
 			//Enviar a la cola de bloqueados esperando la apertura del archivo
 
 		}else{
@@ -451,35 +457,20 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 		}
 	}
 
+
+
+
+
+
 	//Cierra la instancia de un archivo abierto, si ya no hay mas procesos solicitando el archivo lo saca de la tabla global, sino reduce el contador de archivos abiertos
 	void f_close(int cliente_fd){
-		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
-		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
-
-		tabla_global_de_archivos_abiertos archivo = list_find(tabla_gaa, criterio_archivos());  //TODO esta funcion esta mal utilizada
-
-		if(archivo != NULL && archivo.open == 1){
-			//Cerrar archivo y eliminarlo de la tabla global y la tabla de archivos por proceso
-			fclose(archivo.file);
-			list_remove_element(tabla_gaa, archivo);
-			list_remove_element();
-		}
 
 	}
 
 	void f_seek(int cliente_fd){
-		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
-		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
 
 	}
 
-	int criterio_archivos(t_instruccion a, t_instruccion b)
-	{
-		if(a.parametros[0] == b.parametros[0])
-			return 1;
-		else
-			return 0;
-	}
 
 
 	void enviar_cola_archivos_bloqueados(t_instruccion instruccion){
