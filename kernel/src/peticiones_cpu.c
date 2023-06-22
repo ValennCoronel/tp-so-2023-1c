@@ -216,21 +216,27 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
-	/*
-	t_pcb* pcb_proceso;
-	int socket_consola = pcb_proceso->socket_server_id;
-	t_paquete paquete;
-	crear_paquete(FINALIZAR_PROCESO_MEMORIA);
-	agregar_a_paquete(paquete,socket_consola,sizeof(int));
-	serializar_paquete(paquete,sizeof(int));
+	t_tabla_de_segmento *tabla = (t_tabla_de_segmento*)malloc(sizeof(t_tabla_de_segmento));
+	tabla->cantidad_segmentos = proceso_ejecutando->tabla_segmentos->cantidad_segmentos;
+	tabla->pid = proceso_ejecutando->tabla_segmentos->pid;
+	tabla->segmentos = proceso_ejecutando->tabla_segmentos->segmentos;
+
+	//agrego en el paquete, serializo y envio
+	t_paquete *paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
+	agregar_a_paquete_sin_tamanio(paquete,tabla->cantidad_segmentos,sizeof(uint32_t));
+	agregar_a_paquete_sin_tamanio(paquete,tabla->pid,sizeof(uint32_t));
+	agregar_a_paquete(paquete,tabla->segmentos,sizeof(tabla->segmentos));
 	enviar_paquete(paquete,socket_memoria);
+
+	//libero
 	eliminar_paquete(paquete);
-	*/
+	free(tabla->cantidad_segmentos);
+	free(tabla->pid);
+	free(tabla->segmentos);
+	free(tabla);
 
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
-
-	free(proceso_ejecutando);
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
 	return;
