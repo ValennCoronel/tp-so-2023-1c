@@ -40,6 +40,7 @@ typedef enum
 	READ_MEMORY,
 	WRITE_MEMORY,
 	OUT_OF_MEMORY,
+	SEG_FAULT,
 	// filesystem
 	ABRIR_ARCHIVO,
 	CERRAR_ARCHIVO,
@@ -77,16 +78,7 @@ typedef struct {
     char RDX[16]; // Registro de 16 bytes
 } registros_CPU;
 
-typedef struct
-{
-	int tamanio_lista;
-	t_list* lista_instrucciones;
-	int program_counter;
 
-	registros_CPU* registros_CPU;
-
-
-} t_contexto_ejec;
 
 
 
@@ -149,5 +141,17 @@ typedef struct {
 	char permiso;
 	int puntero;
 }tabla_de_archivos_por_proceso;
+
+typedef struct
+{
+	int pid;
+	int tamanio_lista;
+	t_list* lista_instrucciones;
+	int program_counter;
+
+	registros_CPU* registros_CPU;
+	t_tabla_de_segmento* tabla_de_segmentos;
+
+} t_contexto_ejec;
 
 #endif /* GLOBAL_H_ */
