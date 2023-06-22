@@ -48,7 +48,7 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	rafaga_proceso_ejecutando = temporal_create();
 
 	//Lo envio proceso a CPU
-	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
+	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PETICION_CPU, socket_cpu);
 
 
 	contexto_ejecucion_destroy(contexto_ejecucion);
@@ -94,7 +94,7 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 	//inicio cronometro para contar las rafagas del proceco a ejecutar
 	rafaga_proceso_ejecutando = temporal_create();
 
-	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PROCESAR_INSTRUCCIONES, socket_cpu);
+	enviar_contexto_de_ejecucion_a(contexto_ejecucion, PETICION_CPU, socket_cpu);
 
 	contexto_ejecucion_destroy(contexto_ejecucion);
 }

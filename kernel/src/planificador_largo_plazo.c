@@ -7,7 +7,6 @@ t_temporal* rafaga_proceso_ejecutando;
 
 
 sem_t consumidor;
-//TODO cambiar estos por un mutex real
 sem_t m_cola_ready;
 sem_t m_cola_new;
 

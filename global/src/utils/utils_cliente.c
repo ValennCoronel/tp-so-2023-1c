@@ -79,7 +79,7 @@ void agregar_a_paquete_sin_agregar_tamanio(t_paquete* paquete, void* valor, int 
 {
 	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio);
 
-	memcpy(paquete->buffer->stream + paquete->buffer->size , &valor, tamanio);
+	memcpy(paquete->buffer->stream + paquete->buffer->size , valor, tamanio);
 
 	paquete->buffer->size += tamanio;
 }

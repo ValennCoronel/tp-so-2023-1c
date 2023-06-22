@@ -313,13 +313,17 @@ void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion){
 }
 
 void destroy_tabla_de_segmentos(t_tabla_de_segmento* tabla_a_borrar){
-	void _destroy_segmentos(void* segmento){
-		t_segmento* segmento_a_borrar = (t_segmento*)segmento;
+	int segmentos_count = list_size(tabla_a_borrar->segmentos);
+	if(segmentos_count > 0){
+		void _destroy_segmentos(void* segmento){
+			t_segmento* segmento_a_borrar = (t_segmento*)segmento;
 
-		free(segmento_a_borrar);
+			free(segmento_a_borrar);
+		}
+
+		list_clean_and_destroy_elements(tabla_a_borrar->segmentos, _destroy_segmentos);
 	}
 
-	list_clean_and_destroy_elements(tabla_a_borrar->segmentos, _destroy_segmentos);
 	free(tabla_a_borrar);
 }
 
