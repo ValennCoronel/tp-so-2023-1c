@@ -176,6 +176,7 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 	int pid = valores_recibidos->pid;
 
+
 	t_list* huecos_posibles = check_espacio_contiguo(peticion_segmento->tamano_segmento);
 
 	if(list_size(huecos_posibles) == 0){
@@ -213,6 +214,8 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 		agregar_nuevo_segmento_a(pid, nuevo_segmento);
 
+		log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,peticion_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
+
 		t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
 
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(nuevo_segmento->direccion_base), sizeof(uint32_t));
@@ -235,6 +238,9 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 	// acutalizo la tabla del proceso correspondiente
 	agregar_nuevo_segmento_a(pid, nuevo_segmento);
+
+	log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,peticion_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
+
 
 	// envio la direccion base del nuevo segmento a kernel
 
