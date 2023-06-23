@@ -301,6 +301,7 @@ void create_segment(){
 
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(contexto->pid), sizeof(int));
 
 	// enviar paquete serializado
 	enviar_paquete(paquete,socket_memoria);
