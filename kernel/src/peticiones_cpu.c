@@ -258,27 +258,28 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 	//agrego en el paquete, serializo y envio
 	t_paquete *paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
-	agregar_a_paquete_sin_tamanio(paquete,tabla->cantidad_segmentos,sizeof(uint32_t));
-	agregar_a_paquete_sin_tamanio(paquete,tabla->pid,sizeof(uint32_t));
-	agregar_a_paquete(paquete,tabla->segmentos,sizeof(tabla->segmentos));
+	agregar_a_paquete_sin_agregar_tamanio(paquete,&(tabla->cantidad_segmentos),sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete,&(tabla->pid),sizeof(uint32_t));
+
+	// tabla->cantidad_segmento == list_size(tabla->segmentos) porque guardan el mismo valor
+	for(int i =0; i< tabla->cantidad_segmentos ; i++){
+		t_segmento* segmento_N = list_get(tabla->segmentos, i);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->id_segmento), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->direccion_base), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->tamano), sizeof(uint32_t));
+	}
+
 	enviar_paquete(paquete,socket_memoria);
 
 	//libero
 	eliminar_paquete(paquete);
-	free(tabla->cantidad_segmentos);
-	free(tabla->pid);
-	free(tabla->segmentos);
-	free(tabla);
 
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
-<<<<<<< HEAD
-=======
 
 	log_info(logger, "FInaliza el proceso %d - Motivo: SUCCESS", proceso_ejecutando->PID);
 
-	free(proceso_ejecutando);
->>>>>>> 956c85877ff879d0f4c2ba12a76d371d9bbd49f5
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
 	return;
