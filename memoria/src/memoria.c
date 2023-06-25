@@ -388,7 +388,7 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 
 	t_tabla_de_segmento* tabla_del_proceso = buscar_tabla_de(pid);
 
-	if(tabla_del_proceso == NULL){
+	if(tabla_del_proceso == NULL || segmento == NULL){
 		return;
 	}
 
@@ -408,6 +408,10 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 		return;
 	}
 
+	// actualizo la tabla del proceso
+
+	tabla_del_proceso->cantidad_segmentos +=1;
+
 	//uso el segmento
 	segmento_a_actualizar->direccion_base = segmento->direccion_base;
 	segmento_a_actualizar->id_segmento = segmento->id_segmento;
@@ -422,6 +426,11 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
  */
 t_segmento* determinar_hueco_a_ocupar(t_list* huecos_candidatos, char* algoritmo_asignacion){
 	t_segmento* hueco_a_ocupar;
+
+	//si no hay ningun hueco devuelve null
+	if(list_size(huecos_candidatos) == 0){
+		return NULL;
+	}
 
 	if(strcmp(algoritmo_asignacion,"FIRST")==0){
 		hueco_a_ocupar = first_fit(huecos_candidatos);

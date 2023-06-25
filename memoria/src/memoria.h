@@ -26,6 +26,11 @@
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 
+// esto lo agrego para poder hacer tests
+extern t_list* huecos_libres;
+extern void* espacio_usuario;
+extern t_list* tablas_de_segmentos_de_todos_los_procesos;
+extern t_segmento* segmento_0;
 
 typedef struct {
 
