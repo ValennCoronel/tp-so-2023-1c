@@ -50,6 +50,8 @@ int main(void){
 		terminar_programa(logger, config);
 	}
 
+	//CREAR SEGMENTO 0
+	t_tabla_de_segmento* segmento_0 = (t_tabla_de_segmento*)malloc(tam_segmento_0);
 
 	//Escucho conexiones del Kernel, CPU y File System
 	socket_memoria = iniciar_servidor(puerto_escucha);
@@ -261,12 +263,52 @@ void delete_segment(int cliente_fd){
 
 
 
-void crear_nuevo_proceso(int socket_cliente){
-	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernell
+void crear_nuevo_proceso(int socket_cliente,char* algoritmo_asignacion){
+	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernel
+
+	t_tabla_de_segmento* tabla = (t_tabla_de_segmento *)malloc(sizeof(t_tabla_de_segmento)*16);
+	t_paquete* paquete = crear_paquete(NUEVO_PROCESO_MEMORIA);
+
 }
 
 void finalizar_proceso_memoria(int cliente_fd){
+	// recibe paquete del kernel
+	// usando el pid, busca los segmentos a eliminar
+	// despues de eliminar los segmentos, eliminamos la tabla de segmentos
 
+	//recibo paquete
+	t_list* tabla = recibir_paquete(cliente_fd);
+
+	//DESERIALIZO
+	t_tabla_de_segmento* tabla_paquete;
+	int desplazamiento = 0;
+	memcpy(tabla_paquete->cantidad_segmentos,tabla->head,sizeof(uint32_t));
+	desplazamiento += sizeof(uint32_t);
+	memcpy(tabla_paquete->pid,tabla->head + desplazamiento,sizeof(uint32_t));
+	desplazamiento += sizeof(uint32_t);
+	for(int i =0; i< tabla_paquete->cantidad_segmentos ; i++){
+
+			t_segmento* segmento_N;
+			memcpy(segmento_N->id_segmento,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+			memcpy(segmento_N->direccion_base,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+			memcpy(segmento_N->tamano,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+
+			list_add(tabla_paquete->segmentos,segmento_N);
+
+		}
+
+	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(tabla_paquete->pid);
+	if(tabla_buscada != NULL)
+	{
+		destroy_tabla_de_segmentos(tabla_buscada);
+	}
+	else
+	{
+		log_error(logger,"ERROR, NO SE ENCONTRO EL SEGMENTO");
+	}
 }
 
 void acceder_espacio_ususario(int cliente_fd){
@@ -490,6 +532,3 @@ t_segmento* best_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento){
 
 	return list_get_minimum(huecos_candidatos, _calcular_minimo);
 }
-
-
-

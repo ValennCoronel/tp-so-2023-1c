@@ -278,7 +278,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	//Enviar mensaje a Consola informando que finalizo el proceso
 	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
-	log_info(logger, "FInaliza el proceso %d - Motivo: SUCCESS", proceso_ejecutando->PID);
+	log_info(logger, "Finaliza el proceso %d - Motivo: SUCCESS", proceso_ejecutando->PID);
 
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
