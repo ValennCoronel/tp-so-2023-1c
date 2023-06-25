@@ -27,6 +27,7 @@
 typedef struct {
 	int grado_max_multiprogramacion;
 	int conexion_memoria;
+	char* algoritmo_planificacion;
 }planificar_nuevos_procesos_largo_plazo_args;
 
 
@@ -46,11 +47,11 @@ extern sem_t consumidor;
 
 void inicializar_colas_y_semaforos();
 void *planificar_nuevos_procesos_largo_plazo(void *arg);
-void agregar_proceso_a_ready(int conexion_memoria);
+void agregar_proceso_a_ready(int conexion_memoria,  char* algoritmo_planificacion);
 int puede_ir_a_ready(int grado_max_multiprogramacion);
 void agregar_cola_new(t_pcb* pcb_proceso);
 
-t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria);
+t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria, int pid);
 char* listar_pids_cola_ready(void);
 void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion);
 

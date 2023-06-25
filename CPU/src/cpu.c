@@ -324,6 +324,22 @@ void enviar_contexto_a_kernel(op_code opcode,int socket_cliente,t_contexto_ejec*
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->RDX, sizeof(char)*16);
 
 
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->tabla_de_segmentos->pid), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->tabla_de_segmentos->cantidad_segmentos), sizeof(uint32_t));
+
+		int tamanio_tabla = list_size(proceso_a_ejecutar->tabla_de_segmentos->segmentos);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tamanio_tabla), sizeof(int));
+
+		for(int i =0; i<tamanio_tabla ; i++){
+			t_segmento* segmento = list_get(proceso_a_ejecutar->tabla_de_segmentos->segmentos,i);
+
+
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->direccion_base), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->id_segmento), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento->tamano), sizeof(uint32_t));
+		}
+
 		enviar_paquete(paquete, socket_cliente);
 
 

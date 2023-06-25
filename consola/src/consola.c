@@ -31,7 +31,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	if(config == NULL){
 		log_error(logger, "No se pudo iniciar el archivo de configuración !!");
 
-		terminar_programa(config);
+		terminar_programa(config, NULL);
 	}
 
 	//Levantar datos de config a variables
@@ -43,7 +43,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	if(!ip_kernel || !puerto_kernel ){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'PUERTO_KERNEL', 'IP_KERNEL");
 
-		terminar_programa(config);
+		terminar_programa(config, NULL);
 	}
 
 	//Realizo la conexion con kernel
@@ -53,7 +53,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	if(result_conexion == -1){
 		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
 
-		terminar_programa(config);
+		terminar_programa(config, NULL);
 
 	}
 
@@ -131,18 +131,31 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 
 			paquete_instruccion(lista_instrucciones); //Serializo la lista y la envio a kernel
 
-			while(1);
+			// se queda en la espera de la finalizacion del proceso por parte del kernel
+			esperar_a_finalizar_proceso();
+
 			free(cadena);
 
 			//Cerrar archivo
-			fclose(archivo);
-			printf("\n\n Se ha leido el archivo correctamente");
+			;
 
+			terminar_programa(config, archivo);
 
 
 } //FIN DEL MAIN
 
+void esperar_a_finalizar_proceso(){
+	int cod_op = recibir_operacion(conexion_kernel);
+	//if(cod_op == FINALIZAR_PROCESO){
 
+	//}
+
+	int size;
+	char* buffer = recibir_buffer(&size, conexion_kernel);
+
+
+	log_info(logger, "Se recibió: %s de kernel con codigo: %d", buffer, cod_op);
+}
 
 
 //Funciones de inicio de Config y Logger
@@ -162,10 +175,11 @@ t_config* iniciar_config(char* archivo){
 
 
 //Funcion para finalizar el programa
-void terminar_programa(t_config* config){
+void terminar_programa(t_config* config, FILE* pseudocodigo){
 	log_destroy(logger);
 	config_destroy(config);
 	close(conexion_kernel);
+	fclose(pseudocodigo);
 }
 
 
@@ -177,10 +191,17 @@ int conectar_modulo(char* ip, char* puerto){
 	//enviar handshake
 	enviar_mensaje("OK", conexion_kernel, HANDSHAKE);
 
+
+	op_code cod_op = recibir_operacion(conexion_kernel);
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
+
 	int size;
 	char* buffer = recibir_buffer(&size, conexion_kernel);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
 
@@ -280,14 +301,6 @@ void evniar_a_kernel(int tamnio_paquete, t_paquete* paquete){
 	// Enviamos el paquete
 	send(conexion_kernel, a_enviar, tamnio_paquete, 0);
 
-	// se queda en la espera de la finalizacion del proceso por parte del kernel
-	char* mensaje = recibir_mensaje(conexion_kernel);
-
-	if(strcmp(mensaje, "OK") == 0){
-		log_info(logger, "Proceso finalizado");
-	}
-
-	free(mensaje);
 	free(a_enviar);
 }
 

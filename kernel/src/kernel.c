@@ -28,11 +28,6 @@ int main(void){
 	char** recursos;
 	char** instancias_recursos;
 
-	// Variables de testeeo de conexion
-	int conexion_memoria;
-	int conexion_filesystem;
-	int conexion_cpu;
-
 
 
 	// Iniciar archivos de log y configuracion:
@@ -78,8 +73,8 @@ int main(void){
 
 	// Realizar las conexiones y probarlas
 
-	conexion_memoria = conectar_memoria(ip_memoria, puerto_memoria);
-	if(conexion_memoria == -1){
+	int result_conexion_memoria = conectar_memoria(ip_memoria, puerto_memoria);
+	if(result_conexion_memoria  == -1){
 		log_error(logger, "No se pudo conectar con el modulo Memoria !!");
 
 		terminar_programa(logger, config);
@@ -88,8 +83,8 @@ int main(void){
 
 
 
-	conexion_filesystem = conectar_fs(ip_filesystem, puerto_filesystem);
-	if(conexion_filesystem == -1){
+	int result_conexion_filesystem = conectar_fs(ip_filesystem, puerto_filesystem);
+	if(result_conexion_filesystem == -1){
 		log_error(logger, "No se pudo conectar con el modulo filesystem !!");
 
 		terminar_programa(logger, config);
@@ -97,8 +92,8 @@ int main(void){
 	log_info(logger, "El KerneL se conecto con el modulo Filesystem correctamente");
 
 
-	conexion_cpu = conectar_cpu(ip_cpu, puerto_cpu);
-	if(conexion_cpu == -1){
+	int result_conexion_cpu = conectar_cpu(ip_cpu, puerto_cpu);
+	if(result_conexion_cpu == -1){
 		log_error(logger, "No se pudo conectar con el modulo CPU !!");
 
 		terminar_programa(logger, config);
@@ -113,6 +108,7 @@ int main(void){
 	log_info(logger, "El Kernel esta listo para recibir instrucciones de la consola");
 
 
+	proceso_ejecutando=NULL;
 	inicializar_colas_y_semaforos();
 	recurso_bloqueado = dictionary_create();
 	colas_de_procesos_bloqueados_para_cada_archivo = dictionary_create();
@@ -121,7 +117,7 @@ int main(void){
 	t_queue* cola_bloqueados;
 	void iterador_recursos(char* nombre_recurso){
 
-	dictionary_put(recurso_bloqueado,nombre_recurso,cola_bloqueados);
+		dictionary_put(recurso_bloqueado,nombre_recurso,cola_bloqueados);
 	}
 	string_iterate_lines(recursos,iterador_recursos);
 
@@ -139,7 +135,8 @@ int main(void){
 
 	planificar_nuevos_procesos_largo_plazo_args* args_planificador_largo_plazo = malloc(sizeof(planificar_nuevos_procesos_largo_plazo_args));
 	args_planificador_largo_plazo->grado_max_multiprogramacion = grado_max_multiprogramacion;
-	args_planificador_largo_plazo->conexion_memoria = conexion_memoria;
+	args_planificador_largo_plazo->conexion_memoria = socket_memoria;
+	args_planificador_largo_plazo->algoritmo_planificacion = algoritmo_planificacion;
 
 	pthread_create(&thread_planificador_largo_plazo, NULL, planificar_nuevos_procesos_largo_plazo, args_planificador_largo_plazo);
 
@@ -148,7 +145,7 @@ int main(void){
 	args_planificador_corto_plazo->algoritmo_planificacion = malloc( strlen(algoritmo_planificacion) *sizeof(char));
 	args_planificador_corto_plazo->algoritmo_planificacion = algoritmo_planificacion;
 	args_planificador_corto_plazo->hrrn_alfa = hrrn_alfa;
-	args_planificador_corto_plazo->socket_cpu = conexion_cpu;
+	args_planificador_corto_plazo->socket_cpu = socket_cpu;
 
 	pthread_create(&thread_planificador_corto_plazo, NULL, planificar_corto_plazo, args_planificador_corto_plazo);
 
@@ -159,11 +156,11 @@ int main(void){
 	pthread_detach(thread_planificador_corto_plazo);
 
 
-	escuchar_peticiones_cpu(conexion_cpu, recursos, instancias_recursos,grado_max_multiprogramacion,conexion_memoria);
+	escuchar_peticiones_cpu(socket_cpu, recursos, instancias_recursos,grado_max_multiprogramacion,socket_memoria);
 
 	free(args_consolas);
 	free(args_planificador_largo_plazo);
-	free(args_planificador_corto_plazo->algoritmo_planificacion);
+	//free(args_planificador_corto_plazo->algoritmo_planificacion);
 	free(args_planificador_corto_plazo);
 
 	terminar_programa(logger, config);
@@ -208,10 +205,16 @@ int conectar_memoria(char* ip, char* puerto){
 	//enviar handshake
 	enviar_mensaje("OK", socket_memoria, HANDSHAKE);
 
+	op_code cod_op = recibir_operacion(socket_memoria);
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
+
 	int size;
 	char* buffer = recibir_buffer(&size, socket_memoria);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
 
@@ -225,10 +228,17 @@ int conectar_fs(char* ip, char* puerto){
 	//enviar handshake
 	enviar_mensaje("OK", socket_fs, HANDSHAKE);
 
+	op_code cod_op = recibir_operacion(socket_fs);
+
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
+
 	int size;
 	char* buffer = recibir_buffer(&size, socket_fs);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
 
@@ -242,12 +252,20 @@ int conectar_cpu(char* ip, char* puerto){
 	//enviar handshake
 	enviar_mensaje("OK", socket_cpu, HANDSHAKE);
 
+	op_code cod_op = recibir_operacion(socket_cpu);
+
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
+
 	int size;
 	char* buffer = recibir_buffer(&size, socket_cpu);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
+
 
 	return 0;
 }
@@ -302,13 +320,18 @@ void *atender_cliente(void *arg){
 					recibir_instrucciones(cliente_fd, estimacion_inicial);
 					break;
 				case -1:
-					log_error(logger, "El cliente se desconecto. Terminando servidor");
+					log_error(logger, "Consola El cliente se desconecto. Terminando servidor");
+
+					free(arg);
 					return NULL;
 				default:
-					log_warning(logger,"Operacion desconocida. No quieras meter la pata");
+					log_warning(logger,"Consola Operacion desconocida. No quieras meter la pata");
 					break;
 			}
 	}
+
+	free(arg);
+	free(args);
 
 	return NULL;
 }
@@ -316,6 +339,7 @@ void *atender_cliente(void *arg){
 void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 
 	t_list* instrucciones = (t_list*) recibir_paquete_instrucciones(socket_cliente);
+
 
 	//se levanta el pcb
 	t_pcb* pcb_proceso = malloc(sizeof(t_pcb));
@@ -327,8 +351,27 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->tiempo_llegada_rady = 0;
 	pcb_proceso->socket_server_id = socket_cliente;
 
+
+
 	//este malloc para evitar el sementation fault en el envio del contexto de ejecución a cpu
 	pcb_proceso->registros_CPU = malloc(sizeof(registros_CPU));
+
+	strcpy(pcb_proceso->registros_CPU->AX, "");
+	strcpy(pcb_proceso->registros_CPU->BX, "");
+	strcpy(pcb_proceso->registros_CPU->CX, "");
+	strcpy(pcb_proceso->registros_CPU->DX, "");
+
+
+	strcpy(pcb_proceso->registros_CPU->EAX, "");
+	strcpy(pcb_proceso->registros_CPU->EBX, "");
+	strcpy(pcb_proceso->registros_CPU->ECX, "");
+	strcpy(pcb_proceso->registros_CPU->EDX, "");
+
+	strcpy(pcb_proceso->registros_CPU->RAX, "");
+	strcpy(pcb_proceso->registros_CPU->RBX, "");
+	strcpy(pcb_proceso->registros_CPU->RCX, "");
+	strcpy(pcb_proceso->registros_CPU->RDX, "");
+
 
 	agregar_cola_new(pcb_proceso);
 
@@ -408,11 +451,11 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					manejar_seg_fault();
 					break;
 				case -1:
-					log_error(logger, "La CPU se desconecto. Terminando servidor");
+					log_error(logger, "La CPU se desconecto. Terminando servidor ");
 					free(recursos_disponibles);
 					return NULL;
 				default:
-					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata, la operacion es: %d",cod_op );
+					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata." );
 					break;
 			}
 	}

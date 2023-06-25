@@ -135,13 +135,19 @@ int conectar_con_memoria( char* ip, char* puerto){
 
 	//enviar handshake
 
-	enviar_mensaje("OK", socket_memoria, MENSAJE);
+	enviar_mensaje("OK", socket_memoria, HANDSHAKE);
 
+
+	op_code cod_op = recibir_operacion(socket_memoria);
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
 
 	int size;
 	char* buffer = recibir_buffer(&size, socket_memoria);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
 

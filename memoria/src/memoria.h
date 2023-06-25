@@ -53,15 +53,15 @@ void acceder_espacio_ususario(int cliente_fd);
 
 void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento);
 void agregar_nuevo_segmento_a(int pid, t_segmento* segmento);
-t_segmento* determinar_hueco_a_ocupar(t_list* huecos_candidatos, char* algoritmo_asignacion, uint32_t tamanio_segmento);
+t_segmento* determinar_hueco_a_ocupar(t_list* huecos_candidatos, char* algoritmo_asignacion);
 t_list* check_espacio_contiguo(uint32_t tamano_requerido);
 bool check_espacio_no_contiguo(uint32_t tamano_requerido);
 t_arg_segmento_parametro* recibir_segmento_parametro(int cliente_fd);
 
 t_tabla_de_segmento* buscar_tabla_de(int pid);
-t_segmento* first_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento);
-t_segmento* worst_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento);
-t_segmento* best_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento);
+t_segmento* first_fit(t_list* huecos_candidatos);
+t_segmento* worst_fit(t_list* huecos_candidatos);
+t_segmento* best_fit(t_list* huecos_candidatos);
 
 
 #endif /* CPU_H */

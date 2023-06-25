@@ -277,6 +277,7 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 
 		// recibo tabla de segmentos
 
+		contexto_ejecucion->tabla_de_segmentos = malloc(sizeof(t_tabla_de_segmento));
 		memcpy(&(contexto_ejecucion->tabla_de_segmentos->pid), buffer+desplazamiento, sizeof(uint32_t));
 		desplazamiento+=sizeof(uint32_t);
 		memcpy(&(contexto_ejecucion->tabla_de_segmentos->cantidad_segmentos), buffer+desplazamiento, sizeof(uint32_t));
@@ -286,6 +287,7 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 		memcpy(&(tamanio_sementos), buffer+desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 
+		contexto_ejecucion->tabla_de_segmentos->segmentos = list_create();
 		for(int i =0; i<tamanio_sementos; i++){
 			t_segmento* segmento = malloc(sizeof(t_segmento));
 
@@ -365,6 +367,8 @@ void destroy_tabla_de_segmentos(t_tabla_de_segmento* tabla_a_borrar){
 		}
 
 		list_clean_and_destroy_elements(tabla_a_borrar->segmentos, _destroy_segmentos);
+	} else {
+		list_destroy(tabla_a_borrar->segmentos);
 	}
 
 	free(tabla_a_borrar);

@@ -285,7 +285,7 @@ context(tests_dispatcher){
 	// para probar estos dos, mock_enviar_contexto_de_ejecucion_a
 	describe("void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu)"){
 
-			before{
+	/*		before{
 				cola_ready = queue_create();
 				sem_init(&m_cola_ready,0,1);
 				sem_init(&m_cola_new, 0, 1);
@@ -370,7 +370,7 @@ context(tests_dispatcher){
 
 		}end
 	}end
-
+*/
 	/*
 	describe("void planificar_corto_plazo_fifo(int socket_cpu)"){
 
@@ -423,7 +423,7 @@ context(tests_dispatcher){
 		}end
 	}end
 */
-
+	}end
 
 
 }

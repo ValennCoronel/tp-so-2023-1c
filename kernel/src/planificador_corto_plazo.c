@@ -9,17 +9,21 @@ void *planificar_corto_plazo(void *arg){
 	int socket_cpu = args->socket_cpu;
 
 
-	if(strcmp(algoritmo_planificacion, "FIFO") == 0){
-		planificar_corto_plazo_fifo(socket_cpu);
-	} else {
-		planificar_corto_plazo_hrrn(hrrn_alpha, socket_cpu);
+	while(1){
+		if(strcmp(algoritmo_planificacion, "FIFO") == 0){
+			planificar_corto_plazo_fifo(socket_cpu);
+		} else {
+			planificar_corto_plazo_hrrn(hrrn_alpha, socket_cpu);
+		}
 	}
 
+	free(arg);
 	return NULL;
 }
 
 
 void planificar_corto_plazo_fifo(int socket_cpu){
+
 
 	sem_wait(&consumidor);
 	sem_wait(&m_cola_ready);
@@ -31,9 +35,13 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
 	sem_post(&m_cola_ready);
 
+	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_a_ejecutar->PID, "READY", "EXEC");
+
+
 	//frena y elimina el temporal innecesario
 	temporal_stop(proceso_a_ejecutar->temporal_ultimo_desalojo);
 	temporal_destroy(proceso_a_ejecutar->temporal_ultimo_desalojo);
+	proceso_a_ejecutar->temporal_ultimo_desalojo = NULL;
 
 	//creo el contexto de ejecucion
 
@@ -43,6 +51,8 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	contexto_ejecucion->tamanio_lista = list_size(proceso_a_ejecutar->instrucciones);
 	contexto_ejecucion->pid = proceso_a_ejecutar->PID;
 	contexto_ejecucion->tabla_de_segmentos = proceso_a_ejecutar->tabla_segmentos;
+	contexto_ejecucion->registros_CPU = proceso_a_ejecutar->registros_CPU;
+
 
 	proceso_ejecutando = proceso_a_ejecutar;
 
@@ -120,6 +130,7 @@ int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso){
 
 	temporal_stop(pcb_proceso->temporal_ultimo_desalojo);
 	temporal_destroy(pcb_proceso->temporal_ultimo_desalojo);
+	pcb_proceso->temporal_ultimo_desalojo = NULL;
 
 	return tiempo_espera;
 }

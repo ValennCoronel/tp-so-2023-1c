@@ -5,19 +5,21 @@ int socket_cpu;
 int socket_kernel;
 int socket_memoria;
 int socket_fs;
+
 t_list* huecos_libres;
 void* espacio_usuario;
 t_list* tablas_de_segmentos_de_todos_los_procesos;
+t_segmento* segmento_0;
 
 int main(void){
 
 	//Declaracion variables para config
 	char* puerto_escucha;
-	char* tam_memoria;
-	char* tam_segmento_0;
-	char* cant_segmentos;
-	char* retardo_memoria;
-	char* retardo_compactacion;
+	int tam_memoria;
+	int tam_segmento_0;
+	int cant_segmentos;
+	int retardo_memoria;
+	int retardo_compactacion;
 	char* algoritmo_asignacion;
 
 	//Iniciar logger y config
@@ -35,11 +37,11 @@ int main(void){
 
 	//Levantar datos de config a variables
 	puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
-	tam_memoria = config_get_string_value(config, "TAM_MEMORIA");
-	tam_segmento_0 = config_get_string_value(config, "TAM_SEGMENTO_0");
-	cant_segmentos = config_get_string_value(config, "CANT_SEGMENTOS");
-	retardo_memoria = config_get_string_value(config, "RETARDO_MEMORIA");
-	retardo_compactacion = config_get_string_value(config, "RETARDO_COMPACTACION");
+	tam_memoria = config_get_int_value(config, "TAM_MEMORIA");
+	tam_segmento_0 = config_get_int_value(config, "TAM_SEGMENTO_0");
+	cant_segmentos = config_get_int_value(config, "CANT_SEGMENTOS");
+	retardo_memoria = config_get_int_value(config, "RETARDO_MEMORIA");
+	retardo_compactacion = config_get_int_value(config, "RETARDO_COMPACTACION");
 	algoritmo_asignacion = config_get_string_value(config, "ALGORITMO_ASIGNACION");
 
 
@@ -50,8 +52,29 @@ int main(void){
 		terminar_programa(logger, config);
 	}
 
-	//CREAR SEGMENTO 0
-	t_tabla_de_segmento* segmento_0 = (t_tabla_de_segmento*)malloc(tam_segmento_0);
+	//inicializo estructuras administrativas
+
+	espacio_usuario = malloc(tam_memoria);
+
+	tablas_de_segmentos_de_todos_los_procesos = list_create();
+
+	//inicio el segmento 0
+	segmento_0 = malloc(sizeof(t_segmento));
+	segmento_0->direccion_base = 0;
+	segmento_0->id_segmento = 0;
+	segmento_0->tamano = tam_segmento_0;
+
+	// inicio lista de huecos libres inicial
+	huecos_libres = list_create();
+
+	t_segmento* hueco_libre_inicial = malloc(sizeof(t_segmento*));
+
+	hueco_libre_inicial->direccion_base = segmento_0->tamano;// arranca después del segmento 0
+	hueco_libre_inicial->tamano = tam_memoria - segmento_0->tamano;
+	hueco_libre_inicial->id_segmento = 1; // no importa, no se usa
+
+	list_add(huecos_libres, hueco_libre_inicial);
+
 
 	//Escucho conexiones del Kernel, CPU y File System
 	socket_memoria = iniciar_servidor(puerto_escucha);
@@ -87,24 +110,6 @@ void terminar_programa(t_log* logger, t_config* config){
 	config_destroy(config);
 }
 
-
-//Funcion para crear conexion entre modulos
-int conectar_modulo(int conexion, char* ip, char* puerto){
-
-	conexion = crear_conexion(ip, puerto);
-
-	//enviar handshake
-	enviar_mensaje("OK", conexion, HANDSHAKE);
-
-	int size;
-	char* buffer = recibir_buffer(&size, conexion);
-
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
-		return -1;
-	}
-
-	return 0;
-}
 
 
 //Funcion para manejo de peticiones tanto para kernel, CPU y filesystem
@@ -144,7 +149,7 @@ void* atender_cliente(void *args){
 				case NUEVO_PROCESO_MEMORIA:
 					crear_nuevo_proceso(cliente_fd);
 					break;
-				case FINALIZAR_PROCESO:
+				case FINALIZAR_PROCESO_MEMORIA:
 					finalizar_proceso_memoria(cliente_fd);
 					break;
 				case CREAR_SEGMENTO:
@@ -163,7 +168,7 @@ void* atender_cliente(void *args){
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
 					return NULL;
 				default:
-					log_warning(logger,"Operacion desconocida. No quieras meter la pata");
+					log_warning(logger,"Operacion desconocida. No quieras meter la pata, code_op: %d", cod_op);
 					break;
 			}
 	}
@@ -228,7 +233,7 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 	// si son varios es necesario correr el algoritmo de asingnación corespondiente
 
-	t_segmento* hueco_a_ocupar = determinar_hueco_a_ocupar(huecos_posibles, algoritmo_asignacion, peticion_segmento->tamano_segmento);
+	t_segmento* hueco_a_ocupar = determinar_hueco_a_ocupar(huecos_posibles, algoritmo_asignacion);
 
 	usar_hueco(hueco_a_ocupar, peticion_segmento->tamano_segmento);
 
@@ -254,21 +259,29 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 }
 
 
-
-
-
 void delete_segment(int cliente_fd){
 
 }
 
 
 
-void crear_nuevo_proceso(int socket_cliente,char* algoritmo_asignacion){
+
+void crear_nuevo_proceso(int socket_cliente){
 	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernel
 
-	t_tabla_de_segmento* tabla = (t_tabla_de_segmento *)malloc(sizeof(t_tabla_de_segmento)*16);
+	//recibe el pid para el LOG
+	int size;
+	void* buffer = recibir_buffer(&size, socket_cliente);
+
+	int pid;
+	memcpy(&pid, buffer, sizeof(int));
+
+	free(buffer);
+
+	t_tabla_de_segmento* tabla = malloc(sizeof(t_tabla_de_segmento));
 	t_paquete* paquete = crear_paquete(NUEVO_PROCESO_MEMORIA);
 
+	log_info(logger, "Creación de Proceso PID: %d", pid);
 }
 
 void finalizar_proceso_memoria(int cliente_fd){
@@ -277,7 +290,9 @@ void finalizar_proceso_memoria(int cliente_fd){
 	// despues de eliminar los segmentos, eliminamos la tabla de segmentos
 
 	//recibo paquete
-	t_list* tabla = recibir_paquete(cliente_fd);
+	t_list* tabla = recibir_paquete(cliente_fd); //TODO DECIRLE A FEDE QUE ESTO NO FUNCIONA ASI COMO
+
+
 
 	//DESERIALIZO
 	t_tabla_de_segmento* tabla_paquete;
@@ -309,6 +324,7 @@ void finalizar_proceso_memoria(int cliente_fd){
 	{
 		log_error(logger,"ERROR, NO SE ENCONTRO EL SEGMENTO");
 	}
+
 }
 
 void acceder_espacio_ususario(int cliente_fd){
@@ -404,18 +420,18 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 /*
  * en base al algoritmo de asignación que recibe por parámetro, elige el hueco de la lista de huecos y lo devuelve
  */
-t_segmento* determinar_hueco_a_ocupar(t_list* huecos_candidatos, char* algoritmo_asignacion, uint32_t tamanio_segmento){
+t_segmento* determinar_hueco_a_ocupar(t_list* huecos_candidatos, char* algoritmo_asignacion){
 	t_segmento* hueco_a_ocupar;
 
 	if(strcmp(algoritmo_asignacion,"FIRST")==0){
-		hueco_a_ocupar = first_fit(huecos_candidatos, tamanio_segmento);
+		hueco_a_ocupar = first_fit(huecos_candidatos);
 	}
 	else if(strcmp(algoritmo_asignacion,"WORST")==0){
-		hueco_a_ocupar = worst_fit(huecos_candidatos, tamanio_segmento);
+		hueco_a_ocupar = worst_fit(huecos_candidatos);
 	}
 	else if(strcmp(algoritmo_asignacion,"BEST")==0){
 
-		hueco_a_ocupar = best_fit(huecos_candidatos, tamanio_segmento);
+		hueco_a_ocupar = best_fit(huecos_candidatos);
 	}
 
 	return hueco_a_ocupar;
@@ -505,12 +521,12 @@ t_tabla_de_segmento* buscar_tabla_de(int pid){
 }
 
 // --- ALGORITMOS DE ASIGNACION ----
-t_segmento* first_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento){
+t_segmento* first_fit(t_list* huecos_candidatos){
 
 	return list_get(huecos_candidatos,0);
 }
 
-t_segmento* worst_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento){
+t_segmento* worst_fit(t_list* huecos_candidatos){
 	void* _calcular_maximo(void* hueco1, void* hueco2){
 		t_segmento* hueco_libre_1 = (t_segmento*) hueco1;
 		t_segmento* hueco_libre_2 = (t_segmento*) hueco2;
@@ -521,7 +537,7 @@ t_segmento* worst_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento){
 	return list_get_maximum(huecos_candidatos, _calcular_maximo);
 }
 
-t_segmento* best_fit(t_list* huecos_candidatos, uint32_t tamanio_segmento){
+t_segmento* best_fit(t_list* huecos_candidatos){
 
 	void* _calcular_minimo(void* hueco1, void* hueco2){
 		t_segmento* hueco_libre_1 = (t_segmento*) hueco1;

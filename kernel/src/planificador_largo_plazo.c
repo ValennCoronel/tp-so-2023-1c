@@ -28,7 +28,7 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 	planificar_nuevos_procesos_largo_plazo_args* args = (planificar_nuevos_procesos_largo_plazo_args*) arg;
 	int grado_max_multiprogramacion = args->grado_max_multiprogramacion;
 	int conexion_memoria = args->conexion_memoria;
-
+	char* algoritmo_planificacion = args->algoritmo_planificacion;
 
 
 	while(1){
@@ -42,12 +42,12 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 
 		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 ){
 
-			agregar_proceso_a_ready(conexion_memoria);
+			agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
 
 		} else if(tamanio_cola_new != 0){
 			//verificar si se lo puede admitir a la cola de ready
 			if(puede_ir_a_ready(grado_max_multiprogramacion)){
-				agregar_proceso_a_ready(conexion_memoria);
+				agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
 			}
 		}
 	}
@@ -56,15 +56,17 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 }
 
 // si el proceso no es new, no es necesario el socket de memoria
-void agregar_proceso_a_ready(int conexion_memoria){
+void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion){
 	sem_wait(&m_cola_new);
 	t_pcb* proceso_new_a_ready = queue_pop(cola_new);
 	sem_post(&m_cola_new);
 
+	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_new_a_ready->PID, "NEW", "READY");
+
 	//si el proceso es nuevo se calcula tiempo de llegada a ready en milisegundos
 	// y se pide la tabla de segmentos a memoria
 	if(proceso_new_a_ready->tiempo_llegada_rady == 0){
-		proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria);
+		proceso_new_a_ready->tabla_segmentos = obtener_tabla_segmentos(conexion_memoria, proceso_new_a_ready->PID);
 
 		proceso_new_a_ready->tiempo_llegada_rady = temporal_gettime(proceso_new_a_ready->temporal_ready);
 		temporal_stop(proceso_new_a_ready->temporal_ready);
@@ -85,7 +87,8 @@ void agregar_proceso_a_ready(int conexion_memoria){
 	char *pids = listar_pids_cola_ready();
 	sem_post(&m_cola_ready);
 
-	log_info(logger, "Cola Ready FIFO: [%s]", pids);
+
+	log_info(logger, "Cola Ready %s: [%s]",algoritmo_planificacion, pids);
 
 	//si no hay nadie ejecutandose, lo pone a ejecutar, sino va a quedar en la espera en la cola ready
 	if(proceso_ejecutando == NULL){
@@ -132,8 +135,13 @@ void agregar_cola_new(t_pcb* pcb_proceso){
 	log_info(logger, "Se crea el proceso %d en NEW", pcb_proceso->PID);
 }
 
-t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria){
-	enviar_mensaje("Iniciar estructuras", conexion_memoria, NUEVO_PROCESO_MEMORIA);
+t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria, int pid){
+
+	t_paquete* paquete = crear_paquete(NUEVO_PROCESO_MEMORIA);
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(pid), sizeof(int));
+
+	enviar_paquete(paquete, conexion_memoria);
 
 	t_tabla_de_segmento* tabla_segmentos = malloc(sizeof(t_tabla_de_segmento));
 
