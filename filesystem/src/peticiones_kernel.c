@@ -23,7 +23,7 @@ Siempre será posible crear un archivo y por lo tanto esta operación deberá de
 }
 void truncar_archivo(int socket_kernel, int socket_memoria){
 
-	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
 
     t_fcb* peticion_truncado = (t_fcb*) malloc(sizeof(t_fcb));
 
@@ -38,7 +38,7 @@ void truncar_archivo(int socket_kernel, int socket_memoria){
 void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques){
 
 
-	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
 
 
 
@@ -114,7 +114,7 @@ t_dictionary* fcb_por_archivo
 
 void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques){
 
-	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
 
 	enviar_peticion_memoria(READ_MEMORY,instruccion_peticion);
 

@@ -5,7 +5,7 @@ int socket_cpu;
 int socket_kernel;
 int socket_memoria;
 int socket_fs;
-t_dictionary fcb_por_archivo;
+t_dictionary* fcb_por_archivo;
 
 int main(void){
 
@@ -101,7 +101,7 @@ int main(void){
 
 	log_info(logger, "File System listo para recibir peticiones del Kernel");
 
-	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria);
+	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques);
 
 
 	bitarray_destroy(bitmap_array);
@@ -179,10 +179,10 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 					crear_archivo(socket_kernel);
 					break;
 				case TRUNCAR_ARCHIVO:
-					truncar_archivo(socket_kernel);
+					truncar_archivo(socket_kernel, socket_memoria);
 						break;
 				case LEER_ARCHIVO:
-					leer_archivo(socket_kernel, socket_memoria);
+					leer_archivo(socket_kernel, socket_memoria, bloques);
 					break;
 				case ESCRIBIR_ARCHIVO:
 					escribir_archivo(socket_kernel, socket_memoria, bloques);

@@ -42,9 +42,11 @@
 	//Cierra la instancia de un archivo abierto, si ya no hay mas procesos solicitando el archivo lo saca de la tabla global, sino reduce el contador de archivos abiertos
 	void f_close(int cliente_fd){
 
+
 	}
 
 	void f_seek(int cliente_fd){
+
 
 	}
 
