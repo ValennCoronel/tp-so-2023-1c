@@ -159,10 +159,10 @@ void* atender_cliente(void *args){
 					delete_segment(cliente_fd);
 					break;
 				case READ_MEMORY:
-					acceder_espacio_ususario(cliente_fd);
+					acceder_espacio_usuario(cliente_fd);
 					break;
 				case WRITE_MEMORY:
-					acceder_espacio_ususario(cliente_fd);
+					acceder_espacio_usuario(cliente_fd);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -557,3 +557,7 @@ t_segmento* best_fit(t_list* huecos_candidatos){
 
 	return list_get_minimum(huecos_candidatos, _calcular_minimo);
 }
+
+
+
+

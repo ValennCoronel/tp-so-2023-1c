@@ -130,16 +130,20 @@ typedef struct
 
 } t_pcb;
 
+
+
 typedef struct {
 	int fileDescriptor;
 	char* file;
 	int open;
+
 }tabla_global_de_archivos_abiertos;
 
 typedef struct {
 	char* file;
 	char permiso;
 	int puntero;
+
 }tabla_de_archivos_por_proceso;
 
 typedef struct

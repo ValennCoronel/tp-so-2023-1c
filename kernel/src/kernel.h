@@ -28,7 +28,7 @@
 #include "planificador_largo_plazo.h"
 #include "planificador_corto_plazo.h"
 #include "peticiones_cpu.h"
-
+#include "peticiones_fs.h"
 
 extern int socket_cpu;
 extern int socket_kernel;

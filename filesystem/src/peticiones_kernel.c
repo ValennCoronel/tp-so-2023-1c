@@ -1,56 +1,175 @@
 #include "peticiones_kernel.h"
-
+#include "filesystem.h"
 
 
 void abrir_archivo(int socket_kernel){
 /*
- * Esta operación consistirá en verificar que exista el FCB correspondiente al
- * archivo y en caso de que exista deberá devolver un OK, caso contrario, deberá informar
- * que el archivo no existe.
- * */
-	//enviar_mensaje("OK",socket_kernel);
-	//enviar_mensaje("ERROR, NO EXISTE ESE ARCHIVO",socket_kernel);
+
+Esta operación consistirá en verificar que exista el FCB correspondiente al
+archivo y en caso de que exista deberá devolver un OK, caso contrario, deberá informar
+que el archivo no existe.
+*///enviar_mensaje("OK",socket_kernel);//enviar_mensaje("ERROR, NO EXISTE ESE ARCHIVO",socket_kernel);
 }
+
 void crear_archivo(int socket_kernel){
 /*
- * Para esta operación se deberá crear un archivo FCB correspondiente al nuevo archivo, con tamaño 0 y
- * sin bloques asociados.
+
+Para esta operación se deberá crear un archivo FCB correspondiente al nuevo archivo, con tamaño 0 y
+sin bloques asociados.
 Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK.
  *
- * */
-	//enviar_mensaje("OK",socket_kernel);
+
+*///enviar_mensaje("OK",socket_kernel);
 }
-void truncar_archivo(int socket_kernel){
-/*
- *
- * Al momento de truncar un archivo, pueden ocurrir 2 situaciones:
-	- Ampliar el tamaño del archivo: Al momento de ampliar el tamaño del archivo deberá actualizar
-		el tamaño del archivo en el FCB y se le deberán asignar tantos bloques como sea necesario para poder
-		direccionar el nuevo tamaño.
-	- Reducir el tamaño del archivo: Se deberá asignar el nuevo tamaño del archivo en el FCB y
-		se deberán marcar como libres todos los bloques que ya no sean necesarios para direccionar el
-		tamaño del archivo (descartando desde el final del archivo hacia el principio).
- * */
-}
-void leer_archivo(int socket_kernel, int socket_memoria){
-/*
- * Esta operación deberá leer la información correspondiente de los bloques a partir del puntero
- * y el tamaño recibidos. Esta información se deberá enviar a la Memoria para ser escrita a partir
- * de la dirección física recibida por parámetro y esperar su finalización para poder confirmar el éxito
- * de la operación al Kernel.
- *
- * */
+void truncar_archivo(int socket_kernel, int socket_memoria){
+
+	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+
+    t_fcb* peticion_truncado = (t_fcb*) malloc(sizeof(t_fcb));
+
+            peticion_truncado->nombre_archivo = instruccion_peticion->parametros[0];
+            peticion_truncado->tamanio_archivo = instruccion_peticion->parametros[1];
+
+
+            enviar_mensaje("OK", socket_kernel, TRUNCAR_ARCHIVO);
+
 }
 
-void escribir_archivo(int socket_kernel, int socket_memoria){
+void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques){
+
+
+	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+
+
+
+	enviar_peticion_memoria(WRITE_MEMORY,instruccion_peticion);
+
+	int cod_op = recibir_operacion(socket_memoria);
+
+	if(cod_op != WRITE_MEMORY){
+		return;
+	}
+
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_memoria);
+
+	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
+
+
+}
 /*
- * Se deberá solicitar a la Memoria la información que se encuentra a partir de la dirección física y
- *  escribirlo en los bloques correspondientes del archivo a partir del puntero recibido.
-El tamaño de la información a leer de la memoria y a escribir en los bloques también deberá recibirse
-por parámetro desde el Kernel.
- * */
+ Acceso a espacio de usuario
+Tanto CPU como File System pueden, dada una dirección física, solicitar accesos
+al espacio de usuario de Memoria. El módulo deberá realizar lo siguiente:
+
+****1Ante un pedido de lectura, devolver el valor que se encuentra en la posición pedida.
+****2Ante un pedido de escritura, escribir lo indicado en la posición pedida y responder un mensaje de ‘OK’.
+
+Para simular la realidad y la velocidad de los accesos a Memoria,
+cada acceso al espacio de usuario tendrá un tiempo de espera en milisegundos
+definido por archivo de configuración.
+
+
+ */
+
+void enviar_peticion_memoria(op_code code,t_instruccion* instruccion ){
+	t_paquete* paquete = crear_paquete(code);
+
+		agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+
+		agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+		agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+		enviar_paquete(paquete, socket_memoria);
 }
 
+
+/*
+
+typedef struct {
+	char* file;
+	char permiso;
+	int puntero;
+
+}tabla_de_archivos_por_proceso;
+
+
+ typedef struct {
+	int fileDescriptor;
+	char* file;
+	int open;
+
+
+}tabla_global_de_archivos_abiertos;
+
+typedef struct {
+	char* nombre_archivo;
+	int tamanio_archivo;
+	uint32_t puntero_directo;
+	uint32_t puntero_indirecto;
+} t_fcb;
+
+t_dictionary* fcb_por_archivo
+
+ * */
+
+void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques){
+
+	t_instruccion* instruccion_peticion = (t_instruccion) recibir_instruccion();
+
+	enviar_peticion_memoria(READ_MEMORY,instruccion_peticion);
+
+	int cod_op = recibir_operacion(socket_memoria);
+
+	if(cod_op != READ_MEMORY){
+		return;
+	}
+
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_memoria);
+
+	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
+
+}
+
+
+
+t_instruccion* recibir_instruccion(){
+
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_kernel);
+	int desplazamiento=0;
+
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	while (desplazamiento<size){
+
+
+				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->opcode = malloc(instruccion->opcode_lenght);
+				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
+				desplazamiento+=instruccion->opcode_lenght;
+
+				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+				memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
+				desplazamiento += instruccion->parametro1_lenght;
+
+				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+				memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
+				desplazamiento += instruccion->parametro2_lenght;
+
+				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+				memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+				desplazamiento += instruccion->parametro3_lenght;
+	}
+
+	return instruccion;
+}
 /*
  * Persistencia
 Todas las operaciones que se realicen sobre los FCBs, Bitmap y Bloques deberán mantenerse actualizadas

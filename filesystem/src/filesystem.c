@@ -5,6 +5,7 @@ int socket_cpu;
 int socket_kernel;
 int socket_memoria;
 int socket_fs;
+t_dictionary fcb_por_archivo;
 
 int main(void){
 
@@ -60,15 +61,18 @@ int main(void){
 
 	// levanta los archivos binarios que neceesita y inicializa las estructuras administrativas necesarias
 
-
+//TODO IMPORTANTISIMO ESTO DEBE SER ARREGLADO Y FCB DEBE INICIARSE EN la de fopen
+	//de aca ↧ ↧ ↧ ↧ ↧ ↧ ↧ ↧ ↧
 	fcb = iniciar_fcb(path_fcb);
+	fcb_por_archivo = dictionary_create();
+	dictionary_put(fcb_por_archivo, fcb->nombre_archivo, fcb);
 
 	if(fcb == NULL){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo del FCB: 'NOMBRE_ARCHIVO', 'TAMANIO_ARCHIVO', 'PUNTERO_DIRECTO', 'PUNTERO_INDIRECTO' ");
 
 		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 	}
-
+//hasta aca  ↥ ↥ ↥ ↥ ↥ ↥ ↥ ↥ ↥
 	superbloque = iniciar_superbloque(path_superbloque);
 	if(fcb == NULL){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo del superbloque: 'BLOCK_SIZE', 'BLOCK_COUNT' ");
@@ -154,7 +158,7 @@ int conectar_con_memoria( char* ip, char* puerto){
 	return 0;
 }
 
-void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria){
+void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques){
 
 	int socket_kernel = esperar_cliente(server_fd);
 
@@ -181,7 +185,7 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria)
 					leer_archivo(socket_kernel, socket_memoria);
 					break;
 				case ESCRIBIR_ARCHIVO:
-					escribir_archivo(socket_kernel, socket_memoria);
+					escribir_archivo(socket_kernel, socket_memoria, bloques);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
