@@ -137,14 +137,14 @@ typedef struct {
 	char* file;
 	int open;
 
-}tabla_global_de_archivos_abiertos;
+}t_tabla_global_de_archivos_abiertos;
 
 typedef struct {
 	char* file;
 	char permiso;
 	int puntero;
 
-}tabla_de_archivos_por_proceso;
+}t_tabla_de_archivos_por_proceso;
 
 typedef struct
 {

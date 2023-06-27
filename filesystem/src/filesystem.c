@@ -6,6 +6,8 @@ int socket_kernel;
 int socket_memoria;
 int socket_fs;
 t_dictionary* fcb_por_archivo;
+t_dictionary* tabla_global_de_archivos_abiertos;
+char* path_fcb;
 
 int main(void){
 
@@ -15,7 +17,6 @@ int main(void){
 	char* path_superbloque;
 	char* path_bitmap;
 	char* path_bloques;
-	char* path_fcb;
 	double retardo_acceso_bloque;
 	FILE* bitmap;
 	FILE* bloques;
@@ -213,32 +214,7 @@ FILE* levantar_archivo_binario(char* path_archivo){
 	return archivo;
 }
 
-//levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB
-// el archivo de fcb usa el formato de config de las commons
-t_fcb* iniciar_fcb(char* path_fcb){
-	t_config* config_FCB = config_create(path_fcb);
 
-	if(config_FCB == NULL){
-			return NULL;
-	}
-
-	t_fcb *fcb = malloc(sizeof(t_fcb));
-
-	fcb->nombre_archivo = config_get_string_value(config_FCB, "NOMBRE_ARCHIVO");
-	fcb->tamanio_archivo = config_get_int_value(config_FCB, "TAMANIO_ARCHIVO");
-	fcb->puntero_directo = config_get_int_value(config_FCB, "PUNTERO_DIRECTO");
-	fcb->puntero_indirecto = config_get_int_value(config_FCB, "PUNTERO_INDIRECTO");
-
-
-
-	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
-
-		return NULL;
-	}
-
-
-	return fcb;
-}
 
 
 //levanta el archivo de superbloque  y obtiene los datos del archivo para iniciar el superbloque

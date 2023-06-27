@@ -21,7 +21,9 @@
 
 extern int socket_kernel;
 extern int socket_memoria;
+extern char* path_fcb;
 extern t_dictionary* fcb_por_archivo;
+extern t_dictionary* tabla_global_de_archivos_abiertos;
 
 typedef struct {
 	char* nombre_archivo;

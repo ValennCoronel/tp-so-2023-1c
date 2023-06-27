@@ -137,6 +137,44 @@ t_list* recibir_paquete_instrucciones(int socket_cliente){
 		return instrucciones;
 }
 
+t_instruccion* recibir_instruccion(socket_cliente){
+
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_cliente);
+	int desplazamiento=0;
+
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	while (desplazamiento<size){
+
+
+				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->opcode = malloc(instruccion->opcode_lenght);
+				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
+				desplazamiento+=instruccion->opcode_lenght;
+
+				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+				memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
+				desplazamiento += instruccion->parametro1_lenght;
+
+				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+				memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
+				desplazamiento += instruccion->parametro2_lenght;
+
+				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+				memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+				desplazamiento += instruccion->parametro3_lenght;
+	}
+
+	return instruccion;
+}
+
 void recibir_handshake(int socket_cliente)
 {
 	int size;
@@ -163,6 +201,7 @@ void manejar_handshake_del_cliente(int socket_cliente){
 
 	free(buffer);
 }
+
 
 t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 {
