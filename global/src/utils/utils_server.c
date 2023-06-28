@@ -137,7 +137,7 @@ t_list* recibir_paquete_instrucciones(int socket_cliente){
 		return instrucciones;
 }
 
-t_instruccion* recibir_instruccion(socket_cliente){
+t_instruccion* recibir_instruccion(int socket_cliente){
 
 	int size;
 	void *  buffer = recibir_buffer(&size, socket_cliente);

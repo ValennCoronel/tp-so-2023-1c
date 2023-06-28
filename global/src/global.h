@@ -107,28 +107,6 @@ typedef struct {
 	int puntero;
 } archivo;
 
-typedef struct
-{
-	int PID;
-	int socket_server_id;
-	t_list* instrucciones;
-	int program_counter;
-
-	registros_CPU* registros_CPU;
-
-	double estimado_proxima_rafaga;
-	int64_t tiempo_llegada_rady;
-	int64_t rafaga_anterior;
-
-	double prioridad;
-
-	t_tabla_de_segmento* tabla_segmentos;
-	t_list* tabla_archivos_abiertos_del_proceso;
-
-	t_temporal* temporal_ready;
-	t_temporal* temporal_ultimo_desalojo;
-
-} t_pcb;
 
 
 
@@ -157,5 +135,41 @@ typedef struct
 	t_tabla_de_segmento* tabla_de_segmentos;
 
 } t_contexto_ejec;
+
+typedef struct {
+	char* nombre_archivo;
+	int tamanio_archivo;
+	uint32_t puntero_directo;
+	uint32_t puntero_indirecto;
+} t_fcb;
+
+typedef struct {
+	int block_size;
+	int block_count;
+} t_superbloque;
+
+
+typedef struct
+{
+	int PID;
+	int socket_server_id;
+	t_list* instrucciones;
+	int program_counter;
+
+	registros_CPU* registros_CPU;
+
+	double estimado_proxima_rafaga;
+	int64_t tiempo_llegada_rady;
+	int64_t rafaga_anterior;
+
+	double prioridad;
+
+	t_tabla_de_segmento* tabla_segmentos;
+	t_tabla_de_archivos_por_proceso* tabla_archivos_abiertos_del_proceso;
+
+	t_temporal* temporal_ready;
+	t_temporal* temporal_ultimo_desalojo;
+
+} t_pcb;
 
 #endif /* GLOBAL_H_ */

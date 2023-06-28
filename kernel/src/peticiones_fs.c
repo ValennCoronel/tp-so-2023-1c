@@ -13,8 +13,24 @@
 			agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
 			agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
 			enviar_paquete(paquete, socket_fs);
+
+
 	}
 
+	void enviar_peticion_puntero_fs(op_code code,t_instruccion* instruccion,int puntero){
+
+		t_paquete* paquete = crear_paquete(code);
+
+					agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+
+					agregar_a_paquete(paquete, instruccion->parametros[0], instruccion->parametro1_lenght);
+					agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
+					agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+					agregar_a_paquete_sin_agregar_tamanio(paquete, &puntero, sizeof(int));
+
+					enviar_paquete(paquete, socket_fs);
+
+	}
 
 	void f_open(){
 		t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
@@ -86,7 +102,9 @@
 			t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 			t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
 
-			enviar_peticion_fs(LEER_ARCHIVO,instruccion_peticion);
+
+
+			enviar_peticion_puntero_fs(LEER_ARCHIVO,instruccion_peticion, proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero);
 
 		}
 
@@ -95,6 +113,8 @@
 			t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 			t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
 
-			enviar_peticion_fs(ESCRIBIR_ARCHIVO,instruccion_peticion);
+
+
+			enviar_peticion_puntero_fs(ESCRIBIR_ARCHIVO,instruccion_peticion, proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero);
 		}
 

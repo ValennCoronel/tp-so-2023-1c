@@ -1,32 +1,34 @@
 #include "peticiones_kernel.h"
-#include "filesystem.h"
 
 
-void abrir_archivo(){
 /*
-Esta operación consistirá en verificar que exista el FCB correspondiente al
-archivo y en caso de que exista deberá completar las estructuras necesarias y abrir el archivo, caso contrario, deberá crear el archivo*/
+void abrir_archivo(){
+
+//Esta operación consistirá en verificar que exista el FCB correspondiente al
+//archivo y en caso de que exista deberá completar las estructuras necesarias y abrir el archivo,
+//caso contrario, deberá crear el archivo
+
 
 	//VARIABLES Y DATOS PARA LA FUNCION
-	t_instruccion instruccion = recibir_instruccion(socket_kernel);
+	t_instruccion* instruccion = recibir_instruccion(socket_kernel);
 	char* direccion_fcb = string_new();
-	string_append(direccion_fcb, path_fcb);
-	string_append(direccion_fcb, "/");
-	string_append(direccion_fcb, instruccion.parametros[0]);
+	strcpy(direccion_fcb, path_fcb);
+	strcpy(direccion_fcb, "/");
+	strcpy(direccion_fcb, instruccion->parametros[0]);
 
 	//CASO 1: La FCB esta en el diccionario (en memoria) => el archivo existe
-	if(dictionary_has_key(fcb_por_archivo, instruccion.parametros[0])){
+	if(dictionary_has_key(fcb_por_archivo, instruccion->parametros[0])){
 
 		//Cargo estructuras restantes
-		t_tabla_global_de_archivos_abiertos archivo;
-		t_fcb fcb = dictionary_get(fcb_por_archivo, instruccion.parametros[0]);
-		archivo.fileDescriptor = fcb.puntero_directo;
-		archivo.file = instruccion.parametros[0];
-		archivo.open = 1;
-		dictionary_put(tabla_global_de_archivos_abiertos, instruccion.parametros[0], archivo);
+		t_tabla_global_de_archivos_abiertos* archivo = malloc(sizeof(t_tabla_global_de_archivos_abiertos));
+		t_fcb* fcb = dictionary_get(fcb_por_archivo, instruccion->parametros[0]);
+		archivo->fileDescriptor = fcb->puntero_directo;
+		archivo->file = instruccion->parametros[0];
+		archivo->open = 1;
+		dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
 
 		//abro el archivo
-		fopen(instruccion.parametros[0]);
+		fopen(instruccion->parametros[0]);
 
 	//CASO 2: La FCB no esta en memoria
 	}else {
@@ -35,31 +37,31 @@ archivo y en caso de que exista deberá completar las estructuras necesarias y a
 		//CASO A: La FCB existe => el archivo tambien
 		if(config_FCB != NULL){
 			//Levanto la fcb
-			t_fcb fcb = iniciar_fcb(config_FCB, instruccion, direccion_fcb);
+			t_fcb* fcb = iniciar_fcb(config_FCB);
 
 			//Cargo estructuras resantes
-			t_tabla_global_de_archivos_abiertos archivo;
-			archivo.fileDescriptor = fcb.puntero_directo;
-			archivo.file = instruccion.parametros[0];
-			archivo.open = 1;
-			dictionary_put(tabla_global_de_archivos_abiertos, instruccion.parametros[0], archivo);
-			dictionary_put(fcb_por_archivo, instruccion.parametros[0], fcb);
+			t_tabla_global_de_archivos_abiertos* archivo;
+			archivo->fileDescriptor = fcb->puntero_directo;
+			archivo->file = instruccion->parametros[0];
+			archivo->open = 1;
+			dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
+			dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
 
 			//abro el archivo
-			fopen(instruccion.parametros[0]);
+			fopen(instruccion->parametros[0]);
 
 		//CASO B: La FCB no existe => el archivo tampoco
 		}else{
 			//creamos la fcb
-			t_fcb fcb = crear_fcb(config_FCB, instruccion, direccion_fcb);
+			t_fcb* fcb = crear_fcb(config_FCB, instruccion, direccion_fcb);
 
 			//Cargo estructuras resantes
-			t_tabla_global_de_archivos_abiertos archivo;
-			archivo.fileDescriptor = fcb.puntero_directo;
-			archivo.file = instruccion.parametros[0];
-			archivo.open = 1;
-			dictionary_put(tabla_global_de_archivos_abiertos, instruccion.parametros[0], archivo);
-			dictionary_put(fcb_por_archivo, instruccion.parametros[0], fcb);
+			t_tabla_global_de_archivos_abiertos* archivo;
+			archivo->fileDescriptor = fcb->puntero_directo;
+			archivo->file = instruccion->parametros[0];
+			archivo->open = 1;
+			dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
+			dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
 
 			//TODO creo y abro el archivo
 
@@ -68,17 +70,19 @@ archivo y en caso de que exista deberá completar las estructuras necesarias y a
 	}
 
 }
+*/
+
 //levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB, si no existe lo crea
 // el archivo de fcb usa el formato de config de las commons
-t_fcb* crear_fcb(t_config config, t_instruccion instruccion, char* path){
-	connfi_set_value(config, "NOMBRE_ARCHIVO", instruccion.parametros[0]);
-	connfi_set_value(config, "TAMANIO_ARCHIVO", 0);
-	connfi_set_value(config, "PUNTERO_DIRECTO", encontrar_bloque_libre());
-	connfi_set_value(config, "PUNTERO_INDIRECTO", -1); // TODO reveer esto
+t_fcb* crear_fcb(t_config* config, t_instruccion* instruccion, char* path){
+	config_set_value(config, "NOMBRE_ARCHIVO", instruccion->parametros[0]);
+	config_set_value(config, "TAMANIO_ARCHIVO", 0);
+	config_set_value(config, "PUNTERO_DIRECTO", encontrar_bloque_libre());
+	config_set_value(config, "PUNTERO_INDIRECTO", -1); // TODO reveer esto
 
 	config_save_in_file(config, path);
 
-	t_fcb *fcb = malloc(sizeof(t_fcb));
+	t_fcb* fcb = malloc(sizeof(t_fcb));
 
 	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
 	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
@@ -89,9 +93,9 @@ t_fcb* crear_fcb(t_config config, t_instruccion instruccion, char* path){
 }
 
 
-t_fcb* iniciar_fcb(t_config config, t_instruccion instruccion, char* path){
+t_fcb* iniciar_fcb(t_config* config){
 
-	t_fcb *fcb = malloc(sizeof(t_fcb));
+	t_fcb* fcb = malloc(sizeof(t_fcb));
 
 	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
 	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
@@ -110,7 +114,9 @@ t_fcb* iniciar_fcb(t_config config, t_instruccion instruccion, char* path){
 }
 
 int encontrar_bloque_libre(){
+	int a=0;
 	//TODO Funcion que devuelve el primer bloque libre del bitmap y cambia su estado
+	return a ;
 }
 
 void crear_archivo(int socket_kernel){
@@ -123,9 +129,10 @@ Siempre será posible crear un archivo y por lo tanto esta operación deberá de
 
 *///enviar_mensaje("OK",socket_kernel);
 }
+
 void truncar_archivo(int socket_kernel, int socket_memoria){
 
-	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
+	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion(socket_kernel);
 
     t_fcb* peticion_truncado = (t_fcb*) malloc(sizeof(t_fcb));
 
@@ -137,10 +144,11 @@ void truncar_archivo(int socket_kernel, int socket_memoria){
 
 }
 
+
 void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques){
 
 
-	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
+	t_instruccion_y_puntero* instruccion_peticion = (t_instruccion_y_puntero*) recibir_instruccion_y_puntero_kernel(socket_kernel);
 
 
 
@@ -155,11 +163,22 @@ void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques){
 	int size;
 	void *  buffer = recibir_buffer(&size, socket_memoria);
 
-	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
+	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->instruccion->parametros[0]);
 
 
+
+
+	enviar_mensaje("OK", socket_kernel,LEER_ARCHIVO)
 }
 /*
+ 	fseek(bloques,0,(instruccion_peticion->puntero*tamanio_bloque));
+ 	fread(bloques,"r");
+        //while(!feof(bloques))
+        //{
+         //fread(,1,bloques);
+        // }
+
+        fread(,1,aArchivo);
  Acceso a espacio de usuario
 Tanto CPU como File System pueden, dada una dirección física, solicitar accesos
 al espacio de usuario de Memoria. El módulo deberá realizar lo siguiente:
@@ -184,38 +203,9 @@ void enviar_peticion_memoria(op_code code,t_instruccion* instruccion ){
 		enviar_paquete(paquete, socket_memoria);
 }
 
-/*
+void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques,int tamanio_bloque){
 
-typedef struct {
-	char* file;
-	char permiso;
-	int puntero;
-
-}tabla_de_archivos_por_proceso;
-
-
- typedef struct {
-	int fileDescriptor;
-	char* file;
-	int open;
-
-
-}tabla_global_de_archivos_abiertos;
-
-typedef struct {
-	char* nombre_archivo;
-	int tamanio_archivo;
-	uint32_t puntero_directo;
-	uint32_t puntero_indirecto;
-} t_fcb;
-
-t_dictionary* fcb_por_archivo
-
- * */
-
-void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques){
-
-	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion();
+	t_instruccion_y_puntero* instruccion_peticion = (t_instruccion_y_puntero*) recibir_instruccion_y_puntero_kernel(socket_kernel);
 
 	enviar_peticion_memoria(READ_MEMORY,instruccion_peticion);
 
@@ -226,15 +216,66 @@ void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques){
 	}
 
 	int size;
-	void *  buffer = recibir_buffer(&size, socket_memoria);
+	void * buffer = recibir_buffer(&size, socket_memoria);
 
-	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
+	t_fcb* fcb = dictionary_get(fcb_por_archivo,instruccion_peticion->instruccion->parametros[0]);
+
+	fseek(bloques,0,(instruccion_peticion->puntero*tamanio_bloque));
+	fwrite(buffer, size, 1, bloques);
+
+	enviar_mensaje("OK", socket_kernel, ESCRIBIR_ARCHIVO);
 
 }
 
 
+t_instruccion_y_puntero* recibir_instruccion_y_puntero_kernel(int socket_kernel){
+
+	t_instruccion_y_puntero* instruccion_y_puntero = malloc(sizeof(t_instruccion_y_puntero));
 
 
+	int size;
+	void *  buffer = recibir_buffer(&size, socket_kernel);
+	int desplazamiento=0;
+
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
+
+	while (desplazamiento<size){
+
+
+				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->opcode = malloc(instruccion->opcode_lenght);
+				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
+				desplazamiento+=instruccion->opcode_lenght;
+
+				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+				memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
+				desplazamiento += instruccion->parametro1_lenght;
+
+				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+				memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
+				desplazamiento += instruccion->parametro2_lenght;
+
+				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+				desplazamiento+=sizeof(int);
+				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+				memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+				desplazamiento += instruccion->parametro3_lenght;
+
+				memcpy(&(instruccion_y_puntero->puntero), buffer + desplazamiento, sizeof(int));
+				desplazamiento += sizeof(int);
+
+
+	}
+
+
+ return instruccion_y_puntero;
+}
 /*
  * Persistencia
 Todas las operaciones que se realicen sobre los FCBs, Bitmap y Bloques deberán mantenerse actualizadas
