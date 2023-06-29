@@ -59,21 +59,6 @@ int main(void){
 
 	log_info(logger, "El File System se conecto con el modulo Memoria correctamente");
 
-
-	// levanta los archivos binarios que neceesita y inicializa las estructuras administrativas necesarias
-
-//TODO IMPORTANTISIMO ESTO DEBE SER ARREGLADO Y FCB DEBE INICIARSE EN la de fopen
-	//de aca ↧ ↧ ↧ ↧ ↧ ↧ ↧ ↧ ↧
-	fcb = iniciar_fcb(path_fcb);
-	fcb_por_archivo = dictionary_create();
-	dictionary_put(fcb_por_archivo, fcb->nombre_archivo, fcb);
-
-	if(fcb == NULL){
-		log_error(logger, "Falta una de las siguientes propiedades en el archivo del FCB: 'NOMBRE_ARCHIVO', 'TAMANIO_ARCHIVO', 'PUNTERO_DIRECTO', 'PUNTERO_INDIRECTO' ");
-
-		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
-	}
-//hasta aca  ↥ ↥ ↥ ↥ ↥ ↥ ↥ ↥ ↥
 	superbloque = iniciar_superbloque(path_superbloque);
 	if(fcb == NULL){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo del superbloque: 'BLOCK_SIZE', 'BLOCK_COUNT' ");
@@ -102,7 +87,7 @@ int main(void){
 
 	log_info(logger, "File System listo para recibir peticiones del Kernel");
 
-	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques);
+	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques, superbloque);
 
 
 	bitarray_destroy(bitmap_array);
@@ -159,7 +144,7 @@ int conectar_con_memoria( char* ip, char* puerto){
 	return 0;
 }
 
-void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques){
+void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques,t_superbloque* superbloque){
 
 	int socket_kernel = esperar_cliente(server_fd);
 
@@ -173,20 +158,20 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 				case HANDSHAKE:
 					recibir_handshake(socket_kernel);
 					break;
-				//case ABRIR_ARCHIVO:
+				//case ABRIR_ARCHIVO://TODO descomentar UwU
 					//abrir_archivo(socket_kernel);
 					//break;
 				case CREAR_ARCHIVO:
 					crear_archivo(socket_kernel);
 					break;
 				case TRUNCAR_ARCHIVO:
-					truncar_archivo(socket_kernel, socket_memoria);
+					truncar_archivo(socket_kernel, socket_memoria,bloques, superbloque);
 						break;
 				case LEER_ARCHIVO:
-					leer_archivo(socket_kernel, socket_memoria, bloques);
+					leer_archivo(socket_kernel, socket_memoria, bloques,superbloque->block_size);
 					break;
 				case ESCRIBIR_ARCHIVO:
-					escribir_archivo(socket_kernel, socket_memoria, bloques);
+					escribir_archivo(socket_kernel, socket_memoria, bloques,superbloque->block_size);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");

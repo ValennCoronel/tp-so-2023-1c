@@ -16,7 +16,6 @@ t_list* recibir_paquete_instrucciones(int socket_cliente);
 char* recibir_mensaje(int);
 int recibir_operacion(int);
 void recibir_handshake(int);
-t_instruccion* recibir_instruccion(int socket_cliente);
 int responder_peticiones(int cliente_fd);
 void manejar_handshake_del_cliente(int);
 t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente);

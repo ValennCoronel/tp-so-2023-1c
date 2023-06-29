@@ -30,7 +30,7 @@ t_log* iniciar_logger(void);
 t_config* iniciar_config(void);
 void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitmap, FILE* bloques);
 int conectar_con_memoria(char* ip, char* puerto);
-void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques);
+void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques,t_superbloque* superbloque);
 
 t_superbloque* iniciar_superbloque(char* path_superbloque);
 FILE* levantar_archivo_binario(char* path_archivo);

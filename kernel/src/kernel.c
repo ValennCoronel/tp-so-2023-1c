@@ -113,8 +113,6 @@ int main(void){
 	recurso_bloqueado = dictionary_create();
 	colas_de_procesos_bloqueados_para_cada_archivo = dictionary_create(); //diccionario con key=archivo y elementos=procesos bloqueados
 
-	t_dictionary a;
-
 	t_queue* cola_bloqueados;
 	void iterador_recursos(char* nombre_recurso){
 
