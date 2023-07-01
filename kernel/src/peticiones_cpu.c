@@ -592,7 +592,8 @@ void delete_segment(){
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 }
 
-void compactar_memoria(){
+void compactar_memoria()
+{
 
 }
 

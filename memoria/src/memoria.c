@@ -164,6 +164,9 @@ void* atender_cliente(void *args){
 				case WRITE_MEMORY:
 					acceder_espacio_usuario_escritura(cliente_fd);
 					break;
+				case COMPACTAR_MEMORIA:
+					compactar_memoria(cliente_fd);
+					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
 					return NULL;
@@ -176,6 +179,43 @@ void* atender_cliente(void *args){
 	return NULL;
 }
 
+
+void compactar_memoria(int cliente_fd)
+{
+	t_list* tablas_de_segmentos_de_todos_los_procesos;
+	for (int i = 0; i < tablas_de_segmentos_de_todos_los_procesos->elements_count; i++)
+	{
+		t_segmento* segmento_actual = list_get(tablas_de_segmentos_de_todos_los_procesos,i);
+
+		int cantidad_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
+
+        // Obtener el siguiente segmento
+		t_segmento* segmento_siguiente = NULL;
+		if (i < cantidad_segmentos - 1)
+		{
+			segmento_siguiente = list_get(tablas_de_segmentos_de_todos_los_procesos, i + 1);
+		}
+
+        // Calcular el desplazamiento necesario para compactar el segmento actual
+		int desplazamiento = 0;
+		if (segmento_siguiente != NULL) {
+			desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
+		}
+
+		// Mover los datos del actual al nuevo espacio contiguo
+		if (desplazamiento > 0)
+		{
+			void* origen = espacio_usuario + segmento_actual->direccion_base;
+			void* destino = espacio_usuario + segmento_actual->direccion_base + desplazamiento;
+			size_t bytes_a_mover = segmento_actual->tamano;
+			memmove(destino, origen, bytes_a_mover);
+
+			// Actualizar la dirección base del hueco actual
+			segmento_actual->direccion_base += desplazamiento;
+		}
+
+	}
+}
 
 void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 	t_arg_segmento_parametro* valores_recibidos = recibir_segmento_parametro(cliente_fd);
@@ -218,7 +258,7 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 		nuevo_segmento->direccion_base = hueco_a_usar->direccion_base;
 		nuevo_segmento->id_segmento = peticion_segmento->id_segmento;
-		nuevo_segmento->tamano = peticion_segmento->id_segmento;
+		nuevo_segmento->tamano = peticion_segmento->tamano_segmento;
 
 		agregar_nuevo_segmento_a(pid, nuevo_segmento);
 
@@ -372,7 +412,7 @@ void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento){
 		nuevo_hueco->id_segmento = segmento_a_asignar->id_segmento+1; // esto no importa, no se va usar
 
 		// agrego el nuevo hueco a la lista
-		list_add(huecos_libres, nuevo_hueco);
+		list_add(huecos_libres, nuevo_hueco); //TODO HACER QUE SE GUARDE DE FORMA ORDENADA FRANCO
 	}
 
 	// si el tamaño es igual o si es mayor
