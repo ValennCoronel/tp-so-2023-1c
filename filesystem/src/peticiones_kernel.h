@@ -22,4 +22,18 @@ t_fcb* crear_fcb(t_config* config, t_instruccion* instruccion, char* path);
 t_instruccion_y_puntero* recibir_instruccion_y_puntero_kernel(int socket_kernel);
 t_instruccion* recibir_instruccion(int socket_cliente);
 
+int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloque);
+void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, t_superbloque* superbloque);
+void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque);
+void marcar_bloques_libres_indirecto(uint32_t puntero_indirecto, t_superbloque* superbloque, int punteros_x_bloque);
+void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo);
+
+void agregar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_agregar, t_superbloque* superbloque);
+char* pasar_a_string(char** string_array);
+int obtener_primer_bloque_libre();
+void ocupar_bloque_libre_directo(t_fcb* fcb);
+void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, t_superbloque* superbloque);
+void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punteros_x_bloque, t_superbloque* superbloque);
+void guardar_en_bloque(int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque);
+
 #endif /* PETICIONES_KERNEL_H_ */

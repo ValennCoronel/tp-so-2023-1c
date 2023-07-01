@@ -8,6 +8,9 @@ int socket_fs;
 t_dictionary* fcb_por_archivo;
 t_dictionary* tabla_global_de_archivos_abiertos;
 char* path_fcb;
+t_bitarray* bitarray_bloques_libres;
+FILE* bitmap;
+FILE* bloques;
 
 int main(void){
 
@@ -18,9 +21,7 @@ int main(void){
 	char* path_bitmap;
 	char* path_bloques;
 	double retardo_acceso_bloque;
-	FILE* bitmap;
-	FILE* bloques;
-	t_fcb* fcb;
+
 	t_superbloque* superbloque;
 
 	logger = iniciar_logger();
@@ -60,7 +61,7 @@ int main(void){
 	log_info(logger, "El File System se conecto con el modulo Memoria correctamente");
 
 	superbloque = iniciar_superbloque(path_superbloque);
-	if(fcb == NULL){
+	if(superbloque == NULL){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo del superbloque: 'BLOCK_SIZE', 'BLOCK_COUNT' ");
 
 		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
@@ -69,7 +70,7 @@ int main(void){
 	// creo el bitarray
 	int tamanio_bitmap = superbloque->block_count;
 	char* bits = malloc(tamanio_bitmap);
-	t_bitarray* bitmap_array = bitarray_create_with_mode(bits, tamanio_bitmap, MSB_FIRST);
+	bitarray_bloques_libres = bitarray_create_with_mode(bits, tamanio_bitmap, MSB_FIRST);
 
 	bitmap = levantar_archivo_binario(path_bitmap);
 
@@ -79,7 +80,6 @@ int main(void){
 
 	bloques = levantar_archivo_binario(path_bloques);
 
-	int tamanio_bloques = superbloque->block_count * superbloque->block_size;
 
 
 	//escucho conexiones del Kernel
@@ -90,7 +90,7 @@ int main(void){
 	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques, superbloque);
 
 
-	bitarray_destroy(bitmap_array);
+	bitarray_destroy(bitarray_bloques_libres);
 	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
@@ -189,7 +189,7 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 // si no existe lo crea
 FILE* levantar_archivo_binario(char* path_archivo){
 
-	FILE* archivo = fopen(path_archivo, "ab");
+	FILE* archivo = fopen(path_archivo, "wb");
 
 	if(archivo == NULL){
 		log_error(logger, "No existe el archivo con el path: %s",path_archivo);

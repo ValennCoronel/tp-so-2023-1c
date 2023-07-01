@@ -291,7 +291,7 @@ void crear_nuevo_proceso(int socket_cliente){
 	log_info(logger, "Creación de Proceso PID: %d", pid);
 }
 
-//TODO DESCOMENTAR ANTES DE PUSHEAR
+
 void finalizar_proceso_memoria(int cliente_fd){
 	// recibe paquete del kernel
 	// usando el pid, busca los segmentos a eliminar
@@ -303,35 +303,35 @@ void finalizar_proceso_memoria(int cliente_fd){
 
 
 	//DESERIALIZO
-//	t_tabla_de_segmento* tabla_paquete;
-//	int desplazamiento = 0;
-//	memcpy(tabla_paquete->cantidad_segmentos,tabla->head,sizeof(uint32_t));
-//	desplazamiento += sizeof(uint32_t);
-//	memcpy(tabla_paquete->pid,tabla->head + desplazamiento,sizeof(uint32_t));
-//	desplazamiento += sizeof(uint32_t);
-//	for(int i =0; i< tabla_paquete->cantidad_segmentos ; i++){
-//
-//			t_segmento* segmento_N;
-//			memcpy(segmento_N->id_segmento,tabla->head + desplazamiento,sizeof(uint32_t));
-//			desplazamiento += sizeof(uint32_t);
-//			memcpy(segmento_N->direccion_base,tabla->head + desplazamiento,sizeof(uint32_t));
-//			desplazamiento += sizeof(uint32_t);
-//			memcpy(segmento_N->tamano,tabla->head + desplazamiento,sizeof(uint32_t));
-//			desplazamiento += sizeof(uint32_t);
-//
-//			list_add(tabla_paquete->segmentos,segmento_N);
-//
-//		}
-//
-//	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(tabla_paquete->pid);
-//	if(tabla_buscada != NULL)
-//	{
-//		destroy_tabla_de_segmentos(tabla_buscada);
-//	}
-//	else
-//	{
-//		log_error(logger,"ERROR, NO SE ENCONTRO EL SEGMENTO");
-//	}
+	t_tabla_de_segmento* tabla_paquete;
+	int desplazamiento = 0;
+	memcpy(tabla_paquete->cantidad_segmentos,tabla->head,sizeof(uint32_t));
+	desplazamiento += sizeof(uint32_t);
+	memcpy(tabla_paquete->pid,tabla->head + desplazamiento,sizeof(uint32_t));
+	desplazamiento += sizeof(uint32_t);
+	for(int i =0; i< tabla_paquete->cantidad_segmentos ; i++){
+
+			t_segmento* segmento_N;
+			memcpy(segmento_N->id_segmento,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+			memcpy(segmento_N->direccion_base,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+			memcpy(segmento_N->tamano,tabla->head + desplazamiento,sizeof(uint32_t));
+			desplazamiento += sizeof(uint32_t);
+
+			list_add(tabla_paquete->segmentos,segmento_N);
+
+		}
+
+	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(tabla_paquete->pid);
+	if(tabla_buscada != NULL)
+	{
+		destroy_tabla_de_segmentos(tabla_buscada);
+	}
+	else
+	{
+		log_error(logger,"ERROR, NO SE ENCONTRO EL SEGMENTO");
+	}
 
 }
 
