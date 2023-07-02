@@ -158,9 +158,9 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 				case HANDSHAKE:
 					recibir_handshake(socket_kernel);
 					break;
-				//case ABRIR_ARCHIVO://TODO descomentar UwU
-					//abrir_archivo(socket_kernel);
-					//break;
+				case ABRIR_ARCHIVO:
+					abrir_archivo(socket_kernel);
+					break;
 				case CREAR_ARCHIVO:
 					crear_archivo(socket_kernel);
 					break;

@@ -14,10 +14,11 @@
 #include "kernel.h"
 
 void enviar_peticion_fs(op_code code,t_instruccion* instruccion );
+void abrir_archivo(t_instruccion* instruccion);
 void f_open();
-void f_close(int cliente_fd);
+void f_close();
 void f_seek(int cliente_fd);
-void enviar_cola_archivos_bloqueados(t_instruccion instruccion);
+void enviar_cola_archivos_bloqueados(t_instruccion* instruccion);
 void truncar_archivo();
 void leer_archivo();
 void escribir_archivo();

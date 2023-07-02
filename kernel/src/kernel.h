@@ -34,7 +34,8 @@ extern int socket_cpu;
 extern int socket_kernel;
 extern int socket_memoria;
 extern int socket_fs;
-extern t_dictionary* tabla_global_de_archivos_abiertos;
+extern int grado_max_multiprogramacion;
+
 
 
 typedef struct {

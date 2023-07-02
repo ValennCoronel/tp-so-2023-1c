@@ -1,7 +1,7 @@
 #include "peticiones_kernel.h"
 
 
-/*
+
 void abrir_archivo(){
 
 //Esta operación consistirá en verificar que exista el FCB correspondiente al
@@ -19,18 +19,9 @@ void abrir_archivo(){
 	//CASO 1: La FCB esta en el diccionario (en memoria) => el archivo existe
 	if(dictionary_has_key(fcb_por_archivo, instruccion->parametros[0])){
 
-		//Cargo estructuras restantes
-		t_tabla_global_de_archivos_abiertos* archivo = malloc(sizeof(t_tabla_global_de_archivos_abiertos));
-		t_fcb* fcb = dictionary_get(fcb_por_archivo, instruccion->parametros[0]);
-		archivo->fileDescriptor = fcb->puntero_directo;
-		archivo->file = instruccion->parametros[0];
-		archivo->open = 1;
-		dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
+		enviar_mensaje("OK", socket_kernel, MENSAJE);
 
-		//abro el archivo
-		fopen(instruccion->parametros[0]);
-
-	//CASO 2: La FCB no esta en memoria
+	//CASO 2: La FCB no esta en memoria pero si esta en el sistema
 	}else {
 		t_config* config_FCB = config_create(direccion_fcb);
 
@@ -38,39 +29,22 @@ void abrir_archivo(){
 		if(config_FCB != NULL){
 			//Levanto la fcb
 			t_fcb* fcb = iniciar_fcb(config_FCB);
-
-			//Cargo estructuras resantes
-			t_tabla_global_de_archivos_abiertos* archivo;
-			archivo->fileDescriptor = fcb->puntero_directo;
-			archivo->file = instruccion->parametros[0];
-			archivo->open = 1;
-			dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
 			dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
 
-			//abro el archivo
-			fopen(instruccion->parametros[0]);
+			enviar_mensaje("OK", socket_kernel, MENSAJE);
+
 
 		//CASO B: La FCB no existe => el archivo tampoco
 		}else{
-			//creamos la fcb
-			t_fcb* fcb = crear_fcb(config_FCB, instruccion, direccion_fcb);
-
-			//Cargo estructuras resantes
-			t_tabla_global_de_archivos_abiertos* archivo;
-			archivo->fileDescriptor = fcb->puntero_directo;
-			archivo->file = instruccion->parametros[0];
-			archivo->open = 1;
-			dictionary_put(tabla_global_de_archivos_abiertos, instruccion->parametros[0], archivo);
-			dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
-
-			//TODO creo y abro el archivo
+			//Doy aviso a Kernel
+			enviar_mensaje("ERROR", socket_kernel, MENSAJE);
 
 		}
 
 	}
 
 }
-*/
+
 
 //levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB, si no existe lo crea
 // el archivo de fcb usa el formato de config de las commons
@@ -104,6 +78,7 @@ t_fcb* iniciar_fcb(t_config* config){
 
 
 
+
 	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
 		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo");
 		return NULL;
@@ -119,14 +94,26 @@ int encontrar_bloque_libre(){
 	return a ;
 }
 
-void crear_archivo(int socket_kernel){
+void crear_archivo(){
 /*
 
 Para esta operación se deberá crear un archivo FCB correspondiente al nuevo archivo, con tamaño 0 y
 sin bloques asociados.
-Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK.
+Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK. */
 
-*///enviar_mensaje("OK",socket_kernel);
+	//Cargamos las estructuras necesarias
+	t_instruccion* instruccion = recibir_instruccion(socket_kernel);
+	char* direccion_fcb = string_new();
+	strcpy(direccion_fcb, path_fcb);
+	strcpy(direccion_fcb, "/");
+	strcpy(direccion_fcb, instruccion->parametros[0]);
+	t_config* config_FCB = malloc(sizeof(t_config));
+	//creamos la fcb
+	t_fcb* fcb = crear_fcb(config_FCB, instruccion, direccion_fcb);
+
+	//Cargo estructuras resantes
+	dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
+	enviar_mensaje("OK", socket_kernel, MENSAJE);
 }
 
 

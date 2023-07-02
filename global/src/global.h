@@ -11,9 +11,12 @@
 #include <commons/temporal.h>
 #include <commons/log.h>
 #include <commons/string.h>
+#include <commons/collections/dictionary.h>
 
 
 extern t_log* logger;
+extern t_dictionary* fcb_por_archivo;
+extern t_dictionary* tabla_global_de_archivos_abiertos;
 
 typedef enum
 {
@@ -141,6 +144,7 @@ typedef struct {
 	int tamanio_archivo;
 	uint32_t puntero_directo;
 	uint32_t puntero_indirecto;
+	FILE* archivo;
 } t_fcb;
 
 typedef struct {

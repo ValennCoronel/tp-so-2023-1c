@@ -13,7 +13,7 @@ typedef struct {
 
 
 //void abrir_archivo(); //TODO
-void crear_archivo(int socket_kernel);
+void crear_archivo();
 void truncar_archivo(int socket_kernel, int socket_memoria,FILE* bloques,t_superbloque* superbloque);
 void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques,int tamanio_bloque);
 void escribir_archivo(int socket_kernel,int socket_memoria, FILE* bloques,int tamanio_bloque);

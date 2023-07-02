@@ -5,10 +5,11 @@ int socket_cpu;
 int socket_kernel;
 int socket_memoria;
 int socket_fs;
+int grado_max_multiprogramacion;
 
 //Tablas del FS
 t_dictionary* tabla_global_de_archivos_abiertos;
-
+t_dictionary* fcb_por_archivo;
 
 int main(void){
 
@@ -24,7 +25,7 @@ int main(void){
 	char* algoritmo_planificacion;
 	int estimacion_inicial;
 	double hrrn_alfa;
-	int grado_max_multiprogramacion;
+
 	char** recursos;
 	char** instancias_recursos;
 
@@ -112,6 +113,7 @@ int main(void){
 	inicializar_colas_y_semaforos();
 	recurso_bloqueado = dictionary_create();
 	colas_de_procesos_bloqueados_para_cada_archivo = dictionary_create(); //diccionario con key=archivo y elementos=procesos bloqueados
+
 
 	t_queue* cola_bloqueados;
 	void iterador_recursos(char* nombre_recurso){
@@ -445,6 +447,7 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 				case ESCRIBIR_ARCHIVO:
 					break;
 				case CREAR_ARCHIVO:
+					enviar_mensaje("Creando archivo nuevo", socket_fs, CREAR_ARCHIVO);
 					break;
 				case SEG_FAULT:
 					manejar_seg_fault();
