@@ -122,78 +122,261 @@ void truncar_archivo(int socket_kernel, int socket_memoria,FILE* bloques,t_super
 
 	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion(socket_kernel);
 
-	t_fcb* peticion_truncado = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
-
+	t_fcb* fcb_a_truncar = dictionary_get(fcb_por_archivo,instruccion_peticion->parametros[0]);
+    int nuevo_tamano_archivo = atoi(instruccion_peticion->parametros[1]);
 
 	  //calculo de cantidad de bloques a truncar
-    float numero_bloques_nuevo_aux;
-    int bloques_archivo_nuevo=atoi(instruccion_peticion->parametros[1]);
-
-    numero_bloques_nuevo_aux =bloques_archivo_nuevo/(float)superbloque->block_size;
-
-    double parte_fraccional, numero_bloques_nuevo;
-    parte_fraccional = modf(numero_bloques_nuevo_aux, &numero_bloques_nuevo);
-
-    if( parte_fraccional != 0)
-    	numero_bloques_nuevo=numero_bloques_nuevo+1;
+    int numero_de_bloques_nuevo = calcular_cantidad_de_bloques(nuevo_tamano_archivo, superbloque);
 
     //calculo de cantidad de bloques actuales (antes del truncado :D)
-       float numero_bloques;
-
-           numero_bloques =peticion_truncado->tamanio_archivo /(float)superbloque->block_size;
-
-       double fractpart, bloques_anterior;
-           fractpart = modf(numero_bloques, &bloques_anterior);
-
-           if(fractpart != 0)
-        	   bloques_anterior=bloques_anterior+1;
+    int numero_de_bloques_actual = calcular_cantidad_de_bloques(fcb_a_truncar->tamanio_archivo, superbloque);
 
 
 
-           if(numero_bloques_nuevo> bloques_anterior){
-        	   //ampliar
-           }
-           else{
-        	   //reducir
-        	  int cpb =superbloque->block_size/4;
+    if(numero_de_bloques_nuevo > numero_de_bloques_actual){
+	   //ampliar tamanio
+    	int bloques_a_agregar = numero_de_bloques_nuevo - numero_de_bloques_actual;
 
-        	  if(peticion_truncado->puntero_indirecto>0){
-        	  int cantidad_indirectos =peticion_truncado->puntero_indirecto*cpb;
-        	  int cantidad_indirectos_que_debo_tener = numero_bloques_nuevo-peticion_truncado->puntero_directo;
-        	  int cantidad_bloques_a_sacar = cantidad_indirectos_que_debo_tener-cantidad_indirectos;
-        	  float cantidad_punteros_indirectos_a_sacar=cantidad_bloques_a_sacar/(float)cpb;
+    	agregar_bloques(fcb_a_truncar, bloques_a_agregar, superbloque);
 
-        	  //bastante explicita esta parte
-        	  double parte_sobrante_del_bloque_indirecto_que_no_se_saca_del_todo, punteros_indirectos_completos_a_sacar;
-        	  parte_sobrante_del_bloque_indirecto_que_no_se_saca_del_todo = modf(cantidad_punteros_indirectos_a_sacar, &punteros_indirectos_completos_a_sacar);
 
-        	  peticion_truncado->puntero_indirecto-=punteros_indirectos_completos_a_sacar;
-        	  }else{
-        		  peticion_truncado->puntero_directo-=(bloques_archivo_nuevo-bloques_anterior);
-        	  }
+    } else if(numero_de_bloques_nuevo < numero_de_bloques_actual) {
+	   //reducir tamanio
 
-           }
+	  int bloques_a_sacar = numero_de_bloques_actual - numero_de_bloques_nuevo;
+	  sacar_bloques(fcb_a_truncar, bloques_a_sacar, superbloque);
 
-           peticion_truncado->tamanio_archivo = bloques_archivo_nuevo;
+   }
 
-           //TODO actualizar bitarray de huecos libres
+    // actualizo tamanio_fcb
+   fcb_a_truncar->tamanio_archivo = nuevo_tamano_archivo;
 
-            enviar_mensaje("OK", socket_kernel, TRUNCAR_ARCHIVO);
-
-/*
-            typedef struct {
-            	char* nombre_archivo;
-            	int tamanio_archivo;
-            	uint32_t puntero_directo;
-            	uint32_t puntero_indirecto;
-            } t_fcb;
-*/
-
-            //peticion_truncado->nombre_archivo = instruccion_peticion->parametros[0];
-            //peticion_truncado->tamanio_archivo = atoi(instruccion_peticion->parametros[1]);
+   // respondo a kernel un OK
+	enviar_mensaje("OK", socket_kernel, TRUNCAR_ARCHIVO);
 
 }
 
+//dado un tamanio en bytes, calcula cuantos bloques son
+int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloque){
+	float numero_bloques_nuevo_aux =tamanio_en_bytes/(float)superbloque->block_size;
+
+	double parte_fraccional, numero_bloques_nuevo;
+	parte_fraccional = modf(numero_bloques_nuevo_aux, &numero_bloques_nuevo);
+
+
+	if( parte_fraccional != 0)
+		numero_bloques_nuevo=numero_bloques_nuevo+1;
+
+	return (int)numero_bloques_nuevo;
+}
+
+// actualiza el fcb y el bitarray de bloques libres, sacando cierta cantidad de bloques especificada
+void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, t_superbloque* superbloque){
+	// 1 puntero directo
+	// 1 puntero indirecto con x bloques
+
+	int punteros_x_bloque =superbloque->block_size/4; //4 bytes ocupa un puntero
+
+	 if(punteros_x_bloque > bloques_a_sacar){
+		  // saco tambien del directo
+
+		 // marco los bloques como libres
+		 marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
+		 marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
+
+		  fcb_a_actualizar->puntero_directo = -1;
+		  fcb_a_actualizar->puntero_indirecto = -1;
+
+	  } else if(punteros_x_bloque < bloques_a_sacar){
+		  // sino saco solo del indirecto
+		  int bloques_a_sacar_del_indirecto = bloques_a_sacar - punteros_x_bloque;
+		  marcar_bloques_libres_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_a_sacar_del_indirecto, superbloque, punteros_x_bloque);
+
+	  } else {
+		  // sino solo le saco todos los indirectos
+
+		  marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
+
+		  fcb_a_actualizar->puntero_indirecto = -1;
+	  }
+}
+
+// actualiza el bitarray de bloques libres
+// coloca un 0 al numero de bloque que apunta
+void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo){
+
+	bitarray_clean_bit(bitarray_bloques_libres, numero_de_bloque_directo);
+
+	// actualizo el archivo del bitmap con los nuevos valores
+	fwrite(&bitarray_bloques_libres->bitarray,bitarray_bloques_libres->size,1, bitmap);
+}
+
+// actualiza el bitarray de bloques libres
+// coloca un 0 a todos los bloques del puntero indirecto
+void marcar_bloques_libres_indirecto(uint32_t puntero_indirecto, t_superbloque* superbloque, int punteros_x_bloque){
+
+	//leo_archivo_de_bloques
+	char* contenido_blouque_indirecto = malloc(sizeof(superbloque->block_size) + 1);
+	fseek(bloques, 0, SEEK_SET); // arranco a leer desde el inicio
+	fread(contenido_blouque_indirecto,superbloque->block_size,1,bloques);
+
+	for(int i = 0; i < punteros_x_bloque; i++){
+		char* puntero_n_string = string_substring(contenido_blouque_indirecto, i*4, 4);
+		marcar_bloques_libres_directo(atoi(puntero_n_string));
+
+		free(puntero_n_string);
+	}
+	marcar_bloques_libres_directo(puntero_indirecto);
+
+	free(contenido_blouque_indirecto);
+}
+
+// actualiza el bitarray de bloques libres
+// coloca un 0 hasta una cantidad especificada de bloques que hay dento del bloque que apunta el puntero indirecto
+void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque){
+	//leo_archivo_de_bloques
+	char* contenido_blouque_indirecto = malloc(sizeof(superbloque->block_size) + 1);
+	fseek(bloques, 0, SEEK_SET); // arranco a leer desde el inicio
+	fread(contenido_blouque_indirecto,superbloque->block_size,1,bloques);
+
+	for(int i = punteros_x_bloque ; i != (punteros_x_bloque - numeros_de_bloques_a_sacar) ; i--){
+		char* puntero_n_string = string_substring(contenido_blouque_indirecto, (i-1)*4, 4);
+		marcar_bloques_libres_directo(atoi(puntero_n_string));
+
+		free(puntero_n_string);
+	}
+	marcar_bloques_libres_directo(puntero_indirecto);
+
+	free(contenido_blouque_indirecto);
+}
+
+// actualiza el fcb y el bitarray de bloques libres, agregando cierta cantidad de bloques especificada
+void agregar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_agregar, t_superbloque* superbloque){
+	// 1 puntero directo
+	// 1 puntero indirecto con x bloques
+
+	int punteros_x_bloque =superbloque->block_size/4; //4 bytes ocupa un puntero
+
+	if(fcb_a_actualizar->puntero_directo == -1 && bloques_a_agregar == 1){
+		ocupar_bloque_libre_directo(fcb_a_actualizar);
+	} else if(fcb_a_actualizar->puntero_directo == -1 && bloques_a_agregar > 1){
+		//ocupa priermo el directo
+		ocupar_bloque_libre_directo(fcb_a_actualizar);
+		bloques_a_agregar -= 1;
+		// luego ocupa el indirecto para el resto de bloques
+		ocupar_bloque_libre_indirecto(fcb_a_actualizar, bloques_a_agregar, punteros_x_bloque, superbloque);
+
+	} else if(fcb_a_actualizar->puntero_indirecto == -1){
+		//solo ocupa bloques indirectos
+		ocupar_bloque_libre_indirecto(fcb_a_actualizar, bloques_a_agregar, punteros_x_bloque, superbloque);
+
+	} else if(fcb_a_actualizar->puntero_indirecto != -1 && fcb_a_actualizar->puntero_directo != -1 ){
+		ocupar_bloque_libre_indirecto_fatlantes(fcb_a_actualizar, bloques_a_agregar, superbloque);
+	}
+
+}
+
+// obtiene el numero del primer bloque libre según el bit array
+int obtener_primer_bloque_libre(){
+	int puntero_primer_bloque_libre = 0;
+	int bits_bitarray = bitarray_get_max_bit(bitarray_bloques_libres);
+	for(puntero_primer_bloque_libre = 0; puntero_primer_bloque_libre< bits_bitarray; puntero_primer_bloque_libre++){
+		bool esta_ocupado = bitarray_test_bit(bitarray_bloques_libres, puntero_primer_bloque_libre);
+
+		if(!esta_ocupado)
+				break;
+	}
+	return puntero_primer_bloque_libre;
+}
+
+//obteiene un bloque libre y actualiza el fcb como puntero directo
+void ocupar_bloque_libre_directo(t_fcb* fcb){
+	//busca un solo bloque libre y lo setea como puntero directo
+	fcb->puntero_directo = obtener_primer_bloque_libre();
+}
+
+//agrega un puntero indirecto al fcb y le agrega adentro todos los bloques que necesite sin pasarse de los punteros por bloque
+void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punteros_x_bloque, t_superbloque* superbloque){
+	int puntero_indirecto = obtener_primer_bloque_libre();
+	char* punteros_directos = string_new();
+
+	for(int i = 0; i< punteros_x_bloque; i++){
+		int puntero_directo_n = obtener_primer_bloque_libre();
+		char* puntero_directo_n_string = string_itoa(puntero_directo_n);
+
+		int cantidad_de_digitos = strlen(puntero_directo_n_string);
+
+		if(cantidad_de_digitos < 4){
+			// le agrego ceros para que ocupe 4 chars
+			while(cantidad_de_digitos != 4){
+				string_append(&puntero_directo_n_string, "0");
+				cantidad_de_digitos ++;
+			}
+
+			char* puntero_directo_n_string_completo = string_reverse(puntero_directo_n_string);
+
+
+			string_append(&punteros_directos, puntero_directo_n_string_completo);
+
+			free(puntero_directo_n_string_completo);
+		} else if(cantidad_de_digitos == 4){
+			string_append(&punteros_directos, puntero_directo_n_string);
+		} else {
+			// si pasa que es hueco libre es mayor a 4 digitos, significa que no existe y no hace nada
+			return;
+		}
+
+
+		free(puntero_directo_n_string);
+
+		string_append(&punteros_directos,string_itoa(puntero_directo_n) );
+	}
+
+	guardar_en_bloque(puntero_indirecto, punteros_directos, superbloque);
+
+	//free(punteros_directos);
+}
+
+// en base a un array de strings, lo pasa a un string
+char* pasar_a_string(char** string_array){
+	char* string = string_new();
+	void _crear_string(char *contenido_n){
+	    string_append(&string, contenido_n);
+	}
+
+	string_iterate_lines(string_array,_crear_string);
+
+	return string;
+}
+
+// En base a un numero de bloque lo guarda en el archivo
+// 	se tiene en cuenta de que el bloque esta vacio  y que el contenido_a_guardar tenga todos los bytes segun el block size
+void guardar_en_bloque(int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque){
+	int tamanio_archivo = superbloque->block_count * superbloque->block_size;
+
+	fseek(bloques, 0, SEEK_SET);
+	char *leido_buffer = calloc(1, tamanio_archivo +1);
+	fread(leido_buffer, tamanio_archivo, 1, bloques);
+
+
+	char** contenido_archivo_de_bloques = string_array_new();
+
+	for(int i = 0; i< (superbloque->block_count); i++){
+		char* contenido_bloque_n = string_substring(leido_buffer, i* (superbloque->block_size), superbloque->block_size);
+		string_array_push(&contenido_archivo_de_bloques,contenido_bloque_n );
+	}
+
+	string_array_replace(contenido_archivo_de_bloques, numero_de_bloque, contenido_a_guardar);
+
+	char* contenido_bloques_nuevo = pasar_a_string(contenido_archivo_de_bloques);
+
+	fseek(bloques, 0, SEEK_SET);
+	fwrite(contenido_bloques_nuevo,tamanio_archivo, 1, bloques);
+}
+
+void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, t_superbloque* superbloque){
+// TODO FRANCO
+}
 
 void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques,int tamanio_bloque){
 
@@ -230,24 +413,6 @@ void leer_archivo(int socket_kernel, int socket_memoria, FILE* bloques,int taman
 
 
 
-
-
-
-/*
-
- Acceso a espacio de usuario
-Tanto CPU como File System pueden, dada una dirección física, solicitar accesos
-al espacio de usuario de Memoria. El módulo deberá realizar lo siguiente:
-
-****1Ante un pedido de lectura, devolver el valor que se encuentra en la posición pedida.
-****2Ante un pedido de escritura, escribir lo indicado en la posición pedida y responder un mensaje de ‘OK’.
-
-Para simular la realidad y la velocidad de los accesos a Memoria,
-cada acceso al espacio de usuario tendrá un tiempo de espera en milisegundos
-definido por archivo de configuración.
-
-
- */
 
 void enviar_peticion_memoria(op_code code,t_instruccion* instruccion ){
 	t_paquete* paquete = crear_paquete(code);

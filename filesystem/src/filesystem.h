@@ -23,7 +23,11 @@ extern int socket_kernel;
 extern int socket_memoria;
 extern char* path_fcb;
 
-
+extern t_dictionary* fcb_por_archivo;
+extern t_dictionary* tabla_global_de_archivos_abiertos;
+extern t_bitarray* bitarray_bloques_libres;
+extern  FILE* bitmap;
+extern  FILE* bloques;
 
 t_log* iniciar_logger(void);
 t_config* iniciar_config(void);

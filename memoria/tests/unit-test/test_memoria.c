@@ -324,4 +324,77 @@ context(memoria_tests){
 
 		}end
 	}end
+
+	describe("void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento)"){
+		before{
+			huecos_libres= list_create();
+		}end
+		it("debe actualizar la lista de huecos correctamente"){
+			create_hueco(huecos_libres, 0,20,1);
+			create_hueco(huecos_libres, 50,20,2);
+			create_hueco(huecos_libres, 80,40,3);
+			create_hueco(huecos_libres, 134,50,4);
+
+			t_segmento* hueco_a_usar = malloc(sizeof(t_segmento));
+			hueco_a_usar->direccion_base = 0;
+			hueco_a_usar->tamano = 20;
+			hueco_a_usar->id_segmento = 1;
+
+
+
+			usar_hueco(hueco_a_usar, 20);
+
+			should_int(list_size(huecos_libres)) be equal to(3);
+
+			assert_hueco_from_list(huecos_libres, 0, 50, 20,2);
+			assert_hueco_from_list(huecos_libres, 1, 80, 40,3);
+			assert_hueco_from_list(huecos_libres, 2, 134, 50,4);
+
+		}end
+		it("si el hueco es mas grande que el va a usar, crea otro hueco con el tamaño sobrante"){
+			create_hueco(huecos_libres, 0,20,1);
+			create_hueco(huecos_libres, 50,20,2);
+			create_hueco(huecos_libres, 80,40,3);
+			create_hueco(huecos_libres, 134,50,4);
+
+			t_segmento* hueco_a_usar = malloc(sizeof(t_segmento));
+			hueco_a_usar->direccion_base = 0;
+			hueco_a_usar->tamano = 20;
+			hueco_a_usar->id_segmento = 1;
+
+
+			usar_hueco(hueco_a_usar, 10);
+
+			should_int(list_size(huecos_libres)) be equal to(4);
+
+			assert_hueco_from_list(huecos_libres, 0, 50, 20,2);
+			assert_hueco_from_list(huecos_libres, 1, 80, 40,3);
+			assert_hueco_from_list(huecos_libres, 2, 134, 50,4);
+			assert_hueco_from_list(huecos_libres, 3, 10, 10,2);
+
+		}end
+
+		it("si no encuentra el hueco a usar, no modifica la lista de huecos libres"){
+			create_hueco(huecos_libres, 0,20,1);
+			create_hueco(huecos_libres, 50,20,2);
+			create_hueco(huecos_libres, 80,40,3);
+			create_hueco(huecos_libres, 134,50,4);
+
+			//hueco no existente
+			t_segmento* hueco_a_usar = malloc(sizeof(t_segmento));
+			hueco_a_usar->direccion_base = 200;
+			hueco_a_usar->tamano = 20;
+			hueco_a_usar->id_segmento = 50;
+
+
+			usar_hueco(hueco_a_usar, 10);
+
+			should_int(list_size(huecos_libres)) be equal to(4);
+
+			assert_hueco_from_list(huecos_libres, 0, 0, 20,1);
+			assert_hueco_from_list(huecos_libres, 1, 50, 20,2);
+			assert_hueco_from_list(huecos_libres, 2, 80, 40,3);
+			assert_hueco_from_list(huecos_libres, 3, 134, 50,4);
+		}end
+	}end
 }

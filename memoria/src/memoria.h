@@ -54,7 +54,9 @@ void crear_nuevo_proceso(int socket_cliente);
 void finalizar_proceso_memoria(int cliente_fd);
 void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd);
 void delete_segment(int cliente_fd);
-void acceder_espacio_ususario(int cliente_fd);
+void compactar_memoria(int cliente_fd);
+void acceder_espacio_usuario_lectura(int cliente_fd);
+void acceder_espacio_usuario_escritura(int cliente_fd);
 
 void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento);
 void agregar_nuevo_segmento_a(int pid, t_segmento* segmento);
