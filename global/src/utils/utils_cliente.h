@@ -25,6 +25,6 @@ void agregar_a_paquete_sin_agregar_tamanio(t_paquete* paquete, void* valor, int 
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
-
+char* pasar_a_string(char** string_array);
 
 #endif /* UTILS_CLIENTE_H_ */

@@ -115,3 +115,16 @@ void liberar_conexion(int socket_cliente)
 {
 	close(socket_cliente);
 }
+
+// en base a un array de strings, lo pasa a un string
+char* pasar_a_string(char** string_array){
+	char* string = string_new();
+	void _crear_string(char *contenido_n){
+	    string_append(&string, contenido_n);
+	}
+
+	string_iterate_lines(string_array,_crear_string);
+
+	return string;
+}
+

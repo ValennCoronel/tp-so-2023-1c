@@ -159,19 +159,19 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 					recibir_handshake(socket_kernel);
 					break;
 				case ABRIR_ARCHIVO:
-					abrir_archivo(socket_kernel);
+					abrir_archivo();
 					break;
 				case CREAR_ARCHIVO:
 					crear_archivo(socket_kernel);
 					break;
 				case TRUNCAR_ARCHIVO:
-					truncar_archivo(socket_kernel, socket_memoria,bloques, superbloque);
+					truncar_archivo(socket_kernel, socket_memoria, superbloque);
 						break;
 				case LEER_ARCHIVO:
-					leer_archivo(socket_kernel, socket_memoria, bloques,superbloque->block_size);
+					leer_archivo(socket_kernel, socket_memoria,superbloque);
 					break;
 				case ESCRIBIR_ARCHIVO:
-					escribir_archivo(socket_kernel, socket_memoria, bloques,superbloque->block_size);
+					escribir_archivo(socket_kernel, socket_memoria,superbloque);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -189,7 +189,7 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 // si no existe lo crea
 FILE* levantar_archivo_binario(char* path_archivo){
 
-	FILE* archivo = fopen(path_archivo, "wb");
+	FILE* archivo = fopen(path_archivo, "r+");
 
 	if(archivo == NULL){
 		log_error(logger, "No existe el archivo con el path: %s",path_archivo);
