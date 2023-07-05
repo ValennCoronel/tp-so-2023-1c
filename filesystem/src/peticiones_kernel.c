@@ -380,7 +380,7 @@ void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo){
 
 	// actualizo el archivo del bitmap con los nuevos valores
 	fseek(bitmap, 0, SEEK_SET);
-	fwrite(&bitarray_bloques_libres->bitarray,bitarray_bloques_libres->size,1, bitmap);
+	fwrite(bitarray_bloques_libres->bitarray,bitarray_bloques_libres->size,1, bitmap);
 }
 
 // actualiza el bitarray de bloques libres
@@ -407,8 +407,14 @@ void marcar_bloques_libres_indirecto(uint32_t puntero_indirecto, t_superbloque* 
 // coloca un 0 hasta una cantidad especificada de bloques que hay dento del bloque que apunta el puntero indirecto
 void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque){
 	//leo_archivo_de_bloques
+
+	if(numeros_de_bloques_a_sacar == 0){
+		// si no debo sacar nada, no hago nada
+		return;
+	}
+
 	char* contenido_blouque_indirecto = malloc(sizeof(superbloque->block_size) + 1);
-	fseek(bloques, 0, SEEK_SET); // arranco a leer desde el inicio
+	fseek(bloques, (superbloque->block_size)* puntero_indirecto, SEEK_SET);
 	fread(contenido_blouque_indirecto,superbloque->block_size,1,bloques);
 
 	for(int i = punteros_x_bloque ; i != (punteros_x_bloque - numeros_de_bloques_a_sacar) ; i--){
@@ -465,7 +471,13 @@ int obtener_primer_bloque_libre(){
 //obteiene un bloque libre y actualiza el fcb como puntero directo
 void ocupar_bloque_libre_directo(t_fcb* fcb){
 	//busca un solo bloque libre y lo setea como puntero directo
+
 	fcb->puntero_directo = obtener_primer_bloque_libre();
+
+	bitarray_set_bit(bitarray_bloques_libres, fcb->puntero_directo);
+	// actualizo el archivo del bitmap con los nuevos valores
+	fseek(bitmap, 0, SEEK_SET);
+	fwrite(bitarray_bloques_libres->bitarray, bitarray_bloques_libres->size, 1, bitmap);
 }
 
 //agrega un puntero indirecto al fcb y le agrega adentro todos los bloques que necesite sin pasarse de los punteros por bloque

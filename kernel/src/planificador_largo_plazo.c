@@ -186,7 +186,6 @@ t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria, int pid){
 char* listar_pids_cola_ready(void){
 
 	char** array_pids = string_array_new();
-	char* string_pids = string_new();
 
 
 	t_list* lista_ready = cola_ready->elements;
@@ -203,12 +202,7 @@ char* listar_pids_cola_ready(void){
 	}
 
 
-	void crear_string(char *pid_string){
-	    string_append(&string_pids, pid_string);
-	    string_append(&string_pids, ",");
-	}
-
-	string_iterate_lines(array_pids,crear_string);
+	char* string_pids = pasar_a_string(array_pids);
 
 	string_array_destroy(array_pids);
 
