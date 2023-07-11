@@ -31,6 +31,7 @@ void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo);
 
 void agregar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_agregar, t_superbloque* superbloque);
 int obtener_primer_bloque_libre();
+void colocar_en_ocupado_bitarray_en(int posicion);
 void ocupar_bloque_libre_directo(t_fcb* fcb);
 void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, t_superbloque* superbloque);
 void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punteros_x_bloque, t_superbloque* superbloque);

@@ -90,7 +90,7 @@ int main(void){
 	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques, superbloque);
 
 
-	bitarray_destroy(bitarray_bloques_libres);
+
 	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
 }
 
@@ -115,6 +115,7 @@ void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitm
 	log_destroy(logger);
 	config_destroy(config);
 	close(conexion);
+	bitarray_destroy(bitarray_bloques_libres);
 	fclose(bitmap);
 	fclose(bloques);
 }
