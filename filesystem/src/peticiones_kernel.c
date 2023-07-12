@@ -162,22 +162,27 @@ void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superb
 
 
 void leer_archivo(int socket_kernel, int socket_memoria, t_superbloque* superbloque){
-	t_instruccion_y_puntero* instruccion_peticion = (t_instruccion_y_puntero*) recibir_instruccion_y_puntero_kernel(socket_kernel);
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	int puntero = -1;
+	int pid = -1;
 
-	int cantidad_de_bytes_a_leer = atoi(instruccion_peticion->instruccion->parametros[2]);
+	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, puntero, pid);
+
+	int cantidad_de_bytes_a_leer = atoi(instruccion->parametros[2]);
 
 	char* contenido_a_escribir = string_new();
 
 	int cantidad_de_bolques_a_leer = calcular_cantidad_de_bloques(cantidad_de_bytes_a_leer, superbloque);
 
 	for(int i = 0; i< cantidad_de_bolques_a_leer ; i ++){
-		string_append(&contenido_a_escribir, leer_en_bloque(instruccion_peticion->puntero +i ,superbloque));
+		string_append(&contenido_a_escribir, leer_en_bloque(puntero +i ,superbloque));
 	}
 
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
-	agregar_a_paquete(paquete, instruccion_peticion->instruccion->opcode, sizeof(char)*instruccion_peticion->instruccion->opcode_lenght );
-	agregar_a_paquete(paquete, instruccion_peticion->instruccion->parametros[1], instruccion_peticion->instruccion->parametro2_lenght);
-	agregar_a_paquete(paquete,  instruccion_peticion->instruccion->parametros[2],instruccion_peticion->instruccion->parametro3_lenght);
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &pid, sizeof(int));
+	agregar_a_paquete(paquete,  instruccion->opcode, sizeof(char)* instruccion->opcode_lenght );
+	agregar_a_paquete(paquete,  instruccion->parametros[1],  instruccion->parametro2_lenght);
+	agregar_a_paquete(paquete,   instruccion->parametros[2], instruccion->parametro3_lenght);
 	agregar_a_paquete(paquete,  contenido_a_escribir,strlen(contenido_a_escribir)+1);
 	enviar_paquete(paquete, socket_memoria);
 
@@ -198,11 +203,16 @@ void leer_archivo(int socket_kernel, int socket_memoria, t_superbloque* superblo
 
 void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* superbloque){
 
-	t_instruccion_y_puntero* instruccion_peticion = recibir_instruccion_y_puntero_kernel(socket_kernel);
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	int puntero = -1;
+	int pid = -1;
+
+	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, puntero, pid);
 
 
 	t_paquete* paquete = crear_paquete(READ_MEMORY);
-	t_instruccion* instruccion = instruccion_peticion->instruccion;
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &pid, sizeof(int));
 
 	agregar_a_paquete(paquete, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
 
@@ -231,61 +241,39 @@ void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* super
 		memcpy(contenido_bloque_n, buffer + desplazamiento, superbloque->block_size);
 		desplazamiento += superbloque->block_size;
 
-		guardar_en_bloque(instruccion_peticion->puntero + i, contenido_bloque_n, superbloque);
+		guardar_en_bloque(puntero + i, contenido_bloque_n, superbloque);
 	}
 
 	enviar_mensaje("OK", socket_kernel, ESCRIBIR_ARCHIVO);
-
 }
 
 
 //----------UTILS------------
 
-t_instruccion_y_puntero* recibir_instruccion_y_puntero_kernel(int socket_kernel){
-
-	t_instruccion_y_puntero* instruccion_y_puntero = malloc(sizeof(t_instruccion_y_puntero));
-
+void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int puntero, int pid){
 
 	int size;
 	void *  buffer = recibir_buffer(&size, socket_kernel);
 	int desplazamiento=0;
 
-	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-
-
 	while (desplazamiento<size){
 
+		memcpy(&pid, buffer+desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
 
-				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->opcode = malloc(instruccion->opcode_lenght);
-				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
-				desplazamiento+=instruccion->opcode_lenght;
+		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, desplazamiento);
 
-				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
-				memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
-				desplazamiento += instruccion->parametro1_lenght;
+		memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+		instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+		memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+		desplazamiento += instruccion->parametro3_lenght;
 
-				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
-				memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
-				desplazamiento += instruccion->parametro2_lenght;
-
-				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
-				memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
-				desplazamiento += instruccion->parametro3_lenght;
-
-				memcpy(&(instruccion_y_puntero->puntero), buffer + desplazamiento, sizeof(int));
-				desplazamiento += sizeof(int);
+		memcpy(&(puntero), buffer + desplazamiento, sizeof(int));
+		desplazamiento += sizeof(int);
 
 	}
 
- return instruccion_y_puntero;
 }
 
 
@@ -299,29 +287,13 @@ t_instruccion* recibir_instruccion(int socket_cliente){
 	while (desplazamiento<size){
 
 
-				memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->opcode = malloc(instruccion->opcode_lenght);
-				memcpy(instruccion->opcode, buffer+desplazamiento, instruccion->opcode_lenght);
-				desplazamiento+=instruccion->opcode_lenght;
+		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, desplazamiento);
 
-				memcpy(&(instruccion->parametro1_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
-				memcpy(instruccion->parametros[0], buffer + desplazamiento, instruccion->parametro1_lenght);
-				desplazamiento += instruccion->parametro1_lenght;
-
-				memcpy(&(instruccion->parametro2_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
-				memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
-				desplazamiento += instruccion->parametro2_lenght;
-
-				memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
-				desplazamiento+=sizeof(int);
-				instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
-				memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
-				desplazamiento += instruccion->parametro3_lenght;
+		memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
+		desplazamiento+=sizeof(int);
+		instruccion->parametros[2] = malloc(instruccion->parametro3_lenght);
+		memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
+		desplazamiento += instruccion->parametro3_lenght;
 	}
 
 	return instruccion;

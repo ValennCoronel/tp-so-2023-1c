@@ -45,10 +45,9 @@ void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_in
 
 void setear_registro(t_contexto_ejec** contexto,char* registro, char* valor);
 
-char* leer_valor_de(int direccion_fisica, int pid);
+char* leer_valor_de(int direccion_fisica, int pid, int bytes_a_leer);
 void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid);
 char* obtener_valor_del_registro(char* registro_a_leer, t_contexto_ejec** contexto);
-void dormir_en_millis(int RETARDO_INSTRUCCION);
 int obtener_numero_segmento(int direccion_logica, int TAM_MAX_SEGMENTO);
 void destroy_contexto_de_ejecucion_completo(t_contexto_ejec* contexto);
 

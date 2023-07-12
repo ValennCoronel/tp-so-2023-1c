@@ -177,7 +177,7 @@ void manejar_peticion_al_cpu(int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 		{
 			//A modo de simular el tiempo que transcurre en la CPU.
 
-			dormir_en_millis(RETARDO_INSTRUCCION);
+			esperar_por(RETARDO_INSTRUCCION);
 
 			manejar_instruccion_set(&contexto, instruction);
 		}
@@ -458,8 +458,16 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
 
 	int direccion_fisica = traducir_direccion_memoria(direccion_logica, TAM_MAX_SEGMENTO, *contexto);
 
+	int bytes_a_leer = 0;
+	if(strcmp(registro_a_guardar, "AX") == 0 || strcmp(registro_a_guardar, "BX") == 0  || strcmp(registro_a_guardar, "CX") == 0 || strcmp(registro_a_guardar, "DX") == 0){
+		bytes_a_leer = 4;
+	} else if(strcmp(registro_a_guardar, "EAX") == 0 || strcmp(registro_a_guardar, "EBX") == 0  || strcmp(registro_a_guardar, "ECX") == 0 || strcmp(registro_a_guardar, "EDX") == 0){
+		bytes_a_leer = 8;
+	} else {
+		bytes_a_leer = 16;
+	}
 
-	char* valor_leido = leer_valor_de(direccion_fisica, (*contexto)->pid);
+	char* valor_leido = leer_valor_de(direccion_fisica, (*contexto)->pid, bytes_a_leer);
 
 	log_info(logger,"PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %s - Valor: %s", (*contexto)->pid,numero_segmento, registro_a_guardar, valor_leido);
 
@@ -532,19 +540,6 @@ void manejar_instruccion_f_read(int cliente_fd, t_contexto_ejec* contexto, t_ins
 		// envio el contexto de ejcucion actualizado al kernel
 		enviar_contexto_a_kernel(LEER_ARCHIVO,socket_kernel, contexto);
 
-}
-
-void dormir_en_millis(int RETARDO_INSTRUCCION){
-	t_temporal* cronometro = temporal_create();
-
-	int tiempo_transcurrido = temporal_gettime(cronometro);
-
-	while(tiempo_transcurrido < RETARDO_INSTRUCCION){
-		tiempo_transcurrido = temporal_gettime(cronometro);
-	}
-
-	temporal_stop(cronometro);
-	temporal_destroy(cronometro);
 }
 
 char* obtener_valor_del_registro(char* registro_a_leer, t_contexto_ejec** contexto){
@@ -635,11 +630,34 @@ char* obtener_valor_del_registro(char* registro_a_leer, t_contexto_ejec** contex
 void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid){
 	t_paquete* paquete_a_enviar = crear_paquete(WRITE_MEMORY);
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete_a_enviar, &(direccion_fisica), sizeof(int));
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 
-	agregar_a_paquete(paquete_a_enviar, valor_a_escribir, sizeof(valor_a_escribir));
+	//esto no se usa del otro lado, pero hay que hacerlo para evitar errores
+	instruccion->opcode = malloc(8);
+	strcpy(instruccion->opcode, "MOV_OUT");
+	instruccion->opcode_lenght = 8;
+
+	instruccion->parametro1_lenght = strlen(string_itoa(direccion_fisica)) +1;
+	instruccion->parametros[0] = string_itoa(direccion_fisica);
+
+	instruccion->parametro2_lenght = strlen(valor_a_escribir) + 1;
+	instruccion->parametros[1] = valor_a_escribir;
+
+	instruccion->parametro3_lenght = 0;
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete_a_enviar, &pid, sizeof(int));
+	agregar_a_paquete(paquete_a_enviar, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+
+	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[0], instruccion->parametro1_lenght);
+	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[1], instruccion->parametro2_lenght);
+
+	agregar_a_paquete(paquete_a_enviar, valor_a_escribir, strlen(valor_a_escribir) + 1);
+
 
 	enviar_paquete(paquete_a_enviar, socket_memoria);
+
+	instruccion_destroy(instruccion);
+	eliminar_paquete(paquete_a_enviar);
 
 	int cod_op = recibir_operacion(socket_memoria);
 
@@ -664,12 +682,34 @@ void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid){
 
 //pide a memoria una lectura al modulo memoria
 // 	espera hasta recibir el valor leido de memoria
-char* leer_valor_de(int direccion_fisica, int pid){
+char* leer_valor_de(int direccion_fisica, int pid, int bytes_a_leer){
 	t_paquete* paquete_a_enviar = crear_paquete(READ_MEMORY);
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete_a_enviar, &(direccion_fisica), sizeof(int));
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
+	//esto no se usa del otro lado, pero hay que hacerlo para evitar errores
+	instruccion->opcode = malloc(7);
+	strcpy(instruccion->opcode, "MOV_IN");
+	instruccion->opcode_lenght = 7;
+
+	instruccion->parametro1_lenght = strlen(string_itoa(direccion_fisica)) +1;
+	instruccion->parametros[0] = string_itoa(direccion_fisica);
+
+	instruccion->parametro2_lenght = strlen(string_itoa(bytes_a_leer)) +1;
+	instruccion->parametros[1] = string_itoa(bytes_a_leer);
+
+	instruccion->parametro3_lenght = 0;
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete_a_enviar, &pid, sizeof(int));
+	agregar_a_paquete(paquete_a_enviar, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+
+	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[0], instruccion->parametro1_lenght);
+	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[1], instruccion->parametro2_lenght);
 
 	enviar_paquete(paquete_a_enviar, socket_memoria);
+
+	instruccion_destroy(instruccion);
+	eliminar_paquete(paquete_a_enviar);
 
 	int cod_op = recibir_operacion(socket_memoria);
 

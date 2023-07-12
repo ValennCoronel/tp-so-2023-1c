@@ -336,9 +336,8 @@ void delete_segment(int cliente_fd){
 
 void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-	int pid;
+	int pid = 0;
 
-	//ignorar el warning porque pid se inicializa dentro de esta funcion recibir
 	recibir_instruccion_con_dos_parametros_en(instruccion, pid, cliente_fd);
 
 	 int direccion_fisica = atoi(instruccion->parametros[0]);
@@ -371,7 +370,7 @@ void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 	 t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	 char* contenido_a_escribir;
-	 int pid;
+	 int pid = 0;
 
 	 //ignorar el warning porque contenido_a_escribir se inicializa dentro de esta funcion recibir
 	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, contenido_a_escribir, pid, cliente_fd);

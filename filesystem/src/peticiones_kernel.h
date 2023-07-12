@@ -6,10 +6,6 @@
 #include <utils/utils_server.h>
 #include "filesystem.h"
 #include <math.h>
-typedef struct {
-	int puntero;
-	t_instruccion* instruccion;
-} t_instruccion_y_puntero;
 
 
 void crear_archivo();
@@ -19,7 +15,7 @@ void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* super
 void abrir_archivo();
 t_fcb* iniciar_fcb(t_config* config);
 t_fcb* crear_fcb(t_config* config, t_instruccion* instruccion, char* path);
-t_instruccion_y_puntero* recibir_instruccion_y_puntero_kernel(int socket_kernel);
+void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int puntero, int pid);
 t_instruccion* recibir_instruccion(int socket_cliente);
 
 int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloque);
