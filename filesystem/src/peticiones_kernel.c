@@ -148,7 +148,7 @@ void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superb
 	   //reducir tamanio
 
 	  int bloques_a_sacar = numero_de_bloques_actual - numero_de_bloques_nuevo;
-	  sacar_bloques(fcb_a_truncar, bloques_a_sacar, superbloque);
+	  sacar_bloques(fcb_a_truncar, bloques_a_sacar, numero_de_bloques_actual, superbloque);
 
    }
 
@@ -343,34 +343,72 @@ int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloqu
 }
 
 // actualiza el fcb y el bitarray de bloques libres, sacando cierta cantidad de bloques especificada
-void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, t_superbloque* superbloque){
+void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, int bloques_actuales, t_superbloque* superbloque){
 	// 1 puntero directo
 	// 1 puntero indirecto con x bloques
 
 	int punteros_x_bloque =superbloque->block_size/4; //4 bytes ocupa un puntero
 
-	 if(punteros_x_bloque > bloques_a_sacar){
-		  // saco tambien del directo
+	int cantidad_de_bloques_maximo = punteros_x_bloque +1;
+	int bloques_actuales_en_indirecto = bloques_actuales -1;
 
-		 // marco los bloques como libres
-		 marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
-		 marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
 
-		  fcb_a_actualizar->puntero_directo = -1;
-		  fcb_a_actualizar->puntero_indirecto = -1;
+	if(fcb_a_actualizar->puntero_directo != -1 && fcb_a_actualizar->puntero_indirecto != -1){
+		// CASOS:
+		// si bloques_en_puntero_directo=1 bloques_en_indirecto=20 && punteros_x_bloque == 20 ==>
+			 // caso 1: bloques_a_sacar ==  bloques_maximo
+			 // caso 2: bloques_a_sacar == bloques_en_indirecto
+			 // caso 3: bloques_a_sacar < bloques_en_indirecto
+		// si bloques_en_puntero_directo=1 bloques_en_indirecto=12 && punteros_x_bloque == 20 ==>
+			 // caso 4: bloques_a_sacar ==  bloques_en_indirecto + bloques_en_puntero_directo
+			 // caso 5: bloques_a_sacar == bloques_en_indirecto
+			 // caso 6: bloques_a_sacar < bloques_en_indirecto
 
-	  } else if(punteros_x_bloque < bloques_a_sacar){
-		  // sino saco solo del indirecto
-		  int bloques_a_sacar_del_indirecto = bloques_a_sacar - punteros_x_bloque;
-		  marcar_bloques_libres_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_a_sacar_del_indirecto, superbloque, punteros_x_bloque);
+		if(bloques_a_sacar == cantidad_de_bloques_maximo && bloques_actuales == cantidad_de_bloques_maximo){
+			 // solo pasa si bloques_a_sacar == bloques actuales
+			 // marco todos los bloques como libres
+			 marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
+			 marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
 
-	  } else {
-		  // sino solo le saco todos los indirectos
+			 fcb_a_actualizar->puntero_directo = -1;
+			 fcb_a_actualizar->puntero_indirecto = -1;
 
-		  marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
+		  } else if(bloques_a_sacar  == punteros_x_bloque && bloques_actuales == cantidad_de_bloques_maximo){
+			  // sino solo le saco todos los indirectos
 
-		  fcb_a_actualizar->puntero_indirecto = -1;
-	  }
+			  marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
+
+			  fcb_a_actualizar->puntero_indirecto = -1;
+
+
+		  } else if(bloques_a_sacar  < punteros_x_bloque && bloques_a_sacar < bloques_actuales_en_indirecto && bloques_actuales == cantidad_de_bloques_maximo){
+
+			  marcar_bloques_libres_indirecto_sin_liberar_puntero_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_a_sacar, superbloque, punteros_x_bloque);
+
+		  } else if(bloques_a_sacar == (bloques_actuales_en_indirecto + 1) && bloques_actuales_en_indirecto < punteros_x_bloque){
+			  int bloques_indirectos_a_sacar = bloques_a_sacar - 1;
+			  marcar_bloques_libres_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_indirectos_a_sacar, superbloque, punteros_x_bloque);
+			  marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
+
+		  }else if(bloques_a_sacar == bloques_actuales_en_indirecto && bloques_actuales_en_indirecto < punteros_x_bloque){
+			  marcar_bloques_libres_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_a_sacar, superbloque, punteros_x_bloque);
+
+		  }else if(bloques_a_sacar < bloques_actuales_en_indirecto && bloques_actuales_en_indirecto < punteros_x_bloque){
+			  marcar_bloques_libres_indirecto_sin_liberar_puntero_indirecto_hasta(fcb_a_actualizar->puntero_indirecto, bloques_a_sacar, superbloque, punteros_x_bloque);
+
+		  } else {
+			  // otro caso no debería suceder nunca
+			  return;
+		  }
+	} else if(fcb_a_actualizar->puntero_directo != -1 && fcb_a_actualizar->puntero_indirecto == -1 && bloques_a_sacar == 1){
+
+		marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
+
+	} else {
+		//cualquier otro caso no deberia suceder nunca
+		return;
+	}
+
 }
 
 // actualiza el bitarray de bloques libres
@@ -414,7 +452,7 @@ void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numer
 		return;
 	}
 
-	char* contenido_blouque_indirecto = malloc(sizeof(superbloque->block_size) + 1);
+	char* contenido_blouque_indirecto = malloc(superbloque->block_size + 1);
 	fseek(bloques, (superbloque->block_size)* puntero_indirecto, SEEK_SET);
 	fread(contenido_blouque_indirecto,superbloque->block_size,1,bloques);
 
@@ -427,6 +465,29 @@ void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numer
 	marcar_bloques_libres_directo(puntero_indirecto);
 
 	free(contenido_blouque_indirecto);
+}
+
+void marcar_bloques_libres_indirecto_sin_liberar_puntero_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque){
+	//leo_archivo_de_bloques
+
+	if(numeros_de_bloques_a_sacar == 0){
+		// si no debo sacar nada, no hago nada
+		return;
+	}
+
+	char* contenido_bloque_indirecto = malloc(superbloque->block_size + 1);
+	fseek(bloques, (superbloque->block_size)* puntero_indirecto, SEEK_SET);
+	fread(contenido_bloque_indirecto,superbloque->block_size,1,bloques);
+
+	for(int i = punteros_x_bloque ; i != (punteros_x_bloque - numeros_de_bloques_a_sacar) ; i--){
+		char* puntero_n_string = string_substring(contenido_bloque_indirecto, (i-1)*4, 4);
+
+		marcar_bloques_libres_directo(atoi(puntero_n_string));
+
+		free(puntero_n_string);
+	}
+
+	free(contenido_bloque_indirecto);
 }
 
 // actualiza el fcb y el bitarray de bloques libres, agregando cierta cantidad de bloques especificada

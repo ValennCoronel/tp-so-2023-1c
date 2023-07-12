@@ -23,8 +23,9 @@ t_instruccion_y_puntero* recibir_instruccion_y_puntero_kernel(int socket_kernel)
 t_instruccion* recibir_instruccion(int socket_cliente);
 
 int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloque);
-void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, t_superbloque* superbloque);
+void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, int bloques_actuales, t_superbloque* superbloque);
 void marcar_bloques_libres_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque);
+void marcar_bloques_libres_indirecto_sin_liberar_puntero_indirecto_hasta(uint32_t puntero_indirecto, int numeros_de_bloques_a_sacar, t_superbloque* superbloque, int punteros_x_bloque);
 void marcar_bloques_libres_indirecto(uint32_t puntero_indirecto, t_superbloque* superbloque, int punteros_x_bloque);
 void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo);
 
