@@ -210,6 +210,7 @@ void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* super
 	agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
 	enviar_paquete(paquete, socket_memoria);
 
+	eliminar_paquete(paquete);
 
 	int cod_op = recibir_operacion(socket_memoria);
 

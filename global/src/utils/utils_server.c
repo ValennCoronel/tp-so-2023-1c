@@ -314,6 +314,71 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 }
 
 
+void deserializar_instruccion_con_dos_parametros_de(void* buffer, t_instruccion* instruccion, int despĺazamiento){
+	memcpy(&(instruccion->opcode_lenght), buffer + despĺazamiento,  sizeof(int));
+	 despĺazamiento += sizeof(int);
+
+	 instruccion->opcode = malloc(instruccion->opcode_lenght);
+	 memcpy(instruccion->opcode, buffer+despĺazamiento, instruccion->opcode_lenght);
+	 despĺazamiento+=instruccion->opcode_lenght;
+
+
+	 memcpy(&(instruccion->parametro1_lenght), buffer+despĺazamiento, sizeof(int));
+	 despĺazamiento+=sizeof(int);
+
+	 instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+	 memcpy(instruccion->parametros[0], buffer + despĺazamiento, instruccion->parametro1_lenght);
+	 despĺazamiento += instruccion->parametro1_lenght;
+
+
+	 memcpy(&(instruccion->parametro2_lenght), buffer+despĺazamiento, sizeof(int));
+	 despĺazamiento+=sizeof(int);
+
+	 instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+	 memcpy(instruccion->parametros[1], buffer + despĺazamiento, instruccion->parametro2_lenght);
+	 despĺazamiento += instruccion->parametro2_lenght;
+
+	 //esta linea es para el destroy de la instruccion
+	 instruccion->parametro3_lenght = 0;
+}
+
+void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int cliente_fd){
+	int size;
+	void* buffer = recibir_buffer(&size, cliente_fd);
+
+	int despĺazamiento  = 0;
+
+	while(despĺazamiento < size){
+	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
+
+		int contenido_a_escribir_length;
+		memcpy(&contenido_a_escribir_length, buffer + despĺazamiento, sizeof(int));
+		despĺazamiento += sizeof(int);
+
+		contenido_a_escribir = malloc(contenido_a_escribir_length);
+		memcpy(contenido_a_escribir, buffer + despĺazamiento, contenido_a_escribir_length);
+		despĺazamiento += contenido_a_escribir_length;
+
+	}
+
+	free(buffer);
+}
+
+void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int cliente_fd){
+	int size;
+	void* buffer = recibir_buffer(&size, cliente_fd);
+
+	int despĺazamiento  = 0;
+
+	while(despĺazamiento < size){
+	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
+	}
+
+	free(buffer);
+}
+
+
+
 void instruccion_destroy(t_instruccion* instruccion){
     free(instruccion->opcode);
 
@@ -379,4 +444,6 @@ void registro_cpu_destroy(registros_CPU* registro){
 	// no es necesario hacer free de los char[n] porque tienen un tamaño fijo a diferencia de char*
     free(registro);
 }
+
+
 

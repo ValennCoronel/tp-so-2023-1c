@@ -331,10 +331,42 @@ void delete_segment(int cliente_fd){
 }
 
 void acceder_espacio_usuario_lectura(int cliente_fd){
+	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
+	recibir_instruccion_con_dos_parametros_en(instruccion, cliente_fd);
+
+	 int direccion_fisica = atoi(instruccion->parametros[0]);
+	 int bytes_a_leer = atoi(instruccion->parametros[1]);
+
+	 char* contenido_leido = malloc(bytes_a_leer + 1);
+
+	 memcpy(contenido_leido, espacio_usuario+direccion_fisica, bytes_a_leer);
+
+	 instruccion_destroy(instruccion);
+
+	 enviar_mensaje(contenido_leido, cliente_fd, READ_MEMORY);
 
 }
 
 void acceder_espacio_usuario_escritura(int cliente_fd){
+	 t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	 char* contenido_a_escribir;
+
+	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, contenido_a_escribir, cliente_fd);
+
+	 // instruccion->parametros[0] --> direccion_fisica
+	 // instruccion->parametros[1] --> cantidad de bytes a escribir
+
+	 int direccion_fisica = atoi(instruccion->parametros[0]);
+	 int bytes_a_escribir = atoi(instruccion->parametros[1]);
+
+
+	 memcpy(espacio_usuario+direccion_fisica,contenido_a_escribir, bytes_a_escribir);
+
+	 free(contenido_a_escribir);
+	 instruccion_destroy(instruccion);
+
+	 enviar_mensaje("OK", cliente_fd, WRITE_MEMORY);
 
 }
 
@@ -437,8 +469,11 @@ void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento){
 		nuevo_hueco->direccion_base = tamano_segmento + segmento_a_asignar->direccion_base;//direccion base despues del segmento
 		nuevo_hueco->id_segmento = segmento_a_asignar->id_segmento+1; // esto no importa, no se va usar
 
-		// agrego el nuevo hueco a la lista
-		list_add(huecos_libres, nuevo_hueco); //TODO HACER QUE SE GUARDE DE FORMA ORDENADA FRANCO
+		// agrego el nuevo hueco a la lista, reemplazando el anterior hueco
+
+		list_replace_by_condition(huecos_libres, _encontrar_hueco_a_usar, (void*) nuevo_hueco);
+
+		return;
 	}
 
 	// si el tamaño es igual o si es mayor

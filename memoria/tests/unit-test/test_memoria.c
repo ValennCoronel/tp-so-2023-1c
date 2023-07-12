@@ -351,7 +351,7 @@ context(memoria_tests){
 			assert_hueco_from_list(huecos_libres, 2, 134, 50,4);
 
 		}end
-		it("si el hueco es mas grande que el va a usar, crea otro hueco con el tamaño sobrante"){
+		it("si el hueco es mas grande que el va a usar, crea otro hueco con el tamaño sobrante y mantiene el orden de los huecos"){
 			create_hueco(huecos_libres, 0,20,1);
 			create_hueco(huecos_libres, 50,20,2);
 			create_hueco(huecos_libres, 80,40,3);
@@ -367,10 +367,10 @@ context(memoria_tests){
 
 			should_int(list_size(huecos_libres)) be equal to(4);
 
-			assert_hueco_from_list(huecos_libres, 0, 50, 20,2);
-			assert_hueco_from_list(huecos_libres, 1, 80, 40,3);
-			assert_hueco_from_list(huecos_libres, 2, 134, 50,4);
-			assert_hueco_from_list(huecos_libres, 3, 10, 10,2);
+			assert_hueco_from_list(huecos_libres, 0, 10, 10,2);
+			assert_hueco_from_list(huecos_libres, 1, 50, 20,2);
+			assert_hueco_from_list(huecos_libres, 2, 80, 40,3);
+			assert_hueco_from_list(huecos_libres, 3, 134, 50,4);
 
 		}end
 
