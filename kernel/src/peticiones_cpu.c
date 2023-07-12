@@ -29,7 +29,6 @@ void* simulacion_io(void* arg){
 	t_argumentos_simular_io* argumentos = (t_argumentos_simular_io* ) arg;
 	int tiempo_io = argumentos->tiempo_io;
 	int grado_max_multiprogramacion = argumentos->grado_max_multiprogramacion;
-	int tiempo_actual = 0;
 
 	t_pcb* proceso_en_IO = proceso_ejecutando;
 
@@ -37,17 +36,7 @@ void* simulacion_io(void* arg){
 	sem_post(&esperar_proceso_ejecutando);
 
 	//espera activa mientras se ejecuta otro en cpu
-	t_temporal* temporal_dormido = temporal_create();
-
-	while(tiempo_io!=tiempo_actual)
-	{
-
-	tiempo_actual = temporal_gettime(temporal_dormido);
-
-	}
-
-	temporal_stop(temporal_dormido);
-	temporal_destroy(temporal_dormido);
+	esperar_por(tiempo_io);
 
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
 

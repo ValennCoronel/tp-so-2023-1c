@@ -12,6 +12,7 @@ t_list* tablas_de_segmentos_de_todos_los_procesos;
 t_segmento* segmento_0;
 int tam_memoria;
 
+
 int main(void){
 
 	//Declaracion variables para config
@@ -81,7 +82,7 @@ int main(void){
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones(algoritmo_asignacion);
+	manejar_peticiones(algoritmo_asignacion, retardo_memoria);
 
 
 
@@ -113,7 +114,7 @@ void terminar_programa(t_log* logger, t_config* config){
 
 
 //Funcion para manejo de peticiones tanto para kernel, CPU y filesystem
-void manejar_peticiones(char* algoritmo_asignacion){
+void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria){
 
 	while(1){
 		pthread_t thread;
@@ -122,6 +123,8 @@ void manejar_peticiones(char* algoritmo_asignacion){
 		t_arg_atender_cliente* argumentos_atender_cliente = malloc(sizeof(t_arg_atender_cliente));
 		argumentos_atender_cliente->cliente_fd = cliente_fd;
 		argumentos_atender_cliente->algoritmo_asignacion = algoritmo_asignacion;
+		argumentos_atender_cliente->retardo_memoria = retardo_memoria;
+
 
 		pthread_create(&thread, NULL, atender_cliente, (void*) argumentos_atender_cliente);
 
@@ -135,6 +138,7 @@ void* atender_cliente(void *args){
 
 	char* algoritmo_asignacion = argumentos->algoritmo_asignacion;
 	uint64_t cliente_fd = argumentos->cliente_fd;
+	uint64_t retardo_memoria = argumentos->retardo_memoria;
 
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
@@ -159,10 +163,10 @@ void* atender_cliente(void *args){
 					delete_segment(cliente_fd);
 					break;
 				case READ_MEMORY:
-					acceder_espacio_usuario_lectura(cliente_fd);
+					acceder_espacio_usuario_lectura(cliente_fd, retardo_memoria);
 					break;
 				case WRITE_MEMORY:
-					acceder_espacio_usuario_escritura(cliente_fd);
+					acceder_espacio_usuario_escritura(cliente_fd, retardo_memoria);
 					break;
 				case COMPACTAR_MEMORIA:
 					compactar_memoria(cliente_fd);
@@ -327,18 +331,34 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 
 void delete_segment(int cliente_fd){
-
+//TODO delete segment
 }
 
-void acceder_espacio_usuario_lectura(int cliente_fd){
+void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+	int pid;
 
-	recibir_instruccion_con_dos_parametros_en(instruccion, cliente_fd);
+	//ignorar el warning porque pid se inicializa dentro de esta funcion recibir
+	recibir_instruccion_con_dos_parametros_en(instruccion, pid, cliente_fd);
 
 	 int direccion_fisica = atoi(instruccion->parametros[0]);
 	 int bytes_a_leer = atoi(instruccion->parametros[1]);
 
+	 char* modulo_que_solicito_lectura = string_new();
+
+	 if(cliente_fd == socket_cpu){
+		 string_append(&modulo_que_solicito_lectura, "CPU");
+	 } else {
+		 string_append(&modulo_que_solicito_lectura, "FS");
+	 }
+
+	log_info(logger, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_leer, modulo_que_solicito_lectura);
+
+	free(modulo_que_solicito_lectura);
+
 	 char* contenido_leido = malloc(bytes_a_leer + 1);
+
+	 esperar_por(retardo_memoria);
 
 	 memcpy(contenido_leido, espacio_usuario+direccion_fisica, bytes_a_leer);
 
@@ -348,11 +368,13 @@ void acceder_espacio_usuario_lectura(int cliente_fd){
 
 }
 
-void acceder_espacio_usuario_escritura(int cliente_fd){
+void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 	 t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	 char* contenido_a_escribir;
+	 int pid;
 
-	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, contenido_a_escribir, cliente_fd);
+	 //ignorar el warning porque contenido_a_escribir se inicializa dentro de esta funcion recibir
+	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, contenido_a_escribir, pid, cliente_fd);
 
 	 // instruccion->parametros[0] --> direccion_fisica
 	 // instruccion->parametros[1] --> cantidad de bytes a escribir
@@ -360,6 +382,19 @@ void acceder_espacio_usuario_escritura(int cliente_fd){
 	 int direccion_fisica = atoi(instruccion->parametros[0]);
 	 int bytes_a_escribir = atoi(instruccion->parametros[1]);
 
+	 char* modulo_que_solicito_lectura = string_new();
+
+	 if(cliente_fd == socket_cpu){
+		 string_append(&modulo_que_solicito_lectura, "CPU");
+	 } else {
+		 string_append(&modulo_que_solicito_lectura, "FS");
+	 }
+
+	log_info(logger, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_escribir, modulo_que_solicito_lectura);
+
+	free(modulo_que_solicito_lectura);
+
+	 esperar_por(retardo_memoria);
 
 	 memcpy(espacio_usuario+direccion_fisica,contenido_a_escribir, bytes_a_escribir);
 
@@ -371,6 +406,7 @@ void acceder_espacio_usuario_escritura(int cliente_fd){
 }
 
 
+//TODO crear_nuevo_proceso_memoria
 void crear_nuevo_proceso(int socket_cliente){
 	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernel
 
@@ -389,7 +425,7 @@ void crear_nuevo_proceso(int socket_cliente){
 	log_info(logger, "Creación de Proceso PID: %d", pid);
 }
 
-
+//TODO finalizar_proceso_memoria
 void finalizar_proceso_memoria(int cliente_fd){
 	// recibe paquete del kernel
 	// usando el pid, busca los segmentos a eliminar

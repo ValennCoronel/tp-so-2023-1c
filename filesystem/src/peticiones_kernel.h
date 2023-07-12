@@ -12,7 +12,6 @@ typedef struct {
 } t_instruccion_y_puntero;
 
 
-//void abrir_archivo(); //TODO
 void crear_archivo();
 void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloque);
 void leer_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloque);

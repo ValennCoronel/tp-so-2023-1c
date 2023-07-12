@@ -342,13 +342,17 @@ void deserializar_instruccion_con_dos_parametros_de(void* buffer, t_instruccion*
 	 instruccion->parametro3_lenght = 0;
 }
 
-void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int cliente_fd){
+void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int pid, int cliente_fd){
 	int size;
 	void* buffer = recibir_buffer(&size, cliente_fd);
 
 	int despĺazamiento  = 0;
 
 	while(despĺazamiento < size){
+
+		memcpy(&pid, buffer +despĺazamiento, sizeof(int));
+		despĺazamiento += sizeof(int);
+
 	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
 
 		int contenido_a_escribir_length;
@@ -364,13 +368,17 @@ void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instru
 	free(buffer);
 }
 
-void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int cliente_fd){
+void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int pid, int cliente_fd){
 	int size;
 	void* buffer = recibir_buffer(&size, cliente_fd);
 
 	int despĺazamiento  = 0;
 
 	while(despĺazamiento < size){
+
+		memcpy(&pid, buffer +despĺazamiento, sizeof(int));
+		despĺazamiento += sizeof(int);
+
 	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
 	}
 

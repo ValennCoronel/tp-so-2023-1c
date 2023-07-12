@@ -128,3 +128,16 @@ char* pasar_a_string(char** string_array){
 	return string;
 }
 
+void esperar_por(int milisegundos_a_esperar){
+	int tiempo_transcurrido = 0;
+
+	t_temporal* temp = temporal_create();
+
+	while(milisegundos_a_esperar!=tiempo_transcurrido){
+		tiempo_transcurrido = temporal_gettime(temp);
+	}
+
+	temporal_stop(temp);
+	temporal_destroy(temp);
+}
+

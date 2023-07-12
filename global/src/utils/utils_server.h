@@ -19,8 +19,8 @@ void recibir_handshake(int);
 int responder_peticiones(int cliente_fd);
 void manejar_handshake_del_cliente(int);
 t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente);
-void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int cliente_fd);
-void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int cliente_fd);
+void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int pid, int cliente_fd);
+void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int pid, int cliente_fd);
 void deserializar_instruccion_con_dos_parametros_de(void* buffer, t_instruccion* instruccion, int despĺazamiento);
 
 void registro_cpu_destroy(registros_CPU* registro);

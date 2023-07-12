@@ -36,7 +36,7 @@ typedef struct {
 
 	char* algoritmo_asignacion;
 	uint64_t cliente_fd;
-
+	uint64_t retardo_memoria;
 }t_arg_atender_cliente;
 
 typedef struct {
@@ -48,15 +48,15 @@ typedef struct {
 
 void terminar_programa(t_log* logger, t_config* config);
 int conectar_con_memoria(int conexion, char* ip, char* puerto);
-void manejar_peticiones(char* algoritmo_asignacion );
+void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria);
 void *atender_cliente(void *args);
 void crear_nuevo_proceso(int socket_cliente);
 void finalizar_proceso_memoria(int cliente_fd);
 void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd);
 void delete_segment(int cliente_fd);
 void compactar_memoria(int cliente_fd);
-void acceder_espacio_usuario_lectura(int cliente_fd);
-void acceder_espacio_usuario_escritura(int cliente_fd);
+void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria);
+void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria);
 
 void usar_hueco(t_segmento* segmento_a_asignar, int tamano_segmento);
 void agregar_nuevo_segmento_a(int pid, t_segmento* segmento);
