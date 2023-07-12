@@ -10,12 +10,12 @@ t_list* huecos_libres;
 void* espacio_usuario;
 t_list* tablas_de_segmentos_de_todos_los_procesos;
 t_segmento* segmento_0;
+int tam_memoria;
 
 int main(void){
 
 	//Declaracion variables para config
 	char* puerto_escucha;
-	int tam_memoria;
 	int tam_segmento_0;
 	int cant_segmentos;
 	int retardo_memoria;
@@ -113,7 +113,7 @@ void terminar_programa(t_log* logger, t_config* config){
 
 
 //Funcion para manejo de peticiones tanto para kernel, CPU y filesystem
-void manejar_peticiones(char* algoritmo_asignacion ){
+void manejar_peticiones(char* algoritmo_asignacion){
 
 	while(1){
 		pthread_t thread;
@@ -182,12 +182,12 @@ void* atender_cliente(void *args){
 
 void compactar_memoria(int cliente_fd)
 {
-	t_list* tablas_de_segmentos_de_todos_los_procesos;
+	int cantidad_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
+
 	for (int i = 0; i < tablas_de_segmentos_de_todos_los_procesos->elements_count; i++)
 	{
 		t_segmento* segmento_actual = list_get(tablas_de_segmentos_de_todos_los_procesos,i);
 
-		int cantidad_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
 
         // Obtener el siguiente segmento
 		t_segmento* segmento_siguiente = NULL;
@@ -205,16 +205,42 @@ void compactar_memoria(int cliente_fd)
 		// Mover los datos del actual al nuevo espacio contiguo
 		if (desplazamiento > 0)
 		{
-			void* origen = espacio_usuario + segmento_actual->direccion_base;
-			void* destino = espacio_usuario + segmento_actual->direccion_base + desplazamiento;
-			size_t bytes_a_mover = segmento_actual->tamano;
+			void* origen = espacio_usuario + segmento_siguiente->direccion_base;
+			void* destino = espacio_usuario + segmento_actual->direccion_base + segmento_actual->tamano;
+			size_t bytes_a_mover = segmento_siguiente->tamano;
 			memmove(destino, origen, bytes_a_mover);
 
 			// Actualizar la dirección base del hueco actual
-			segmento_actual->direccion_base += desplazamiento;
+			segmento_siguiente->direccion_base += segmento_actual->direccion_base + segmento_actual->tamano;
 		}
 
 	}
+
+	// actualizo la lista de huecos libres para que haya un solo hueco libre de lo que falta por ocupar de memoria
+
+
+	void _hueco_destroyer(void* hueco){
+		t_segmento* hueco_n = (t_segmento*) hueco;
+
+		free(hueco_n);
+	}
+
+
+	list_destroy_and_destroy_elements(huecos_libres, _hueco_destroyer);
+
+	huecos_libres  = list_create();
+
+	t_segmento* ultimo_segmento = obtener_ultimo_hueco_de_la_tabla();
+
+	t_segmento* unico_hueco_libre = malloc(sizeof(t_segmento));
+	unico_hueco_libre->id_segmento = -1;
+	unico_hueco_libre->direccion_base = ultimo_segmento->direccion_base + ultimo_segmento->tamano;
+
+	// tamano con el resto de la memoria que falta por ocupar
+	unico_hueco_libre->tamano = tam_memoria - unico_hueco_libre->direccion_base;
+
+	list_add(huecos_libres, unico_hueco_libre);
+
 }
 
 void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
@@ -606,6 +632,10 @@ t_segmento* best_fit(t_list* huecos_candidatos){
 	return list_get_minimum(huecos_candidatos, _calcular_minimo);
 }
 
+t_segmento* obtener_ultimo_hueco_de_la_tabla(){
+	int cantidad_de_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
 
+	return (t_segmento*) list_get(tablas_de_segmentos_de_todos_los_procesos,cantidad_de_segmentos-1);
+}
 
 
