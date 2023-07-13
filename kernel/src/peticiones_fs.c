@@ -119,6 +119,8 @@
 		//se borra la entrada de la tabla de archivos por porceso en cualquier caso
 		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso->file);
 		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso);
+		proceso_ejecutando->tabla_archivos_abiertos_del_proceso = NULL;
+
 
 		log_info(logger, "PID: %d - Cerrar Archivo: %s", contexto->pid, nombre_archivo);
 
@@ -129,8 +131,6 @@
 			free(tabla->file);
 			free(tabla);
 
-			// continua con el mismo proceso
-			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 		}else{
 			//Reduzco la cantidad de abiertos y avanzo al proximo proceso
 			tabla->open --;
@@ -141,8 +141,11 @@
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-			pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);//TODO SOLO DEBE AGREGARLO A LA COLA DE READY Y CONTINUAR CON LA ISNTRUCCIONES DEL PROCESO EJECUTANDO
+			pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
 		}
+
+		// en ambos casos continua con el mismo proceso
+		enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 	}
 
 	void f_seek(int cliente_fd){
@@ -181,6 +184,7 @@
 			queue_push(cola_bloqueados, proceso_ejecutando);
 			//agrego la cola al diccionario
 			dictionary_put(colas_de_procesos_bloqueados_para_cada_archivo, nombre_archivo, cola_bloqueados);
+
 			//ejecuto el proceso siguiente en la cola
 			poner_a_ejecutar_otro_proceso();
 
@@ -197,10 +201,10 @@
 
 
 			//Creo una cola, le asigno la cola del diccionario y la remuevo
-			t_queue* cola_bloqueados = dictionary_get(colas_de_procesos_bloqueados_para_cada_archivo, instruccion->parametros[0]);
+			t_queue* cola_bloqueados = dictionary_get(colas_de_procesos_bloqueados_para_cada_archivo, nombre_archivo);
 			//cargo el proceso a bloquear en la cola
 			queue_push(cola_bloqueados, proceso_ejecutando);
-			//TODO RESOLVER PROBLEMA DEL PROCESO_EJECUTADO = NULL EN LA FUNCION poner_a_ejecutar_otro_proceso
+
 			//ejecuto el proceso siguiente en la cola
 			poner_a_ejecutar_otro_proceso();
 		}
@@ -236,7 +240,10 @@
 
 				log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);//TODO SOLO DEBE AGREGARLO A LA COLA DE READY Y CONTINUAR CON LA ISNTRUCCIONES DEL PROCESO EJECUTANDO
+				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+
+				//continua con el mismo proceso
+				enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 			}
 		}
 
@@ -270,7 +277,10 @@
 
 				log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);//TODO SOLO DEBE AGREGARLO A LA COLA DE READY Y CONTINUAR CON LA ISNTRUCCIONES DEL PROCESO EJECUTANDO
+				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+
+				//continua con el mismo proceso
+				enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 			}
 		}
 
@@ -305,7 +315,10 @@
 
 				log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);//TODO SOLO DEBE AGREGARLO A LA COLA DE READY Y CONTINUAR CON LA ISNTRUCCIONES DEL PROCESO EJECUTANDO
+				pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+
+				//continua con el mismo proceso
+				enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 			}
 		}
 	}

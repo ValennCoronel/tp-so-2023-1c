@@ -292,8 +292,6 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	return;
 }
 
-
-
 void create_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
@@ -583,7 +581,7 @@ void delete_segment(){
 
 void compactar_memoria()
 {
-
+	//TODO IMPLEMENTAR compactar_memoria
 }
 
 t_tabla_de_segmento* recibir_tabla_de_segmentos(){
@@ -632,9 +630,12 @@ void destroy_proceso_ejecutando(){
 
 		instruccion_destroy(inst);
 	}
-		//TODO finalizar el free de estas estructuras cuando se definan
-		void destructor_tabla_archivos (void* arg){}
 
+	// destroy tabla de archivos_abiertos del proceso
+	if(proceso_ejecutando->tabla_archivos_abiertos_del_proceso != NULL){
+		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso->file);
+		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso);
+	}
 
 		//Liberar PCB del proceso actual
 		list_destroy_and_destroy_elements(proceso_ejecutando->instrucciones, destructor_instrucciones);
