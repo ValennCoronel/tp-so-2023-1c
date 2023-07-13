@@ -1,25 +1,25 @@
 #include "peticiones_kernel.h"
 
 
-
-void abrir_archivo(){
-
 //Esta operación consistirá en verificar que exista el FCB correspondiente al
 //archivo y en caso de que exista deberá completar las estructuras necesarias y abrir el archivo,
 //caso contrario, deberá crear el archivo
-
+void abrir_archivo(){
 
 	//VARIABLES Y DATOS PARA LA FUNCION
 	t_instruccion* instruccion = recibir_instruccion(socket_kernel);
+
+	char* nombre_archivo = strdup(instruccion->parametros[0]);
+
 	char* direccion_fcb = string_new();
-	strcpy(direccion_fcb, path_fcb);
-	strcpy(direccion_fcb, "/");
-	strcpy(direccion_fcb, instruccion->parametros[0]);
+	string_append(&direccion_fcb, path_fcb);
+	string_append(&direccion_fcb, "/");
+	string_append(&direccion_fcb, nombre_archivo);
 
 	//CASO 1: La FCB esta en el diccionario (en memoria) => el archivo existe
-	if(dictionary_has_key(fcb_por_archivo, instruccion->parametros[0])){
+	if(dictionary_has_key(fcb_por_archivo, nombre_archivo)){
 
-		enviar_mensaje("OK", socket_kernel, MENSAJE);
+		enviar_mensaje("OK", socket_kernel, ABRIR_ARCHIVO);
 
 	//CASO 2: La FCB no esta en memoria pero si esta en el sistema
 	}else {
@@ -29,15 +29,18 @@ void abrir_archivo(){
 		if(config_FCB != NULL){
 			//Levanto la fcb
 			t_fcb* fcb = iniciar_fcb(config_FCB);
-			dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
 
-			enviar_mensaje("OK", socket_kernel, MENSAJE);
+			config_destroy(config_FCB);
+
+			dictionary_put(fcb_por_archivo, nombre_archivo, fcb);
+
+			enviar_mensaje("OK", socket_kernel, ABRIR_ARCHIVO);
 
 
 		//CASO B: La FCB no existe => el archivo tampoco
 		}else{
 			//Doy aviso a Kernel
-			enviar_mensaje("ERROR", socket_kernel, MENSAJE);
+			enviar_mensaje("ERROR", socket_kernel, ABRIR_ARCHIVO);
 
 		}
 
@@ -46,74 +49,29 @@ void abrir_archivo(){
 }
 
 
-//levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB, si no existe lo crea
-// el archivo de fcb usa el formato de config de las commons
-t_fcb* crear_fcb(t_config* config, t_instruccion* instruccion, char* path){
-	config_set_value(config, "NOMBRE_ARCHIVO", instruccion->parametros[0]);
-	config_set_value(config, "TAMANIO_ARCHIVO", 0);
-	config_set_value(config, "PUNTERO_DIRECTO", string_itoa(obtener_primer_bloque_libre()));
-	config_set_value(config, "PUNTERO_INDIRECTO", string_itoa(-1)); // TODO reveer esto
-
-	config_save_in_file(config, path);
-
-	t_fcb* fcb = malloc(sizeof(t_fcb));
-
-	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
-	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
-	fcb->puntero_directo = config_get_int_value(config, "PUNTERO_DIRECTO");
-	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
-
-	return fcb;
-}
-
-
-t_fcb* iniciar_fcb(t_config* config){
-
-	// si no existe la config no hace nada
-	if(config == NULL){
-		return NULL;
-	}
-
-	t_fcb* fcb = malloc(sizeof(t_fcb));
-
-	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
-	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
-	fcb->puntero_directo = config_get_int_value(config, "PUNTERO_DIRECTO");
-	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
-
-
-
-
-	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
-		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo");
-		return NULL;
-	}
-
-
-	return fcb;
-}
-
-
-void crear_archivo(){
 /*
-
-Para esta operación se deberá crear un archivo FCB correspondiente al nuevo archivo, con tamaño 0 y
-sin bloques asociados.
-Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK. */
-
+	Para esta operación se deberá crear un archivo FCB correspondiente al nuevo archivo, con tamaño 0 y
+	sin bloques asociados.
+	Siempre será posible crear un archivo y por lo tanto esta operación deberá devolver OK.
+*/
+void crear_archivo(){
 	//Cargamos las estructuras necesarias
 	t_instruccion* instruccion = recibir_instruccion(socket_kernel);
+
+	char* nombre_archivo = strdup(instruccion->parametros[0]);
+
 	char* direccion_fcb = string_new();
-	strcpy(direccion_fcb, path_fcb);
-	strcpy(direccion_fcb, "/");
-	strcpy(direccion_fcb, instruccion->parametros[0]);
-	t_config* config_FCB = malloc(sizeof(t_config));
+	string_append(&direccion_fcb, path_fcb);
+	string_append(&direccion_fcb, "/");
+	string_append(&direccion_fcb, nombre_archivo);
+
+
 	//creamos la fcb
-	t_fcb* fcb = crear_fcb(config_FCB, instruccion, direccion_fcb);
+	t_fcb* fcb = crear_fcb(instruccion, direccion_fcb);
 
 	//Cargo estructuras resantes
-	dictionary_put(fcb_por_archivo, instruccion->parametros[0], fcb);
-	enviar_mensaje("OK", socket_kernel, MENSAJE);
+	dictionary_put(fcb_por_archivo, nombre_archivo, fcb);
+	enviar_mensaje("OK", socket_kernel, CREAR_ARCHIVO);
 }
 
 
@@ -297,6 +255,56 @@ t_instruccion* recibir_instruccion(int socket_cliente){
 	}
 
 	return instruccion;
+}
+
+//levanta el archivo de fcb  y obtiene los datos del archivo para iniciar el FCB, si no existe lo crea
+// el archivo de fcb usa el formato de config de las commons
+t_fcb* crear_fcb( t_instruccion* instruccion, char* path){
+	t_config* config = malloc(sizeof(t_config));
+
+	config->path = strdup(path);
+	config->properties = dictionary_create();
+
+	config_set_value(config, "NOMBRE_ARCHIVO", instruccion->parametros[0]);
+	config_set_value(config, "TAMANIO_ARCHIVO", 0);
+	config_set_value(config, "PUNTERO_DIRECTO", string_itoa(-1));
+	config_set_value(config, "PUNTERO_INDIRECTO", string_itoa(-1));
+
+	config_save_in_file(config, path);
+
+	t_fcb* fcb = malloc(sizeof(t_fcb));
+
+	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
+	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
+	fcb->puntero_directo = config_get_int_value(config, "PUNTERO_DIRECTO");
+	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
+
+	config_destroy(config);
+	return fcb;
+}
+
+
+t_fcb* iniciar_fcb(t_config* config){
+	// si no existe la config no hace nada
+	if(config == NULL){
+		return NULL;
+	}
+
+	t_fcb* fcb = malloc(sizeof(t_fcb));
+
+	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
+	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
+	fcb->puntero_directo = config_get_int_value(config, "PUNTERO_DIRECTO");
+	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
+
+
+	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
+		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo");
+		return NULL;
+	}
+
+
+	return fcb;
 }
 
 

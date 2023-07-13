@@ -14,7 +14,7 @@ void leer_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloq
 void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* superbloque);
 void abrir_archivo();
 t_fcb* iniciar_fcb(t_config* config);
-t_fcb* crear_fcb(t_config* config, t_instruccion* instruccion, char* path);
+t_fcb* crear_fcb(t_instruccion* instruccion, char* path);
 void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int puntero, int pid);
 t_instruccion* recibir_instruccion(int socket_cliente);
 
