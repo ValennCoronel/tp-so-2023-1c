@@ -14,6 +14,7 @@
 #include "kernel.h"
 
 void enviar_peticion_fs(op_code code,t_instruccion* instruccion );
+void enviar_peticion_puntero_fs(op_code code,t_instruccion* instruccion,int puntero, int pid);
 void abrir_archivo(t_instruccion* instruccion);
 void f_open();
 void f_close();

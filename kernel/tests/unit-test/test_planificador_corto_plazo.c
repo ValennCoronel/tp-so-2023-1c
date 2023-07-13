@@ -7,7 +7,6 @@
 #include <arpa/inet.h>
 #include <cspecs/cspec.h>
 #include <pthread.h>
-#include "../../src/mock_envio_cpu.h"
 
 int mock_server_cpu, mock_cliente_kernel, mock_cliente_cpu;
 int opcode;
