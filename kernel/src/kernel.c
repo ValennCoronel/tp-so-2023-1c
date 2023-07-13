@@ -115,7 +115,7 @@ int main(void){
 	colas_de_procesos_bloqueados_para_cada_archivo = dictionary_create(); //diccionario con key=archivo y elementos=procesos bloqueados
 
 
-	t_queue* cola_bloqueados;
+	t_queue* cola_bloqueados = queue_create();
 	void iterador_recursos(char* nombre_recurso){
 
 		dictionary_put(recurso_bloqueado,nombre_recurso,cola_bloqueados);
@@ -123,6 +123,9 @@ int main(void){
 	string_iterate_lines(recursos,iterador_recursos);
 
 	//inicio hilos
+
+	//inicio escucha de peticones de consolas
+
 	pthread_t thread_consolas, thread_planificador_largo_plazo, thread_planificador_corto_plazo;
 
 	manejar_peticiones_cosola_args* args_consolas = malloc(sizeof(manejar_peticiones_cosola_args));
@@ -143,7 +146,6 @@ int main(void){
 
 	//inicio planificador corto plazo
 	planificar_corto_plazo_args* args_planificador_corto_plazo = malloc(sizeof(planificar_corto_plazo_args));
-	args_planificador_corto_plazo->algoritmo_planificacion = malloc( strlen(algoritmo_planificacion) *sizeof(char));
 	args_planificador_corto_plazo->algoritmo_planificacion = algoritmo_planificacion;
 	args_planificador_corto_plazo->hrrn_alfa = hrrn_alfa;
 	args_planificador_corto_plazo->socket_cpu = socket_cpu;
@@ -156,7 +158,7 @@ int main(void){
 	pthread_detach(thread_planificador_largo_plazo);
 	pthread_detach(thread_planificador_corto_plazo);
 
-
+	//escucho las peticiones de CPU
 	escuchar_peticiones_cpu(socket_cpu, recursos, instancias_recursos,grado_max_multiprogramacion,socket_memoria);
 
 	free(args_consolas);
@@ -306,7 +308,7 @@ void *atender_cliente(void *arg){
 
 	int cliente_fd = args->consola_fd;
 	int estimacion_inicial = args->estimacion_inicial;
-	printf("%d", cliente_fd);
+
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
 
@@ -331,7 +333,6 @@ void *atender_cliente(void *arg){
 			}
 	}
 
-	free(arg);
 	free(args);
 
 	return NULL;
@@ -410,7 +411,6 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					break;
 				case BLOQUEAR_PROCESO:
 					bloquear_proceso_IO(cliente_fd,grado_max_multiprogramacion);
-					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case APROPIAR_RECURSOS:
 					apropiar_recursos(cliente_fd, recursos, recursos_disponibles, cantidad_de_recursos);
@@ -420,7 +420,6 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					break;
 				case DESALOJAR_PROCESO:
 					desalojar_proceso(cliente_fd,grado_max_multiprogramacion);
-					//llamar hilo planificar_corto_plazo para poner a ejecutar al siguiente proceso
 					break;
 				case CREAR_SEGMENTO:
 					//enviar_a_memoria leer word
@@ -437,14 +436,19 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					f_open();
 					break;
 				case CERRAR_ARCHIVO:
+					f_close();
 					break;
 				case TRUNCAR_ARCHIVO:
+					truncar_archivo();
 					break;
 				case APUNTAR_ARCHIVO:
+					f_seek(cliente_fd);
 					break;
 				case LEER_ARCHIVO:
+					leer_archivo();
 					break;
 				case ESCRIBIR_ARCHIVO:
+					escribir_archivo();
 					break;
 				case CREAR_ARCHIVO:
 					enviar_mensaje("Creando archivo nuevo", socket_fs, CREAR_ARCHIVO);

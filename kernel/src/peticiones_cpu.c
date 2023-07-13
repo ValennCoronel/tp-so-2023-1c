@@ -15,9 +15,11 @@ void manejar_seg_fault(int socket_cliente){
 
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 
+	sem_wait(&m_proceso_ejecutando);
 	enviar_mensaje("SEG_FAULT !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 	log_info(logger, "FInaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
+	sem_post(&m_proceso_ejecutando);
 
 	contexto_ejecucion_destroy(contexto);
 	destroy_proceso_ejecutando();
@@ -30,7 +32,9 @@ void* simulacion_io(void* arg){
 	int tiempo_io = argumentos->tiempo_io;
 	int grado_max_multiprogramacion = argumentos->grado_max_multiprogramacion;
 
+	sem_wait(&m_proceso_ejecutando);
 	t_pcb* proceso_en_IO = proceso_ejecutando;
+	sem_post(&m_proceso_ejecutando);
 
 	// despierta el semáforo para poner a ejecutar otro proceso
 	sem_post(&esperar_proceso_ejecutando);
@@ -38,9 +42,11 @@ void* simulacion_io(void* arg){
 	//espera activa mientras se ejecuta otro en cpu
 	esperar_por(tiempo_io);
 
+	sem_wait(&m_proceso_ejecutando);
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
 
 	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
+	sem_post(&m_proceso_ejecutando);
 
 	return NULL;
 }
@@ -64,7 +70,9 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	pthread_detach(hilo_simulacion);
 
 	//se calcula la rafaga anterior para el algoritmo hrrn
+	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
+	sem_post(&m_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
@@ -94,11 +102,12 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	if(indice_recurso == -1){
 
 		//TODO pedir_finalizar_las_estructuras_de_memoria();
+		sem_wait(&m_proceso_ejecutando);
 		enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 		log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 
 		log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
-
+		sem_post(&m_proceso_ejecutando);
 
 		contexto_ejecucion_destroy(contexto);
 		destroy_proceso_ejecutando();
@@ -108,7 +117,9 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	}
 
 	if(recurso_disponible[indice_recurso] <= 0){
+		sem_wait(&m_proceso_ejecutando);
 		bloquear_proceso_por_recurso(proceso_ejecutando, recursos[indice_recurso]);
+		sem_post(&m_proceso_ejecutando);
 		poner_a_ejecutar_otro_proceso();
 	} else {
 		recurso_disponible[indice_recurso] -= 1;
@@ -138,9 +149,11 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 		if(indice_recurso == -1){
 
 			//TODO pedir_finalizar_las_estructuras_de_memoria();
+			sem_wait(&m_proceso_ejecutando);
 			enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 			log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
+			sem_post(&m_proceso_ejecutando);
 
 			contexto_ejecucion_destroy(contexto);
 			destroy_proceso_ejecutando();
@@ -183,6 +196,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	//devolver proceso a la cola de ready
 	//calcula la ráfaga anterior y lo guarda en el pcb para el hrrn
 	// si es fifo no lo usa
+	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
 	temporal_destroy(rafaga_proceso_ejecutando);
@@ -192,6 +206,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 
 
 	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
+	sem_post(&m_proceso_ejecutando);
 	poner_a_ejecutar_otro_proceso();
 
 	//destruyo el contexto de ejecucion
@@ -201,8 +216,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 
 void bloquear_proceso_por_recurso(t_pcb* proceso_a_bloquear, char* nombre_recurso){
 
-	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","BLOC");
-
+	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_a_bloquear->PID, "EXEC","BLOC");
 
 	//antes de bloquearse, se calcula las ráfagas anteriores para el hrrn, si es fifo no lo usa
 	proceso_a_bloquear->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
@@ -243,7 +257,10 @@ void poner_a_ejecutar_otro_proceso(){
 		temporal_destroy(rafaga_proceso_ejecutando);
 	}
 
+	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando = NULL;
+	sem_post(&m_proceso_ejecutando);
+
 	sem_post(&consumidor);
 }
 
@@ -257,6 +274,8 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 		// Una vez hecho esto, se dará aviso a la Consola de la finalización del proceso.
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
+
+	sem_wait(&m_proceso_ejecutando);
 	t_tabla_de_segmento *tabla = proceso_ejecutando->tabla_segmentos;
 
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
@@ -276,6 +295,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->tamano), sizeof(uint32_t));
 	}
 
+	sem_post(&m_proceso_ejecutando);
 	enviar_paquete(paquete,socket_memoria);
 
 	//libero
@@ -283,9 +303,11 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 	//Enviar mensaje a Consola informando que finalizo el proceso
 
+	sem_wait(&m_proceso_ejecutando);
 	enviar_mensaje("Proceso finalizado", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 	log_info(logger, "Finaliza el proceso %d - Motivo: SUCCESS", proceso_ejecutando->PID);
+	sem_post(&m_proceso_ejecutando);
 
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
@@ -331,9 +353,11 @@ void manejar_escucha_out_of_memory(){
 	memcpy(mensaje, buffer,size);
 
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
+	sem_wait(&m_proceso_ejecutando);
 	enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 	log_info(logger, "FInaliza el proceso %d - Motivo: OUT_OF_MEMORY", proceso_ejecutando->PID);
+	sem_post(&m_proceso_ejecutando);
 
 	destroy_proceso_ejecutando();
 	poner_a_ejecutar_otro_proceso();
@@ -354,14 +378,14 @@ void manejar_escucha_crear_segmento(t_contexto_ejec* contexto, t_segmento_parame
 	segmento_nuevo->tamano = peticion_segmento->tamano_segmento;
 	segmento_nuevo->direccion_base = direccion_base;
 
-
+	sem_wait(&m_proceso_ejecutando);
 	// lo agrego en al tabla de segmentos, pero no lo indexo por el id del segmento
 	list_add(proceso_ejecutando->tabla_segmentos->segmentos, segmento_nuevo);
 
 
 	// actualizo la cantidad de segmentos de la tabla
 	proceso_ejecutando->tabla_segmentos->cantidad_segmentos += 1;
-
+	sem_post(&m_proceso_ejecutando);
 	// continuo con las siguientes instrucciones del proceso
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 }
@@ -445,9 +469,10 @@ void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 		}
 	}
 
-
+	sem_wait(&m_proceso_ejecutando);
 	// actualizo la tabla del proceso ejecutando actualmente
 	actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_ejecutando);
+	sem_post(&m_proceso_ejecutando);
 
 }
 
@@ -568,11 +593,13 @@ void delete_segment(){
 
 		//y actualizar la tabla de segmentos del proceso ejecutando
 
+		sem_wait(&m_proceso_ejecutando);
 		// libero la tabla anterior
 		destroy_tabla_de_segmentos(proceso_ejecutando->tabla_segmentos);
 
 		// seteo con la nueva tabla actualizada
 		proceso_ejecutando->tabla_segmentos = tabla_de_segmentos_actualizada;
+		sem_post(&m_proceso_ejecutando);
 	}
 
 	// continuo con las siguientes instrucciones del proceso
@@ -632,6 +659,7 @@ void destroy_proceso_ejecutando(){
 	}
 
 	// destroy tabla de archivos_abiertos del proceso
+	sem_wait(&m_proceso_ejecutando);
 	if(proceso_ejecutando->tabla_archivos_abiertos_del_proceso != NULL){
 		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso->file);
 		free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso);
@@ -658,6 +686,8 @@ void destroy_proceso_ejecutando(){
 
 		free(proceso_ejecutando);
 		proceso_ejecutando = NULL;
+
+		sem_post(&m_proceso_ejecutando);
 }
 
 char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_recursos){

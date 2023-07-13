@@ -306,7 +306,7 @@ void enviar_contexto_a_kernel(op_code opcode,int socket_cliente,t_contexto_ejec*
 
 		}
 
-		agregar_a_paquete_sin_agregar_tamanio(paquete, (void *) &(proceso_a_ejecutar->program_counter), sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_a_ejecutar->program_counter), sizeof(int));
 
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->AX, sizeof(char)*4);
 		agregar_a_paquete(paquete,  proceso_a_ejecutar->registros_CPU->BX, sizeof(char)*4);

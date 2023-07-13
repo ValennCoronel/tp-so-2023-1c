@@ -53,8 +53,9 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	contexto_ejecucion->tabla_de_segmentos = proceso_a_ejecutar->tabla_segmentos;
 	contexto_ejecucion->registros_CPU = proceso_a_ejecutar->registros_CPU;
 
-
+	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando = proceso_a_ejecutar;
+	sem_post(&m_proceso_ejecutando);
 
 	//inicio cronometro para contar las rafagas del proceco a ejecutar
 	rafaga_proceso_ejecutando = temporal_create();
@@ -104,7 +105,9 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 
 	contexto_ejecucion->tabla_de_segmentos = proceso_a_ejecutar->tabla_segmentos;
 
+	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando = proceso_a_ejecutar;
+	sem_post(&m_proceso_ejecutando);
 
 	//inicio cronometro para contar las rafagas del proceco a ejecutar
 	rafaga_proceso_ejecutando = temporal_create();

@@ -9,6 +9,7 @@ t_temporal* rafaga_proceso_ejecutando;
 sem_t consumidor;
 sem_t m_cola_ready;
 sem_t m_cola_new;
+sem_t m_proceso_ejecutando;
 
 t_dictionary* colas_de_procesos_bloqueados_para_cada_archivo;
 
@@ -19,6 +20,7 @@ void inicializar_colas_y_semaforos(){
 	cola_ready = queue_create();
 	sem_init(&m_cola_ready,0,1);
 	sem_init(&m_cola_new, 0, 1);
+	sem_init(&m_proceso_ejecutando, 0, 1);
 	sem_init(&consumidor,0,0);
 }
 
@@ -78,7 +80,8 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 	}
 
 
-	//inicio el cronomitro para el hrrn, si es fifo no lo va a usar
+	//inicio el cronometro para el hrrn, si es fifo no lo va a usar
+	// es para medir el tiempo de espera en ready
 	proceso_new_a_ready->temporal_ultimo_desalojo = temporal_create();
 
 
@@ -91,9 +94,12 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 	log_info(logger, "Cola Ready %s: [%s]",algoritmo_planificacion, pids);
 
 	//si no hay nadie ejecutandose, lo pone a ejecutar, sino va a quedar en la espera en la cola ready
+	sem_wait(&m_proceso_ejecutando);
 	if(proceso_ejecutando == NULL){
 		sem_post(&consumidor);
 	}
+	sem_post(&m_proceso_ejecutando);
+
 	free(pids);
 }
 

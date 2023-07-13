@@ -43,7 +43,7 @@ extern t_temporal* rafaga_proceso_ejecutando;
 extern sem_t m_cola_ready;
 extern sem_t m_cola_new;
 extern sem_t consumidor;
-
+extern sem_t m_proceso_ejecutando;
 
 void inicializar_colas_y_semaforos();
 void *planificar_nuevos_procesos_largo_plazo(void *arg);
