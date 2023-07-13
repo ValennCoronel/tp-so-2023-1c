@@ -251,11 +251,34 @@ void compactar_memoria(int cliente_fd)
 
 	list_add(huecos_libres, unico_hueco_libre);
 
-	//log: Resultado Compactación:
-		//Por cada segmento de cada proceso se deberá imprimir una línea con el siguiente formato:
-	//“PID: <PID> - Segmento: <ID SEGMENTO> - Base: <BASE> - Tamaño <TAMAÑO>”
 
-	//TODO DEBE RESPONDER CON LAS TABLAS DE SEGMENTOS ACTUALIZADAS A KERNEL
+	// responde con las tablas de todos los procesos acutalizada a kernel
+	t_paquete* paquete_respuesta = crear_paquete(COMPACTAR_MEMORIA);
+	int lista_length = list_size(tablas_de_segmentos_de_todos_los_procesos);
+	agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &lista_length, sizeof(int));
+
+	for(int i = 0; i < lista_length ; i++){
+		t_tabla_de_segmento* tabla_n = list_get(tablas_de_segmentos_de_todos_los_procesos, i);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(tabla_n->cantidad_segmentos), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(tabla_n->pid), sizeof(uint32_t));
+
+		int cantidad_segmentos = list_size(tabla_n->segmentos);
+		agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &cantidad_segmentos, sizeof(int));
+
+		for(int j = 0; j< cantidad_segmentos ; j++){
+			t_segmento* segmento_n = list_get(tabla_n->segmentos, j);
+
+			log_info(logger, "PID: %d - Segmento: %d - Base: %d - Tamaño %d", tabla_n->pid, segmento_n->id_segmento, segmento_n->direccion_base, segmento_n->tamano);
+
+			agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(segmento_n->id_segmento),sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(segmento_n->direccion_base),sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(segmento_n->tamano),sizeof(uint32_t));
+		}
+
+	}
+
+	enviar_paquete(paquete_respuesta, socket_kernel);
 
 }
 
