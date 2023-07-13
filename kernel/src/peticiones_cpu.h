@@ -60,5 +60,6 @@ t_list* recibir_tablas_de_segmentos();
 t_tabla_de_segmento* recibir_tabla_de_segmentos();
 
 char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_recursos);
+bool hay_operaciones_entre_fs_y_memoria();
 
 #endif /* SRC_PETICIONES_CPU_H_ */

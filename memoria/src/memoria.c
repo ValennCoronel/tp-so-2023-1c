@@ -186,6 +186,12 @@ void* atender_cliente(void *args){
 
 void compactar_memoria(int cliente_fd)
 {
+	 // se debe recibir para evitar errores en los sockets, por mas que no se use
+	char* mensaje = recibir_mensaje(cliente_fd);
+
+	log_info(logger, "Solicitud de Compactación");
+
+
 	int cantidad_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
 
 	for (int i = 0; i < tablas_de_segmentos_de_todos_los_procesos->elements_count; i++)
@@ -244,6 +250,12 @@ void compactar_memoria(int cliente_fd)
 	unico_hueco_libre->tamano = tam_memoria - unico_hueco_libre->direccion_base;
 
 	list_add(huecos_libres, unico_hueco_libre);
+
+	//log: Resultado Compactación:
+		//Por cada segmento de cada proceso se deberá imprimir una línea con el siguiente formato:
+	//“PID: <PID> - Segmento: <ID SEGMENTO> - Base: <BASE> - Tamaño <TAMAÑO>”
+
+	//TODO DEBE RESPONDER CON LAS TABLAS DE SEGMENTOS ACTUALIZADAS A KERNEL
 
 }
 

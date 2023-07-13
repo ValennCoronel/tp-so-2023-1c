@@ -390,13 +390,25 @@ void manejar_escucha_crear_segmento(t_contexto_ejec* contexto, t_segmento_parame
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 }
 
+//este compactar es solo para create_segment
 void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* peticion_segmento){
 
 	//recibo el texto, a pesar de que no lo uso para evitar errores de codigo de operación
-	int size;
-	void *  buffer = recibir_buffer(&size, socket_memoria);
-	char* mensaje = malloc(size);
-	memcpy(mensaje, buffer,size);
+	char* mensaje = recibir_mensaje(socket_memoria);
+
+	bool debo_esperar_peticiones_fs = hay_operaciones_entre_fs_y_memoria();
+
+	if(debo_esperar_peticiones_fs){
+		log_info(logger, "Compactación: Esperando Fin de Operaciones de FS");
+	}
+
+	while(debo_esperar_peticiones_fs){
+		debo_esperar_peticiones_fs = hay_operaciones_entre_fs_y_memoria();
+	}
+
+	//En caso de que se tengan operaciones del File System en curso, el Kernel deberá esperar
+	//	la finalización de las mismas para luego proceder a solicitar la compactación a la Memoria
+	log_info(logger, "Compactación: Se solicitó compactación");
 
 	// se solicita compactar la memoria
 	enviar_mensaje("Compacta!!",socket_memoria, COMPACTAR_MEMORIA);
@@ -406,6 +418,8 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 
 	//y actualizar la tabla de segmentos de cada proceso en la cola de ready
 	acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
+
+	log_info(logger, "Se finalizó el proceso de compactación");
 
 	// luego solicita a memoria otra vez de crear el segmento
 	t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
@@ -606,10 +620,6 @@ void delete_segment(){
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 }
 
-void compactar_memoria()
-{
-	//TODO IMPLEMENTAR compactar_memoria
-}
 
 t_tabla_de_segmento* recibir_tabla_de_segmentos(){
 	t_tabla_de_segmento* tabla_de_segmento = malloc(sizeof(t_tabla_de_segmento));
@@ -715,3 +725,20 @@ char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_rec
 		return recursos_disponibles_string ;
 }
 
+bool hay_operaciones_entre_fs_y_memoria(){
+	bool hay_proceso_bloqueado = false;
+
+	void _check_si_existe_algun_proceso_bloqueado(char* key, void* value){
+		t_queue* cola_bloqueado = (t_queue*) value;
+		t_tabla_global_de_archivos_abiertos* tabla = dictionary_get(tabla_global_de_archivos_abiertos, key);
+		if(queue_size(cola_bloqueado) > 0 && tabla != NULL && tabla->open == 1){
+
+			hay_proceso_bloqueado = true;
+		}
+	}
+	//dictionary_iterator(tabla_global_de_archivos_abiertos,_check_si_existe_algun_proceso_bloqueado);
+
+	dictionary_iterator(colas_de_procesos_bloqueados_para_cada_archivo, _check_si_existe_algun_proceso_bloqueado);
+
+	return hay_proceso_bloqueado;
+}

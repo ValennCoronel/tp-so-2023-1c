@@ -429,9 +429,6 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					//enviar_a_memoria leer word
 					delete_segment();
 					break;
-				case COMPACTAR_MEMORIA:
-					compactar_memoria();
-					break;
 				case ABRIR_ARCHIVO:
 					f_open();
 					break;
