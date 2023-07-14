@@ -16,8 +16,11 @@ void manejar_seg_fault(int socket_cliente){
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 
 	sem_wait(&m_proceso_ejecutando);
-	enviar_mensaje("SEG_FAULT !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
+	enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
 
+	eliminar_paquete(paquete);
 	log_info(logger, "FInaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
 	sem_post(&m_proceso_ejecutando);
 
@@ -103,7 +106,13 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 
 		//TODO pedir_finalizar_las_estructuras_de_memoria();
 		sem_wait(&m_proceso_ejecutando);
-		enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
+		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
+		enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
+
+		eliminar_paquete(paquete);
+
 		log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 
 		log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
@@ -150,7 +159,12 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 			//TODO pedir_finalizar_las_estructuras_de_memoria();
 			sem_wait(&m_proceso_ejecutando);
-			enviar_mensaje("INVALID_RESOURCE !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+			t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
+			enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
+
+			eliminar_paquete(paquete);
+
 			log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
 			sem_post(&m_proceso_ejecutando);
@@ -354,7 +368,12 @@ void manejar_escucha_out_of_memory(){
 
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 	sem_wait(&m_proceso_ejecutando);
-	enviar_mensaje("OUT_OF_MEMORY !!", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
+	enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
+
+
+	eliminar_paquete(paquete);
 
 	log_info(logger, "FInaliza el proceso %d - Motivo: OUT_OF_MEMORY", proceso_ejecutando->PID);
 	sem_post(&m_proceso_ejecutando);

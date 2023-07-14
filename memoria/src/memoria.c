@@ -486,46 +486,28 @@ void crear_nuevo_proceso(int socket_cliente, int cant_segmentos){
 
 }
 
-//TODO finalizar_proceso_memoria
+
 void finalizar_proceso_memoria(int cliente_fd){
-	// recibe paquete del kernel
-	// usando el pid, busca los segmentos a eliminar
-	// despues de eliminar los segmentos, eliminamos la tabla de segmentos
 
-	//recibo paquete
-	t_list* tabla = recibir_paquete(cliente_fd); //TODO DECIRLE A FEDE QUE ESTO NO FUNCIONA ASI COMO
+	// recibe pid del kernel
+	int size;
+	void* buffer = recibir_buffer(&size, cliente_fd);
 
+	int pid;
+	memcpy(&pid, buffer, sizeof(int));
 
+	free(buffer);
 
-	//DESERIALIZO
-	t_tabla_de_segmento* tabla_paquete;
-	int desplazamiento = 0;
-	memcpy(tabla_paquete->cantidad_segmentos,tabla->head,sizeof(uint32_t));
-	desplazamiento += sizeof(uint32_t);
-	memcpy(tabla_paquete->pid,tabla->head + desplazamiento,sizeof(uint32_t));
-	desplazamiento += sizeof(uint32_t);
-	for(int i =0; i< tabla_paquete->cantidad_segmentos ; i++){
+	// usando el pid, busca la tabla de segmentos del proceso
+	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(pid);
 
-			t_segmento* segmento_N;
-			memcpy(segmento_N->id_segmento,tabla->head + desplazamiento,sizeof(uint32_t));
-			desplazamiento += sizeof(uint32_t);
-			memcpy(segmento_N->direccion_base,tabla->head + desplazamiento,sizeof(uint32_t));
-			desplazamiento += sizeof(uint32_t);
-			memcpy(segmento_N->tamano,tabla->head + desplazamiento,sizeof(uint32_t));
-			desplazamiento += sizeof(uint32_t);
-
-			list_add(tabla_paquete->segmentos,segmento_N);
-
-		}
-
-	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(tabla_paquete->pid);
-	if(tabla_buscada != NULL)
-	{
+	if(tabla_buscada != NULL){
+		// despues de eliminar los segmentos, eliminamos la tabla de segmentos
 		destroy_tabla_de_segmentos(tabla_buscada);
-	}
-	else
-	{
-		log_error(logger,"ERROR, NO SE ENCONTRO EL SEGMENTO");
+
+		log_info(logger, "Eliminación de Proceso PID: %d", pid);
+	} else {
+		log_error(logger,"No se encontro la tabla del Proceso PID: %d", pid);
 	}
 
 }
