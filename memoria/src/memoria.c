@@ -10,7 +10,7 @@ t_list* huecos_libres;
 void* espacio_usuario;
 t_list* tablas_de_segmentos_de_todos_los_procesos;
 t_segmento* segmento_0;
-int tam_memoria;
+uint32_t tam_memoria;
 
 
 int main(void){
@@ -68,7 +68,7 @@ int main(void){
 	// inicio lista de huecos libres inicial
 	huecos_libres = list_create();
 
-	t_segmento* hueco_libre_inicial = malloc(sizeof(t_segmento*));
+	t_segmento* hueco_libre_inicial = malloc(sizeof(t_segmento));
 
 	hueco_libre_inicial->direccion_base = segmento_0->tamano;// arranca después del segmento 0
 	hueco_libre_inicial->tamano = tam_memoria - segmento_0->tamano;

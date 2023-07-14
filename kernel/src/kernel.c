@@ -325,7 +325,6 @@ void *atender_cliente(void *arg){
 				case -1:
 					log_error(logger, "Consola El cliente se desconecto. Terminando servidor");
 
-					free(arg);
 					return NULL;
 				default:
 					log_warning(logger,"Consola Operacion desconocida. No quieras meter la pata");
@@ -352,6 +351,7 @@ void recibir_instrucciones(int socket_cliente, int estimacion_inicial){
 	pcb_proceso->estimado_proxima_rafaga = estimacion_inicial;
 	pcb_proceso->tiempo_llegada_rady = 0;
 	pcb_proceso->socket_server_id = socket_cliente;
+	pcb_proceso->tabla_archivos_abiertos_del_proceso = NULL;
 
 
 

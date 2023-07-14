@@ -93,15 +93,24 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 
 	log_info(logger, "Cola Ready %s: [%s]",algoritmo_planificacion, pids);
 
+	free(pids);
 	//si no hay nadie ejecutandose, lo pone a ejecutar, sino va a quedar en la espera en la cola ready
-	sem_wait(&m_proceso_ejecutando);
+	while(proceso_ejecutando != NULL){
+		sem_wait(&m_proceso_ejecutando);
+		if(proceso_ejecutando == NULL){
+			sem_post(&m_proceso_ejecutando);
+			sem_post(&consumidor);
+			return;
+		}
+		sem_post(&m_proceso_ejecutando);
+
+	}
 	if(proceso_ejecutando == NULL){
 		sem_post(&m_proceso_ejecutando);
 		sem_post(&consumidor);
 	}
-	sem_post(&m_proceso_ejecutando);
-
-	free(pids);
+	log_info(logger, "salgo planificador largo plazo");
+	
 }
 
 void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion){

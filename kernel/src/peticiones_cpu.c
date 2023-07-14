@@ -223,9 +223,14 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","READY");
 
+	proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
+	proceso_ejecutando->program_counter = contexto->program_counter;
 
 	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
 	sem_post(&m_proceso_ejecutando);
+
+	log_info(logger, "program counter %d", contexto->program_counter);
+
 	poner_a_ejecutar_otro_proceso();
 
 	//destruyo el contexto de ejecucion
