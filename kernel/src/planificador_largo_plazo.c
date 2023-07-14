@@ -96,6 +96,7 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 	//si no hay nadie ejecutandose, lo pone a ejecutar, sino va a quedar en la espera en la cola ready
 	sem_wait(&m_proceso_ejecutando);
 	if(proceso_ejecutando == NULL){
+		sem_post(&m_proceso_ejecutando);
 		sem_post(&consumidor);
 	}
 	sem_post(&m_proceso_ejecutando);
@@ -168,6 +169,8 @@ t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria, int pid){
 
 			memcpy(&(tam_segmentos),buffer + desplazamiento, sizeof(int));
 			desplazamiento += sizeof(int);
+
+			tabla_segmentos->segmentos = list_create();
 
 			for(int i=0; i<tam_segmentos; i++){
 

@@ -190,7 +190,7 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 // si no existe lo crea
 FILE* levantar_archivo_binario(char* path_archivo){
 
-	FILE* archivo = fopen(path_archivo, "r+");
+	FILE* archivo = fopen(path_archivo, "wb+");
 
 	if(archivo == NULL){
 		log_error(logger, "No existe el archivo con el path: %s",path_archivo);

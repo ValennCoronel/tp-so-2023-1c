@@ -233,7 +233,7 @@ context(test_peticiones){
 		t_pcb* proceso_2;
 		before{
 			sem_init(&m_cola_ready,0,1);
-
+			sem_init(&m_proceso_ejecutando, 0, 1);
 			cola_ready = queue_create();
 
 			proceso_1 = malloc(sizeof(t_pcb));

@@ -18,9 +18,11 @@ void manejar_seg_fault(int socket_cliente){
 	sem_wait(&m_proceso_ejecutando);
 	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
-	enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
-
+	enviar_paquete(paquete, socket_memoria);
 	eliminar_paquete(paquete);
+
+	enviar_mensaje("Segmentation Fault", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
+
 	log_info(logger, "FInaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
 	sem_post(&m_proceso_ejecutando);
 
@@ -109,9 +111,11 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 
 		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
-		enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
+		enviar_paquete(paquete, socket_memoria);
 
 		eliminar_paquete(paquete);
+
+		enviar_mensaje("Invalid Resource", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 		log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 
@@ -161,9 +165,10 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 			sem_wait(&m_proceso_ejecutando);
 			t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
 			agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
-			enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
+			enviar_paquete(paquete, socket_memoria);
 
 			eliminar_paquete(paquete);
+			enviar_mensaje("Invalid Resource", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 			log_info(logger, "FInaliza el proceso %d - Motivo: INVALID_RESOURCE", proceso_ejecutando->PID);
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
@@ -290,24 +295,13 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	sem_wait(&m_proceso_ejecutando);
-	t_tabla_de_segmento *tabla = proceso_ejecutando->tabla_segmentos;
+	//liberar tabla? t_tabla_de_segmento *tabla = proceso_ejecutando->tabla_segmentos;
 
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_ejecutando->PID, "EXEC","EXIT");
 
-
-	//agrego en el paquete, serializo y envio
+	//TODO pedir_finalizar_las_estructuras_de_memoria
 	t_paquete *paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
-	agregar_a_paquete_sin_agregar_tamanio(paquete,&(tabla->cantidad_segmentos),sizeof(uint32_t));
-	agregar_a_paquete_sin_agregar_tamanio(paquete,&(tabla->pid),sizeof(uint32_t));
-
-	// tabla->cantidad_segmento == list_size(tabla->segmentos) porque guardan el mismo valor
-	for(int i =0; i< tabla->cantidad_segmentos ; i++){
-		t_segmento* segmento_N = list_get(tabla->segmentos, i);
-
-		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->id_segmento), sizeof(uint32_t));
-		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->direccion_base), sizeof(uint32_t));
-		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_N->tamano), sizeof(uint32_t));
-	}
+	agregar_a_paquete_sin_agregar_tamanio(paquete,&(proceso_ejecutando->PID),sizeof(int));
 
 	sem_post(&m_proceso_ejecutando);
 	enviar_paquete(paquete,socket_memoria);
@@ -370,10 +364,11 @@ void manejar_escucha_out_of_memory(){
 	sem_wait(&m_proceso_ejecutando);
 	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
-	enviar_paquete(paquete, proceso_ejecutando->socket_server_id);
-
+	enviar_paquete(paquete, socket_memoria);
 
 	eliminar_paquete(paquete);
+
+	enviar_mensaje("Out of memory", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
 	log_info(logger, "FInaliza el proceso %d - Motivo: OUT_OF_MEMORY", proceso_ejecutando->PID);
 	sem_post(&m_proceso_ejecutando);

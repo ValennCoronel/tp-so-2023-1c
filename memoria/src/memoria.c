@@ -480,7 +480,7 @@ void crear_nuevo_proceso(int socket_cliente, int cant_segmentos){
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->tamano), sizeof(uint32_t));
 	}
 
-	enviar_paquete(paquete, socket_kernel);
+	enviar_paquete(paquete, socket_cliente);
 
 	list_add(tablas_de_segmentos_de_todos_los_procesos, tabla);
 
