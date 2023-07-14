@@ -50,12 +50,12 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	int result_conexion = conectar_modulo(ip_kernel, puerto_kernel);
 
 	//Testeo el resultado de la conexion
-	if(result_conexion == -1){
-		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
-
-		terminar_programa(config, NULL);
-
-	}
+//	if(result_conexion == -1){
+//		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
+//
+//		terminar_programa(config, NULL);
+//
+//	}
 
 	log_info(logger, "La Consola se conecto con el modulo Kernel correctamente");
 
@@ -85,14 +85,33 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 
 	while(feof(archivo) == 0){
 		cadena = malloc(30);
-			fgets(cadena, 30, archivo);
-			//printf("cadena:  %s", cadena);
+			char* resultado_lectura = fgets(cadena, 30, archivo);
+
+			if(resultado_lectura == NULL){
+				break;
+			}
+			// borro los \n
+			if(string_contains(cadena, "\n")){
+				char** array_de_cadenas = string_split(cadena, "\n");
+
+
+				cadena = string_array_pop(array_de_cadenas);
+
+				while(strcmp(cadena, "") == 0){
+					cadena = string_array_pop(array_de_cadenas);
+				}
+
+				//free(temp);
+				string_array_destroy(array_de_cadenas);
+			}
+
+
+
 			t_instruccion *ptr_inst = malloc(sizeof(t_instruccion)); //Creo la struct y reservo memoria
 
 			char* token = strtok(cadena, " "); // obtiene el primer elemento en token
-			ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
 
-			printf("%s\n", token); // imprime el primer elemento (solo por control)
+			ptr_inst->opcode = token; //Asigno la instruccion leida a la struct-> instruccion
 
 			token = strtok(NULL, " "); // avanza al segundo elemento
 			int i = 0; // Variable local utilizada para cargar el array de parametros

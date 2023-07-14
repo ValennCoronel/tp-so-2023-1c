@@ -172,3 +172,40 @@
 [INFO] 20:01:03:139 consola/(23253:23253): La Consola se conecto con el modulo Kernel correctamente
 [INFO] 20:04:10:697 consola/(23407:23407): La Consola se conecto con el modulo Kernel correctamente
 [ERROR] 20:53:15:106 consola/(25196:25196): Consola no se pudo conectar con el modulo Kernel !!
+[ERROR] 16:14:45:891 consola/(10823:10823): Consola no se pudo conectar con el modulo Kernel !!
+[INFO] 16:15:16:523 consola/(10876:10876): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:15:16:528 consola/(10876:10876): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:15:56:915 consola/(10925:10925): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:15:56:927 consola/(10925:10925): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:16:10:510 consola/(10948:10948): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:16:10:518 consola/(10948:10948): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:17:55:525 consola/(11044:11044): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:17:55:533 consola/(11044:11044): Se recibió:  de kernel con codigo: -1
+[INFO] 16:18:22:754 consola/(11120:11120): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:18:22:762 consola/(11120:11120): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:19:08:674 consola/(11193:11193): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:19:08:681 consola/(11193:11193): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:19:36:100 consola/(11231:11231): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:21:02:226 consola/(11411:11411): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:21:02:235 consola/(11411:11411): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:23:25:823 consola/(11567:11567): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:23:25:833 consola/(11567:11567): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:24:27:653 consola/(11642:11642): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:24:55:422 consola/(11690:11690): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:28:27:531 consola/(11953:11953): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:28:27:551 consola/(11953:11953): Se recibió:  de kernel con codigo: -1
+[INFO] 16:32:41:043 consola/(12134:12134): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:33:09:869 consola/(12179:12179): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:34:33:607 consola/(12262:12262): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:35:10:722 consola/(12324:12324): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:35:10:728 consola/(12324:12324): Se recibió:  de kernel con codigo: -1
+[INFO] 16:36:35:914 consola/(12432:12432): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:36:35:923 consola/(12432:12432): Se recibió:  de kernel con codigo: -1
+[INFO] 16:37:29:917 consola/(12495:12495): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:38:36:592 consola/(12495:12495): Se recibió:  de kernel con codigo: -1
+[INFO] 16:39:20:560 consola/(12617:12617): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:39:20:586 consola/(12617:12617): Se recibió: (null) de kernel con codigo: -1
+[INFO] 16:39:36:751 consola/(12659:12659): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:39:36:765 consola/(12659:12659): Se recibió:  de kernel con codigo: -1
+[INFO] 16:40:00:755 consola/(12706:12706): La Consola se conecto con el modulo Kernel correctamente
+[INFO] 16:40:00:760 consola/(12706:12706): Se recibió:  de kernel con codigo: -1
