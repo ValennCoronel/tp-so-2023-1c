@@ -31,6 +31,9 @@ all: main-build
 # Main-build Target
 main-build: kernel
 
+dependents:
+	-cd /home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy && $(MAKE) all
+
 # Tool invocations
 kernel: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
