@@ -7,6 +7,10 @@ void f_open(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones, contexto->program_counter-1); //obtengo instruccion a ejecutar
 
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
+
 	char* nombre_archivo = strdup(instruccion->parametros[0]);
 
 	log_info(logger, "PID: %d - Abrir Archivo: %s", contexto->pid, nombre_archivo);
@@ -65,6 +69,10 @@ void f_close(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
 
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
+
 	char* nombre_archivo = instruccion->parametros[0];
 	t_tabla_global_de_archivos_abiertos* tabla = dictionary_get(tabla_global_de_archivos_abiertos, nombre_archivo);
 
@@ -105,6 +113,10 @@ void f_seek(int cliente_fd){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
 
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
+
 	char* nombre_archivo = instruccion_peticion->parametros[0];
 	int posicion = atoi(instruccion_peticion->parametros[1]);
 
@@ -121,6 +133,10 @@ void f_seek(int cliente_fd){
 void truncar_archivo(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
 
 	char* nombre_archivo = instruccion_peticion->parametros[0];
 	char* tamanio_a_truncar_string = instruccion_peticion->parametros[1];
@@ -157,6 +173,10 @@ void truncar_archivo(){
 void leer_archivo(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
 
 	char* nombre_archivo = instruccion_peticion->parametros[0];
 	sem_wait(&m_proceso_ejecutando);
@@ -198,6 +218,9 @@ void escribir_archivo(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
 
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
 
 	char* nombre_archivo = instruccion_peticion->parametros[0];
 	sem_wait(&m_proceso_ejecutando);

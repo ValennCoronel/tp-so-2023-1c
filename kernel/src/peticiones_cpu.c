@@ -50,6 +50,9 @@ void* simulacion_io(void* arg){
 	sem_wait(&m_proceso_ejecutando);
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
 
+
+	proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
+
 	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
 	sem_post(&m_proceso_ejecutando);
 
@@ -62,6 +65,8 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+
+
 	pthread_t hilo_simulacion;
 
 	sem_init(&esperar_proceso_ejecutando, 0, 0);
@@ -76,6 +81,8 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 
 	//se calcula la rafaga anterior para el algoritmo hrrn
 	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+
 	proceso_ejecutando->rafaga_anterior = temporal_gettime(rafaga_proceso_ejecutando);
 	sem_post(&m_proceso_ejecutando);
 	temporal_stop(rafaga_proceso_ejecutando);
@@ -100,6 +107,10 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
 
 	int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
 
@@ -156,6 +167,10 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
 
+		sem_wait(&m_proceso_ejecutando);
+		proceso_ejecutando->program_counter = contexto->program_counter;
+		sem_post(&m_proceso_ejecutando);
+
 		int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
 
 		// si no existe el recurso finaliza
@@ -189,6 +204,10 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 		if(proceso_desbloqueado!=NULL){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_desbloqueado->PID, "BLOC","READY");
+
+			sem_wait(&m_proceso_ejecutando);
+			proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
+			sem_post(&m_proceso_ejecutando);
 
 			pasar_a_ready(proceso_desbloqueado,grado_max_multiprogramacion);
 		}
@@ -228,8 +247,6 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 
 	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
 	sem_post(&m_proceso_ejecutando);
-
-	log_info(logger, "program counter %d", contexto->program_counter);
 
 	poner_a_ejecutar_otro_proceso();
 
@@ -330,6 +347,10 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 void create_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+
+	sem_wait(&m_proceso_ejecutando);
+	proceso_ejecutando->program_counter = contexto->program_counter;
+	sem_post(&m_proceso_ejecutando);
 
 	t_segmento_parametro* peticion_segmento = (t_segmento_parametro*) malloc(sizeof(t_segmento_parametro));
 
@@ -601,6 +622,7 @@ void delete_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
 
+
 	// busco el segmento a borrar por id de la tabla de segmentos del proceso ejecutando
 	t_segmento_parametro* segmento_a_eliminar = malloc(sizeof(t_segmento_parametro));
 	segmento_a_eliminar->id_segmento = atoi(instruccion_peticion->parametros[0]);
@@ -627,6 +649,7 @@ void delete_segment(){
 		//y actualizar la tabla de segmentos del proceso ejecutando
 
 		sem_wait(&m_proceso_ejecutando);
+		proceso_ejecutando->program_counter = contexto->program_counter;
 		// libero la tabla anterior
 		destroy_tabla_de_segmentos(proceso_ejecutando->tabla_segmentos);
 
