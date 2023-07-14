@@ -133,7 +133,7 @@ void esperar_por(int milisegundos_a_esperar){
 
 	t_temporal* temp = temporal_create();
 
-	while(milisegundos_a_esperar!=tiempo_transcurrido){
+	while(milisegundos_a_esperar > tiempo_transcurrido){
 		tiempo_transcurrido = temporal_gettime(temp);
 	}
 
