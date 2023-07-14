@@ -37,6 +37,7 @@ typedef struct {
 	char* algoritmo_asignacion;
 	uint64_t cliente_fd;
 	uint64_t retardo_memoria;
+	uint64_t cant_segmentos;
 }t_arg_atender_cliente;
 
 typedef struct {
@@ -48,9 +49,9 @@ typedef struct {
 
 void terminar_programa(t_log* logger, t_config* config);
 int conectar_con_memoria(int conexion, char* ip, char* puerto);
-void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria);
+void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria, int cant_segmentos);
 void *atender_cliente(void *args);
-void crear_nuevo_proceso(int socket_cliente);
+void crear_nuevo_proceso(int socket_cliente, int cant_segmentos);
 void finalizar_proceso_memoria(int cliente_fd);
 void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd);
 void delete_segment(int cliente_fd);
@@ -71,5 +72,6 @@ t_segmento* worst_fit(t_list* huecos_candidatos);
 t_segmento* best_fit(t_list* huecos_candidatos);
 
 t_segmento* obtener_ultimo_hueco_de_la_tabla();
+t_segmento* crear_segmento_sin_usar();
 
 #endif /* CPU_H */

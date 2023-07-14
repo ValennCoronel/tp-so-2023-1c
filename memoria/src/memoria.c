@@ -82,9 +82,9 @@ int main(void){
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones(algoritmo_asignacion, retardo_memoria);
+	manejar_peticiones(algoritmo_asignacion, retardo_memoria, cant_segmentos);
 
-
+	terminar_programa(logger, config);
 
 } //FIN DEL MAIN
 
@@ -114,7 +114,7 @@ void terminar_programa(t_log* logger, t_config* config){
 
 
 //Funcion para manejo de peticiones tanto para kernel, CPU y filesystem
-void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria){
+void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria, int cant_segmentos){
 
 	while(1){
 		pthread_t thread;
@@ -124,6 +124,8 @@ void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria){
 		argumentos_atender_cliente->cliente_fd = cliente_fd;
 		argumentos_atender_cliente->algoritmo_asignacion = algoritmo_asignacion;
 		argumentos_atender_cliente->retardo_memoria = retardo_memoria;
+		argumentos_atender_cliente->cant_segmentos = cant_segmentos;
+
 
 
 		pthread_create(&thread, NULL, atender_cliente, (void*) argumentos_atender_cliente);
@@ -139,6 +141,7 @@ void* atender_cliente(void *args){
 	char* algoritmo_asignacion = argumentos->algoritmo_asignacion;
 	uint64_t cliente_fd = argumentos->cliente_fd;
 	uint64_t retardo_memoria = argumentos->retardo_memoria;
+	uint64_t cant_segmentos = argumentos->cant_segmentos;
 
 	while(1){
 		int cod_op = recibir_operacion(cliente_fd);
@@ -151,7 +154,7 @@ void* atender_cliente(void *args){
 					recibir_handshake(cliente_fd);
 					break;
 				case NUEVO_PROCESO_MEMORIA:
-					crear_nuevo_proceso(cliente_fd);
+					crear_nuevo_proceso(cliente_fd, cant_segmentos);
 					break;
 				case FINALIZAR_PROCESO_MEMORIA:
 					finalizar_proceso_memoria(cliente_fd);
@@ -439,10 +442,8 @@ void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 
 }
 
-
-//TODO crear_nuevo_proceso_memoria
-void crear_nuevo_proceso(int socket_cliente){
-	//TODO crear estructuras administrativas y enviar tabla de segmentos a Kernel
+//crea las estructuras administrativas y enviar tabla de segmentos a Kernel
+void crear_nuevo_proceso(int socket_cliente, int cant_segmentos){
 
 	//recibe el pid para el LOG
 	int size;
@@ -457,6 +458,32 @@ void crear_nuevo_proceso(int socket_cliente){
 	t_paquete* paquete = crear_paquete(NUEVO_PROCESO_MEMORIA);
 
 	log_info(logger, "Creación de Proceso PID: %d", pid);
+
+	tabla->cantidad_segmentos = cant_segmentos;
+	tabla->pid = pid;
+	tabla->segmentos = list_create();
+
+	for(int i = 0; i< cant_segmentos; i++){
+		list_add(tabla->segmentos, crear_segmento_sin_usar());
+	}
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla->pid), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla->cantidad_segmentos), sizeof(uint32_t));
+
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &cant_segmentos, sizeof(int));
+
+	for(int i = 0; i<cant_segmentos; i++){
+		t_segmento* segmento_n = list_get(tabla->segmentos, i);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->direccion_base), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->id_segmento), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->tamano), sizeof(uint32_t));
+	}
+
+	enviar_paquete(paquete, socket_kernel);
+
+	list_add(tablas_de_segmentos_de_todos_los_procesos, tabla);
+
 }
 
 //TODO finalizar_proceso_memoria
@@ -503,9 +530,6 @@ void finalizar_proceso_memoria(int cliente_fd){
 
 }
 
-void acceder_espacio_ususario(int cliente_fd){
-	enviar_mensaje("OK",cliente_fd, MENSAJE);
-}
 
 // -------- UTILS -------
 
@@ -743,4 +767,12 @@ t_segmento* obtener_ultimo_hueco_de_la_tabla(){
 	return (t_segmento*) list_get(tablas_de_segmentos_de_todos_los_procesos,cantidad_de_segmentos-1);
 }
 
+t_segmento* crear_segmento_sin_usar(){
+	t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
 
+	segmento_nuevo->direccion_base = -1;
+	segmento_nuevo->tamano = -1;
+	segmento_nuevo->id_segmento = -1;
+
+	return segmento_nuevo;
+}
