@@ -89,11 +89,12 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	temporal_destroy(rafaga_proceso_ejecutando);
 	rafaga_proceso_ejecutando = NULL;
 
+
 	sem_wait(&esperar_proceso_ejecutando);
 
-	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", contexto->pid, "EXEC","BLOC");
-
 	log_info(logger, "PID: %d - Ejecuta IO: %d", contexto->pid,tiempo_io);
+
+	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", contexto->pid, "EXEC","BLOC");
 
 
 	poner_a_ejecutar_otro_proceso();
@@ -204,9 +205,12 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 		t_queue* cola_bloqueados= (t_queue*) dictionary_get(recurso_bloqueado,recursos[indice_recurso]);
 
-		t_pcb* proceso_desbloqueado = queue_pop(cola_bloqueados);
+		//t_pcb* proceso_desbloqueado = queue_size(cola_bloqueados);
 
-		if(proceso_desbloqueado!=NULL){
+		int cantidad_procesos_bloqueados = queue_size(cola_bloqueados);
+
+		if(cantidad_procesos_bloqueados != 0){
+			t_pcb* proceso_desbloqueado = queue_pop(cola_bloqueados);
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_desbloqueado->PID, "BLOC","READY");
 
