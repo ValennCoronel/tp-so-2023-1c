@@ -106,18 +106,8 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible, int cantidad_de_recursos){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
-<<<<<<< Updated upstream
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
-	log_info(instruccion->opcode);
-=======
-
-	//log_info(logger, "recursos: %s",contexto->lista_instrucciones);
-
-
-
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
->>>>>>> Stashed changes
 
 	log_info(logger, "recursos: %s",instruccion->parametros[0]);
 
