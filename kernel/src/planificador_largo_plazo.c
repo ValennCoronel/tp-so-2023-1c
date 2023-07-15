@@ -44,11 +44,15 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 
 		int procesos_en_memoria_total = calcular_procesos_en_memoria(tamanio_cola_ready);
 
-		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 && procesos_en_memoria_total <= grado_max_multiprogramacion ){
+		// sumo uno para simular si agrego a ready el proceso qeu esta en new
+		procesos_en_memoria_total ++;
+
+		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 && procesos_en_memoria_total < grado_max_multiprogramacion ){
 
 			agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
 
-		} else if(tamanio_cola_new != 0 && procesos_en_memoria_total <= grado_max_multiprogramacion){
+		} else if(tamanio_cola_new != 0 && procesos_en_memoria_total < grado_max_multiprogramacion){
+
 			//verificar si se lo puede admitir a la cola de ready
 				agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
 //			if(puede_ir_a_ready(grado_max_multiprogramacion)){
@@ -238,7 +242,7 @@ int calcular_procesos_en_memoria(int procesos_en_ready){
 		t_queue* cola_bloqueados_recurso_n = (t_queue*) value;
 
 		if(queue_size(cola_bloqueados_recurso_n) != 0){
-			procesos_bloqueados = queue_size(cola_bloqueados_recurso_n);
+			procesos_bloqueados += queue_size(cola_bloqueados_recurso_n);
 		}
 	}
 

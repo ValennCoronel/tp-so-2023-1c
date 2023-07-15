@@ -50,26 +50,8 @@ void* simulacion_io(void* arg){
 	sem_wait(&m_proceso_ejecutando);
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
 	
-	log_info(logger, "espero a que temporal_ultimo_desalojo se destruya");
-
-	log_info(logger, "espero a que temporal_ultimo_desalojo se destruya");
-
-//	while(proceso_ejecutando->temporal_ultimo_desalojo != NULL){
-//		//espero hasta que se destruya el temporal_ultimo_desalojo en el planificador de corto plazo
-//	}
-	log_info(logger, "se destruyo temporal_ultimo_desalojo ");
-
-	//while(proceso_ejecutando->temporal_ultimo_desalojo != NULL){
-		//espero hasta que se destruya el temporal_ultimo_desalojo en el planificador de corto plazo
-	//}
-	log_info(logger, "se destruyo temporal_ultimo_desalojo ");
-
-	//temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
-
 	
 	proceso_en_IO->temporal_ultimo_desalojo = temporal_create();
-
-	log_info(logger, "temporal ultimo desalojo: %ld", temporal_gettime(proceso_en_IO->temporal_ultimo_desalojo));
 
 
 	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
