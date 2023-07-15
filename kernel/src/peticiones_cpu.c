@@ -64,7 +64,7 @@ void* simulacion_io(void* arg){
 void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
 
 	pthread_t hilo_simulacion;
@@ -106,7 +106,9 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible, int cantidad_de_recursos){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
+
+	log_info(instruccion->opcode);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -165,7 +167,7 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(cliente_fd);
 
-		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
 		sem_wait(&m_proceso_ejecutando);
 		proceso_ejecutando->program_counter = contexto->program_counter;
@@ -346,7 +348,7 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 void create_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -620,7 +622,7 @@ t_list* recibir_tablas_de_segmentos(){
 
 void delete_segment(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 
 	// busco el segmento a borrar por id de la tabla de segmentos del proceso ejecutando
