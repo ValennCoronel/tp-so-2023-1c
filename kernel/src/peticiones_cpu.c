@@ -106,15 +106,28 @@ void bloquear_proceso_IO(int socket_cliente,int grado_max_multiprogramacion){
 void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponible, int cantidad_de_recursos){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
+<<<<<<< Updated upstream
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
 	log_info(instruccion->opcode);
+=======
+
+	//log_info(logger, "recursos: %s",contexto->lista_instrucciones);
+
+
+
+	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1);
+>>>>>>> Stashed changes
+
+	log_info(logger, "recursos: %s",instruccion->parametros[0]);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
 	int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
+
+
 
 	// si no existe el recurso finaliza
 	if(indice_recurso == -1){
@@ -283,6 +296,8 @@ int obtener_indice_recurso(char** recursos, char* recurso_a_buscar){
 	if(string_array_is_empty(recursos)){
 		return -1;
 	}
+
+
 
 	while(indice_recurso < tamanio_recursos && strcmp(recurso_a_buscar, recursos[indice_recurso]) != 0 ){
 		indice_recurso++;

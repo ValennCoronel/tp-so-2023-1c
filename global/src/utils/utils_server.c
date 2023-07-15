@@ -189,8 +189,10 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 		memcpy(&tamanio_lista, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 
+
 		for(int i = 0; i< tamanio_lista; i++){
 			t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
 
 			memcpy(&(instruccion->opcode_lenght), buffer + desplazamiento, sizeof(int));
 			desplazamiento+=sizeof(int);
@@ -209,6 +211,7 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 			instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
 			memcpy(instruccion->parametros[1], buffer + desplazamiento, instruccion->parametro2_lenght);
 			desplazamiento += instruccion->parametro2_lenght;
+
 
 			memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
 			desplazamiento+=sizeof(int);

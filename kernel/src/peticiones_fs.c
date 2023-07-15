@@ -5,7 +5,7 @@
 
 void f_open(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones, contexto->program_counter-1); //obtengo instruccion a ejecutar
+	t_instruccion* instruccion = list_get(contexto->lista_instrucciones, contexto->program_counter-2); //obtengo instruccion a ejecutar
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -67,7 +67,7 @@ void f_open(){
 //Cierra la instancia de un archivo abierto, si ya no hay mas procesos solicitando el archivo lo saca de la tabla global, sino reduce el contador de archivos abiertos
 void f_close(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-1); //obtengo instruccion a ejecutar
+	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2); //obtengo instruccion a ejecutar
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -111,7 +111,7 @@ void f_close(){
 
 void f_seek(int cliente_fd){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -132,7 +132,7 @@ void f_seek(int cliente_fd){
 
 void truncar_archivo(){
 	t_contexto_ejec* contexto = recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -172,7 +172,7 @@ void truncar_archivo(){
 
 void leer_archivo(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -216,7 +216,7 @@ void leer_archivo(){
 
 void escribir_archivo(){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
-	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 1);
+	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
