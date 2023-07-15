@@ -45,10 +45,12 @@ void* simulacion_io(void* arg){
 	sem_post(&esperar_proceso_ejecutando);
 
 	//espera activa mientras se ejecuta otro en cpu
-	esperar_por(tiempo_io);
+	esperar_por(tiempo_io *1000);
 
 	sem_wait(&m_proceso_ejecutando);
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
+	
+	log_info(logger, "espero a que temporal_ultimo_desalojo se destruya");
 
 	log_info(logger, "espero a que temporal_ultimo_desalojo se destruya");
 
@@ -57,7 +59,17 @@ void* simulacion_io(void* arg){
 //	}
 	log_info(logger, "se destruyo temporal_ultimo_desalojo ");
 
-	proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
+	//while(proceso_ejecutando->temporal_ultimo_desalojo != NULL){
+		//espero hasta que se destruya el temporal_ultimo_desalojo en el planificador de corto plazo
+	//}
+	log_info(logger, "se destruyo temporal_ultimo_desalojo ");
+
+	//temporal_destroy(proceso_ejecutando->temporal_ultimo_desalojo);
+
+	
+	proceso_en_IO->temporal_ultimo_desalojo = temporal_create();
+
+	log_info(logger, "temporal ultimo desalojo: %ld", temporal_gettime(proceso_en_IO->temporal_ultimo_desalojo));
 
 
 	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
@@ -156,7 +168,17 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 		sem_wait(&m_proceso_ejecutando);
 		bloquear_proceso_por_recurso(proceso_ejecutando, recursos[indice_recurso]);
 		sem_post(&m_proceso_ejecutando);
+
 		poner_a_ejecutar_otro_proceso();
+
+		char* recursos_disponibles_string = listar_recursos_disponibles(recurso_disponible, cantidad_de_recursos);
+		log_info(logger, "PID: %d - Wait: %s - Instancias: [%s]", contexto->pid,recursos[indice_recurso], recursos_disponibles_string);
+
+		free(recursos_disponibles_string);
+
+		contexto_ejecucion_destroy(contexto);
+
+		return;
 	} else {
 		recurso_disponible[indice_recurso] -= 1;
 	}

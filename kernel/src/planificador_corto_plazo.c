@@ -28,8 +28,6 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	sem_wait(&consumidor);
 	sem_wait(&m_cola_ready);
 
-
-
 	if(queue_size(cola_ready) == 0) {
 		sem_post(&consumidor);
 		sem_post(&m_cola_ready);
@@ -48,6 +46,7 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	temporal_stop(proceso_a_ejecutar->temporal_ultimo_desalojo);
 	temporal_destroy(proceso_a_ejecutar->temporal_ultimo_desalojo);
 	proceso_a_ejecutar->temporal_ultimo_desalojo = NULL;
+	
 
 
 
