@@ -50,12 +50,12 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	int result_conexion = conectar_modulo(ip_kernel, puerto_kernel);
 
 	//Testeo el resultado de la conexion
-//	if(result_conexion == -1){
-//		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
-//
-//		terminar_programa(config, NULL);
-//
-//	}
+	if(result_conexion == -1){
+		log_error(logger, "Consola no se pudo conectar con el modulo Kernel !!");
+
+		terminar_programa(config, NULL);
+
+	}
 
 	log_info(logger, "La Consola se conecto con el modulo Kernel correctamente");
 
