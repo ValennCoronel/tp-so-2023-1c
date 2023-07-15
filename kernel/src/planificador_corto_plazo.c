@@ -42,6 +42,7 @@ void planificar_corto_plazo_fifo(int socket_cpu){
 	temporal_stop(proceso_a_ejecutar->temporal_ultimo_desalojo);
 	temporal_destroy(proceso_a_ejecutar->temporal_ultimo_desalojo);
 	proceso_a_ejecutar->temporal_ultimo_desalojo = NULL;
+	
 
 	//creo el contexto de ejecucion
 
