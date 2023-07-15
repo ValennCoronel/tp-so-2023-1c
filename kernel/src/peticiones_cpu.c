@@ -50,8 +50,15 @@ void* simulacion_io(void* arg){
 	sem_wait(&m_proceso_ejecutando);
 	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_en_IO->PID, "BLOC","READY");
 
+	log_info(logger, "espero a que temporal_ultimo_desalojo se destruya");
+
+//	while(proceso_ejecutando->temporal_ultimo_desalojo != NULL){
+//		//espero hasta que se destruya el temporal_ultimo_desalojo en el planificador de corto plazo
+//	}
+	log_info(logger, "se destruyo temporal_ultimo_desalojo ");
 
 	proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
+
 
 	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
 	sem_post(&m_proceso_ejecutando);
@@ -117,7 +124,6 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	sem_post(&m_proceso_ejecutando);
 
 	int indice_recurso = obtener_indice_recurso(recursos, instruccion->parametros[0]);
-
 
 
 	// si no existe el recurso finaliza

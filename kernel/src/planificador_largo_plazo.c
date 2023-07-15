@@ -42,20 +42,23 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 		int tamanio_cola_new = queue_size(cola_new);
 		sem_post(&m_cola_new);
 
-		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 ){
+		int procesos_en_memoria_total = calcular_procesos_en_memoria(tamanio_cola_ready);
+
+		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 && procesos_en_memoria_total <= grado_max_multiprogramacion ){
 
 			agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
 
-		} else if(tamanio_cola_new != 0){
+		} else if(tamanio_cola_new != 0 && procesos_en_memoria_total <= grado_max_multiprogramacion){
 			//verificar si se lo puede admitir a la cola de ready
-			if(puede_ir_a_ready(grado_max_multiprogramacion)){
 				agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
-			}
+//			if(puede_ir_a_ready(grado_max_multiprogramacion)){
+//			}
 		}
 	}
 
 	return NULL;
 }
+
 
 // si el proceso no es new, no es necesario el socket de memoria
 void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion){
@@ -225,4 +228,26 @@ char* listar_pids_cola_ready(void){
 	string_array_destroy(array_pids);
 
 	return string_pids ;
+}
+
+int calcular_procesos_en_memoria(int procesos_en_ready){
+
+	int procesos_bloqueados = 0;
+
+	void _calcular_procesos_bloqueados(char* key, void* value){
+		t_queue* cola_bloqueados_recurso_n = (t_queue*) value;
+
+		if(queue_size(cola_bloqueados_recurso_n) != 0){
+			procesos_bloqueados = queue_size(cola_bloqueados_recurso_n);
+		}
+	}
+
+	dictionary_iterator(recurso_bloqueado, _calcular_procesos_bloqueados);
+
+	if(proceso_ejecutando != NULL){
+		procesos_bloqueados ++;
+	}
+
+
+	return procesos_bloqueados + procesos_en_ready;
 }
