@@ -422,6 +422,9 @@ int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO, t_con
 
 	int direccion_fisica;
 
+	log_info(logger, "id segmento en la direccion logica: %d", num_segmento);
+	log_info(logger, "hay %d segmentos para este proceso", list_size(contexto->tabla_de_segmentos->segmentos));
+	
 	// verifico si es válida la peticion
 	if(entrada_segmento->tamano > desplazamiento_segmento){
 		direccion_fisica = desplazamiento_segmento + entrada_segmento->direccion_base;
@@ -501,7 +504,7 @@ void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_in
 	escribir_valor_en(direccion_fisica, valor_leido,contexto->pid );
 
 	free(registro_a_leer);
-	free(valor_leido);
+	//free(valor_leido);
 }
 
 void manejar_instruccion_f_write(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO){
@@ -547,76 +550,64 @@ char* obtener_valor_del_registro(char* registro_a_leer, t_contexto_ejec** contex
 
 	if(strcmp(registro_a_leer,"AX")==0)
 		{
-		valor_a_leido = malloc(4);
 
 		valor_a_leido= string_substring_until((*contexto)->registros_CPU->AX, 4);
 
 		}else if(strcmp(registro_a_leer,"BX")==0)
 		{
-			valor_a_leido = malloc(4);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->BX, 4);
 
 		}else if(strcmp(registro_a_leer,"CX")==0)
 		{
-			valor_a_leido = malloc(4);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->CX, 4);
 
 		}else if(strcmp(registro_a_leer,"DX")==0)
 		{
 
-			valor_a_leido = malloc(4);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->DX, 4);
 
 		}else if(strcmp(registro_a_leer,"EAX")==0)
 		{
-			valor_a_leido = malloc(8);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->EAX, 8);
 
 		}else if(strcmp(registro_a_leer,"EBX")==0)
 		{
 
-			valor_a_leido = malloc(8);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->EBX, 8);
 
 		}else if(strcmp(registro_a_leer,"ECX")==0)
 		{
 
-			valor_a_leido = malloc(8);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->ECX, 8);
 
 		}else if(strcmp(registro_a_leer,"EDX")==0)
 		{
-			valor_a_leido = malloc(8);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->EDX, 8);
 
 		}else if(strcmp(registro_a_leer,"RAX")==0)
 		{
-			valor_a_leido = malloc(16);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->RAX, 16);
 
 		}else if(strcmp(registro_a_leer,"RBX")==0)
 		{
-			valor_a_leido = malloc(16);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->RBX, 16);
 
 		}else if(strcmp(registro_a_leer,"RCX")==0)
 		{
-			valor_a_leido = malloc(16);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->RCX, 16);
 
 		}else if(strcmp(registro_a_leer,"RDX")==0)
 		{
-			valor_a_leido = malloc(16);
 
 			valor_a_leido= string_substring_until((*contexto)->registros_CPU->RDX, 16);
 		}

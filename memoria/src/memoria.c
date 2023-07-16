@@ -463,7 +463,9 @@ void crear_nuevo_proceso(int socket_cliente, int cant_segmentos){
 	tabla->pid = pid;
 	tabla->segmentos = list_create();
 
-	for(int i = 0; i< cant_segmentos; i++){
+	list_add(tabla->segmentos, segmento_0);
+
+	for(int i = 0; i< (cant_segmentos-1); i++){
 		list_add(tabla->segmentos, crear_segmento_sin_usar());
 	}
 
