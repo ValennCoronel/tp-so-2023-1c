@@ -459,7 +459,7 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					free(recursos_disponibles);
 					return NULL;
 				default:
-					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata." );
+					log_warning(logger,"CPU Operacion desconocida. No quieras meter la pata. cod_op: %d", cod_op );
 					break;
 			}
 	}

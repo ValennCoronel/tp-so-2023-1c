@@ -375,23 +375,15 @@ void delete_segment(int cliente_fd){
 void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	int pid = 0;
+	char* nombre_modulo;
 
-	recibir_instruccion_con_dos_parametros_en(instruccion, pid, cliente_fd);
+	recibir_instruccion_con_dos_parametros_en(instruccion, &nombre_modulo, &pid, cliente_fd);
 
 	 int direccion_fisica = atoi(instruccion->parametros[0]);
 	 int bytes_a_leer = atoi(instruccion->parametros[1]);
 
-	 char* modulo_que_solicito_lectura = string_new();
 
-	 if(cliente_fd == socket_cpu){
-		 string_append(&modulo_que_solicito_lectura, "CPU");
-	 } else {
-		 string_append(&modulo_que_solicito_lectura, "FS");
-	 }
-
-	log_info(logger, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_leer, modulo_que_solicito_lectura);
-
-	free(modulo_que_solicito_lectura);
+	log_info(logger, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_leer, nombre_modulo);
 
 	 char* contenido_leido = malloc(bytes_a_leer + 1);
 
@@ -408,10 +400,11 @@ void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 	 t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 	 char* contenido_a_escribir;
+	 char* nombre_modulo;
 	 int pid = 0;
 
 	 //ignorar el warning porque contenido_a_escribir se inicializa dentro de esta funcion recibir
-	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, contenido_a_escribir, pid, cliente_fd);
+	 recibir_instruccion_con_dos_parametros_y_contenido_en(instruccion, &contenido_a_escribir, &nombre_modulo, &pid, cliente_fd);
 
 	 // instruccion->parametros[0] --> direccion_fisica
 	 // instruccion->parametros[1] --> cantidad de bytes a escribir
@@ -419,17 +412,9 @@ void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 	 int direccion_fisica = atoi(instruccion->parametros[0]);
 	 int bytes_a_escribir = atoi(instruccion->parametros[1]);
 
-	 char* modulo_que_solicito_lectura = string_new();
 
-	 if(cliente_fd == socket_cpu){
-		 string_append(&modulo_que_solicito_lectura, "CPU");
-	 } else {
-		 string_append(&modulo_que_solicito_lectura, "FS");
-	 }
+	log_info(logger, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_escribir, nombre_modulo);
 
-	log_info(logger, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_escribir, modulo_que_solicito_lectura);
-
-	free(modulo_que_solicito_lectura);
 
 	 esperar_por(retardo_memoria);
 

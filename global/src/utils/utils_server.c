@@ -180,6 +180,8 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 
 	buffer = recibir_buffer(&size, socket_cliente);
 
+	log_info(logger, "size: %d", size);
+
 	while(desplazamiento < size )
 	{
 
@@ -317,35 +319,30 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 }
 
 
-void deserializar_instruccion_con_dos_parametros_de(void* buffer, t_instruccion* instruccion, int despĺazamiento){
-	memcpy(&(instruccion->opcode_lenght), buffer + despĺazamiento,  sizeof(int));
-	 despĺazamiento += sizeof(int);
+void deserializar_instruccion_con_dos_parametros_de(void* buffer, t_instruccion* instruccion, int *desplazamiento){
+	memcpy(&(instruccion->opcode_lenght), buffer + *desplazamiento, sizeof(int));
+	*desplazamiento+=sizeof(int);
+	instruccion->opcode = malloc(instruccion->opcode_lenght);
+	memcpy(instruccion->opcode, buffer+*desplazamiento, instruccion->opcode_lenght);
+	*desplazamiento+=instruccion->opcode_lenght;
 
-	 instruccion->opcode = malloc(instruccion->opcode_lenght);
-	 memcpy(instruccion->opcode, buffer+despĺazamiento, instruccion->opcode_lenght);
-	 despĺazamiento+=instruccion->opcode_lenght;
+	memcpy(&(instruccion->parametro1_lenght), buffer+*desplazamiento, sizeof(int));
+	*desplazamiento+=sizeof(int);
+	instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
+	memcpy(instruccion->parametros[0], buffer + *desplazamiento, instruccion->parametro1_lenght);
+	*desplazamiento += instruccion->parametro1_lenght;
 
-
-	 memcpy(&(instruccion->parametro1_lenght), buffer+despĺazamiento, sizeof(int));
-	 despĺazamiento+=sizeof(int);
-
-	 instruccion->parametros[0] = malloc(instruccion->parametro1_lenght);
-	 memcpy(instruccion->parametros[0], buffer + despĺazamiento, instruccion->parametro1_lenght);
-	 despĺazamiento += instruccion->parametro1_lenght;
-
-
-	 memcpy(&(instruccion->parametro2_lenght), buffer+despĺazamiento, sizeof(int));
-	 despĺazamiento+=sizeof(int);
-
-	 instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
-	 memcpy(instruccion->parametros[1], buffer + despĺazamiento, instruccion->parametro2_lenght);
-	 despĺazamiento += instruccion->parametro2_lenght;
+	memcpy(&(instruccion->parametro2_lenght), buffer+*desplazamiento, sizeof(int));
+	*desplazamiento+=sizeof(int);
+	instruccion->parametros[1] = malloc(instruccion->parametro2_lenght);
+	memcpy(instruccion->parametros[1], buffer + *desplazamiento, instruccion->parametro2_lenght);
+	*desplazamiento += instruccion->parametro2_lenght;
 
 	 //esta linea es para el destroy de la instruccion
 	 instruccion->parametro3_lenght = 0;
 }
 
-void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char* contenido_a_escribir, int pid, int cliente_fd){
+void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instruccion, char** contenido_a_escribir, char** nombre_modulo, int *pid, int cliente_fd){
 	int size;
 	void* buffer = recibir_buffer(&size, cliente_fd);
 
@@ -353,25 +350,32 @@ void recibir_instruccion_con_dos_parametros_y_contenido_en(t_instruccion* instru
 
 	while(despĺazamiento < size){
 
-		memcpy(&pid, buffer +despĺazamiento, sizeof(int));
+		memcpy(pid, buffer +despĺazamiento, sizeof(int));
 		despĺazamiento += sizeof(int);
 
-	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
+	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, &despĺazamiento);
 
 		int contenido_a_escribir_length;
 		memcpy(&contenido_a_escribir_length, buffer + despĺazamiento, sizeof(int));
 		despĺazamiento += sizeof(int);
 
-		contenido_a_escribir = malloc(contenido_a_escribir_length);
-		memcpy(contenido_a_escribir, buffer + despĺazamiento, contenido_a_escribir_length);
+		*contenido_a_escribir = malloc(contenido_a_escribir_length);
+		memcpy(*contenido_a_escribir, buffer + despĺazamiento, contenido_a_escribir_length);
 		despĺazamiento += contenido_a_escribir_length;
 
+		int nombre_modulo_length;
+		memcpy(&nombre_modulo_length, buffer + despĺazamiento, sizeof(int));
+		despĺazamiento += sizeof(int);
+
+		*nombre_modulo = malloc(nombre_modulo_length);
+		memcpy(*nombre_modulo, buffer + despĺazamiento, nombre_modulo_length);
+		despĺazamiento += nombre_modulo_length;
 	}
 
 	free(buffer);
 }
 
-void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int pid, int cliente_fd){
+void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, char** nombre_modulo, int *pid, int cliente_fd){
 	int size;
 	void* buffer = recibir_buffer(&size, cliente_fd);
 
@@ -379,10 +383,18 @@ void recibir_instruccion_con_dos_parametros_en(t_instruccion* instruccion, int p
 
 	while(despĺazamiento < size){
 
-		memcpy(&pid, buffer +despĺazamiento, sizeof(int));
+		memcpy(pid, buffer +despĺazamiento, sizeof(int));
 		despĺazamiento += sizeof(int);
 
-	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, despĺazamiento);
+	    deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, &despĺazamiento);
+
+	    int nombre_modulo_length;
+		memcpy(&nombre_modulo_length, buffer + despĺazamiento, sizeof(int));
+		despĺazamiento += sizeof(int);
+
+		*nombre_modulo = malloc(nombre_modulo_length);
+		memcpy(*nombre_modulo, buffer + despĺazamiento, nombre_modulo_length);
+		despĺazamiento += nombre_modulo_length;
 	}
 
 	free(buffer);

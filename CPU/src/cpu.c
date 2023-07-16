@@ -99,14 +99,21 @@ int conectar_memoria(char* ip, char* puerto){
 	//enviar handshake
 	enviar_mensaje("OK", socket_memoria, HANDSHAKE);
 
+	op_code cod_op = recibir_operacion(socket_memoria);
+	if(cod_op != HANDSHAKE){
+		return -1;
+	}
+
 	int size;
 	char* buffer = recibir_buffer(&size, socket_memoria);
 
-	if(strcmp(buffer, "ERROR") == 0 || strcmp(buffer, "") == 0){
+
+	if(strcmp(buffer, "OK") != 0){
 		return -1;
 	}
 
 	return 0;
+
 }
 
 //Funcion para manejo de peticiones del kernel:
@@ -184,12 +191,18 @@ void manejar_peticion_al_cpu(int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 
 		if(strcmp(instruction->opcode,"MOV_IN")==0)
 		{	//require traduccion de logica a física
-			manejar_instruccion_mov_in(socket_kernel, &contexto, instruction, TAM_MAX_SEGMENTO);
+			bool operacion_exitosa = manejar_instruccion_mov_in(socket_kernel, &contexto, instruction, TAM_MAX_SEGMENTO);
+			if(!operacion_exitosa){
+				continuar_con_el_ciclo_instruccion = false;
+			}
 		}
 
 		if(strcmp(instruction->opcode,"MOV_OUT")==0)
 		{//require traduccion de logica a física
-			manejar_instruccion_mov_out(socket_kernel, contexto, instruction, TAM_MAX_SEGMENTO);
+			bool operacion_exitosa =manejar_instruccion_mov_out(socket_kernel, contexto, instruction, TAM_MAX_SEGMENTO);
+			if(!operacion_exitosa){
+				continuar_con_el_ciclo_instruccion = false;
+			}
 		}
 
 		if(strcmp(instruction->opcode,"I/O")==0)
@@ -405,7 +418,7 @@ void setear_registro(t_contexto_ejec** contexto,char* registro, char* valor)
 
 }
 
-int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO, t_contexto_ejec* contexto)
+int traducir_direccion_memoria(int direccion_logica, int bytes_a_acceder, int TAM_MAX_SEGMENTO, t_contexto_ejec* contexto)
 {
 	int num_segmento = obtener_numero_segmento(direccion_logica, TAM_MAX_SEGMENTO);
 	int desplazamiento_segmento = direccion_logica % TAM_MAX_SEGMENTO;
@@ -426,7 +439,7 @@ int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO, t_con
 	log_info(logger, "hay %d segmentos para este proceso", list_size(contexto->tabla_de_segmentos->segmentos));
 	
 	// verifico si es válida la peticion
-	if(entrada_segmento->tamano > desplazamiento_segmento){
+	if(entrada_segmento->tamano > (desplazamiento_segmento + bytes_a_acceder)){
 		direccion_fisica = desplazamiento_segmento + entrada_segmento->direccion_base;
 	} else {
 
@@ -451,15 +464,13 @@ int obtener_numero_segmento(int direccion_logica, int TAM_MAX_SEGMENTO){
  * Lee el valor de memoria correspondiente a la Dirección Lógica y lo almacena en el Registro.
  *
  */
-void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
+bool manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
 {
 	char* registro_a_guardar = strdup(instruccion->parametros[0]);
 
 	int direccion_logica =  atoi(instruccion->parametros[1]);
 
 	int numero_segmento = obtener_numero_segmento(direccion_logica, TAM_MAX_SEGMENTO);
-
-	int direccion_fisica = traducir_direccion_memoria(direccion_logica, TAM_MAX_SEGMENTO, *contexto);
 
 	int bytes_a_leer = 0;
 	if(strcmp(registro_a_guardar, "AX") == 0 || strcmp(registro_a_guardar, "BX") == 0  || strcmp(registro_a_guardar, "CX") == 0 || strcmp(registro_a_guardar, "DX") == 0){
@@ -470,6 +481,12 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
 		bytes_a_leer = 16;
 	}
 
+	int direccion_fisica = traducir_direccion_memoria(direccion_logica, bytes_a_leer, TAM_MAX_SEGMENTO, *contexto);
+
+	// en caso de segmentation fault salgo
+	if(direccion_fisica == -1){
+		return false;
+	}
 	char* valor_leido = leer_valor_de(direccion_fisica, (*contexto)->pid, bytes_a_leer);
 
 	log_info(logger,"PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %s - Valor: %s", (*contexto)->pid,numero_segmento, registro_a_guardar, valor_leido);
@@ -479,6 +496,7 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
 
 	free(registro_a_guardar);
 	free(valor_leido);
+	return true;
 }
 /**
  * (Dirección Lógica, Registro)
@@ -486,7 +504,7 @@ void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
  *
  */
 
-void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
+bool manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO)
 {
 
 	char* registro_a_leer = strdup(instruccion->parametros[1]);
@@ -495,23 +513,30 @@ void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_in
 
 	int numero_segmento = obtener_numero_segmento(direccion_logica, TAM_MAX_SEGMENTO);
 
-	int direccion_fisica = traducir_direccion_memoria(direccion_logica, TAM_MAX_SEGMENTO, contexto);
-
 	char* valor_leido = obtener_valor_del_registro(registro_a_leer, &contexto);
+
+	int direccion_fisica = traducir_direccion_memoria(direccion_logica, strlen(valor_leido), TAM_MAX_SEGMENTO, contexto);
+
+	/// en caso de segmentation fault salgo
+	if(direccion_fisica == -1){
+		return false;
+	}
 
 	log_info(logger,"PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid,numero_segmento, direccion_fisica, valor_leido);
 
 	escribir_valor_en(direccion_fisica, valor_leido,contexto->pid );
 
 	free(registro_a_leer);
-	//free(valor_leido);
+	free(valor_leido);
+	return true;
 }
 
 void manejar_instruccion_f_write(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO){
 
 		int direccion_logica = atoi(instruccion->parametros[1]);
+		int bytes_a_escribir = atoi(instruccion->parametros[2]);
 
-		int direccion_fisica = traducir_direccion_memoria(direccion_logica, TAM_MAX_SEGMENTO, contexto);
+		int direccion_fisica = traducir_direccion_memoria(direccion_logica, bytes_a_escribir, TAM_MAX_SEGMENTO, contexto);
 
 
 		// cambio el parámetro de la direccion logica por la direccion física
@@ -529,8 +554,9 @@ void manejar_instruccion_f_write(int cliente_fd, t_contexto_ejec* contexto, t_in
 void manejar_instruccion_f_read(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruccion, int TAM_MAX_SEGMENTO){
 
 		int direccion_logica = atoi(instruccion->parametros[1]);
+		int bytes_a_leer = atoi(instruccion->parametros[2]);
 
-		int direccion_fisica = traducir_direccion_memoria(direccion_logica, TAM_MAX_SEGMENTO, contexto);
+		int direccion_fisica = traducir_direccion_memoria(direccion_logica, bytes_a_leer, TAM_MAX_SEGMENTO, contexto);
 
 
 		// cambio el parámetro de la direccion logica por la física
@@ -624,29 +650,36 @@ void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 
 	//esto no se usa del otro lado, pero hay que hacerlo para evitar errores
-	instruccion->opcode = malloc(8);
-	strcpy(instruccion->opcode, "MOV_OUT");
-	instruccion->opcode_lenght = 8;
+	instruccion->opcode = 	string_new();
+	string_append(&(instruccion->opcode), "MOV_OUT");
+	instruccion->opcode_lenght = strlen(instruccion->opcode) +1;
 
 	instruccion->parametro1_lenght = strlen(string_itoa(direccion_fisica)) +1;
 	instruccion->parametros[0] = string_itoa(direccion_fisica);
 
-	instruccion->parametro2_lenght = strlen(valor_a_escribir) + 1;
-	instruccion->parametros[1] = valor_a_escribir;
+	char *bytes_a_escribir = string_itoa(strlen(valor_a_escribir));
+	instruccion->parametro2_lenght = strlen(bytes_a_escribir) + 1;
+	instruccion->parametros[1] = bytes_a_escribir;
 
 	instruccion->parametro3_lenght = 0;
 
 	agregar_a_paquete_sin_agregar_tamanio(paquete_a_enviar, &pid, sizeof(int));
-	agregar_a_paquete(paquete_a_enviar, instruccion->opcode, sizeof(char)*instruccion->opcode_lenght );
+	agregar_a_paquete(paquete_a_enviar, instruccion->opcode, instruccion->opcode_lenght );
 
 	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[0], instruccion->parametro1_lenght);
 	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[1], instruccion->parametro2_lenght);
 
 	agregar_a_paquete(paquete_a_enviar, valor_a_escribir, strlen(valor_a_escribir) + 1);
 
+	char* nombre_modulo = string_new();
+	string_append(&nombre_modulo, "CPU");
+
+	agregar_a_paquete(paquete_a_enviar, nombre_modulo, strlen(nombre_modulo) + 1);
+
 
 	enviar_paquete(paquete_a_enviar, socket_memoria);
 
+	free(nombre_modulo);
 	instruccion_destroy(instruccion);
 	eliminar_paquete(paquete_a_enviar);
 
@@ -655,10 +688,7 @@ void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid){
 	if(cod_op == WRITE_MEMORY){
 
 		// recibo el OK de memoria
-		int size;
-		void *  buffer = recibir_buffer(&size, socket_memoria);
-		char* mensaje = malloc(size);
-		memcpy(mensaje, buffer,size);
+		char* mensaje = recibir_mensaje(socket_memoria);
 
 		if(strcmp(mensaje,"OK") == 0){
 			log_info(logger,"PID: %d - escritura en memoria exitosa!! ", pid );
@@ -666,6 +696,8 @@ void escribir_valor_en(int direccion_fisica, char* valor_a_escribir, int pid){
 			// si esto se llega a ejecutar, debe haber algun error en memoria o aca o algo raro falla
 			log_info(logger,"PID: %d - no se pudo escribir en memoria, esto no deberia pasar", pid );
 		}
+	} else {
+		log_info(logger,"Se recibio cod_op: %d esto no deberia pasar", cod_op );
 	}
 
 
@@ -679,15 +711,16 @@ char* leer_valor_de(int direccion_fisica, int pid, int bytes_a_leer){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 
 	//esto no se usa del otro lado, pero hay que hacerlo para evitar errores
-	instruccion->opcode = malloc(7);
-	strcpy(instruccion->opcode, "MOV_IN");
-	instruccion->opcode_lenght = 7;
+	instruccion->opcode = 	string_new();
+	string_append(&(instruccion->opcode), "MOV_IN");
+	instruccion->opcode_lenght = strlen(instruccion->opcode) +1;
 
 	instruccion->parametro1_lenght = strlen(string_itoa(direccion_fisica)) +1;
 	instruccion->parametros[0] = string_itoa(direccion_fisica);
 
-	instruccion->parametro2_lenght = strlen(string_itoa(bytes_a_leer)) +1;
-	instruccion->parametros[1] = string_itoa(bytes_a_leer);
+	char *bytes_a_escribir = string_itoa(bytes_a_leer);
+	instruccion->parametro2_lenght = strlen(bytes_a_escribir) + 1;
+	instruccion->parametros[1] = bytes_a_escribir;
 
 	instruccion->parametro3_lenght = 0;
 
@@ -697,8 +730,14 @@ char* leer_valor_de(int direccion_fisica, int pid, int bytes_a_leer){
 	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[0], instruccion->parametro1_lenght);
 	agregar_a_paquete(paquete_a_enviar, instruccion->parametros[1], instruccion->parametro2_lenght);
 
+	char* nombre_modulo = string_new();
+	string_append(&nombre_modulo, "CPU");
+
+	agregar_a_paquete(paquete_a_enviar, nombre_modulo, strlen(nombre_modulo) + 1);
+
 	enviar_paquete(paquete_a_enviar, socket_memoria);
 
+	free(nombre_modulo);
 	instruccion_destroy(instruccion);
 	eliminar_paquete(paquete_a_enviar);
 
@@ -707,14 +746,13 @@ char* leer_valor_de(int direccion_fisica, int pid, int bytes_a_leer){
 	char* valor_leido;
 
 	if(cod_op == READ_MEMORY){
+		// recibo el valor leido de memoria
+		valor_leido = recibir_mensaje(socket_memoria);
 
-		// recibo el OK de memoria
-		int size;
-		void *  buffer = recibir_buffer(&size, socket_memoria);
-		valor_leido = malloc(size);
-		memcpy(valor_leido, buffer,size);
+		log_info(logger,"PID: %d - Se leyo de memoria: %s", pid, valor_leido);
 
-		log_info(logger,"PID: %d - se leyo de memoria: %s", pid, valor_leido);
+	} else {
+		log_info(logger,"Se recibio cod_op: %d esto no deberia pasar", cod_op );
 	}
 
 	return valor_leido;

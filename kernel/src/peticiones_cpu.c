@@ -13,17 +13,18 @@ void manejar_seg_fault(int socket_cliente){
 	//recibo el contexto de cpu, a pesar de que no lo uso para evitar errores de codigo de operación
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cliente);
 
+	log_info(logger, "proceso PID del contexto: %d", contexto->pid);
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 
 	sem_wait(&m_proceso_ejecutando);
-	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
 	enviar_paquete(paquete, socket_memoria);
 	eliminar_paquete(paquete);
 
 	enviar_mensaje("Segmentation Fault", proceso_ejecutando->socket_server_id, FINALIZAR_PROCESO);
 
-	log_info(logger, "FInaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
+	log_info(logger, "Finaliza el proceso %d - Motivo: SEG_FAULT", proceso_ejecutando->PID);
 	sem_post(&m_proceso_ejecutando);
 
 	contexto_ejecucion_destroy(contexto);
@@ -126,7 +127,7 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 		//TODO pedir_finalizar_las_estructuras_de_memoria();
 		sem_wait(&m_proceso_ejecutando);
 
-		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+		t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
 		enviar_paquete(paquete, socket_memoria);
 
@@ -194,7 +195,7 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 			//TODO pedir_finalizar_las_estructuras_de_memoria();
 			sem_wait(&m_proceso_ejecutando);
-			t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+			t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
 			agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
 			enviar_paquete(paquete, socket_memoria);
 
@@ -409,7 +410,7 @@ void manejar_escucha_out_of_memory(){
 
 	//TODO pedir_finalizar_las_estructuras_de_memoria();
 	sem_wait(&m_proceso_ejecutando);
-	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO_MEMORIA);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(proceso_ejecutando->PID), sizeof(int));
 	enviar_paquete(paquete, socket_memoria);
 

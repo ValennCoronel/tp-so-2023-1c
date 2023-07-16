@@ -39,9 +39,9 @@ void enviar_mensaje_a_kernel(op_code code,int cliente_fd,t_contexto_ejec** conte
 void enviar_contexto_a_kernel(op_code code,int cliente_fd,t_contexto_ejec* contexto);
 
 void manejar_instruccion_set(t_contexto_ejec** contexto,t_instruccion* instruccion);
-int traducir_direccion_memoria(int direccion_logica, int TAM_MAX_SEGMENTO, t_contexto_ejec* contexto);
-void manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion, int TAM_MAX_SEGMENTO);
-void manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruction,  int TAM_MAX_SEGMENTO);
+int traducir_direccion_memoria(int direccion_logica,int bytes_a_acceder, int TAM_MAX_SEGMENTO, t_contexto_ejec* contexto);
+bool manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_instruccion* instruccion, int TAM_MAX_SEGMENTO);
+bool manejar_instruccion_mov_out(int cliente_fd, t_contexto_ejec* contexto, t_instruccion* instruction,  int TAM_MAX_SEGMENTO);
 
 void setear_registro(t_contexto_ejec** contexto,char* registro, char* valor);
 
