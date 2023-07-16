@@ -180,7 +180,6 @@ t_contexto_ejec* recibir_contexto_de_ejecucion(int socket_cliente)
 
 	buffer = recibir_buffer(&size, socket_cliente);
 
-	log_info(logger, "size: %d", size);
 
 	while(desplazamiento < size )
 	{

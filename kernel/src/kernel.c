@@ -452,7 +452,7 @@ void *escuchar_peticiones_cpu(int cliente_fd,char** recursos,char** instancias_r
 					enviar_mensaje("Creando archivo nuevo", socket_fs, CREAR_ARCHIVO);
 					break;
 				case SEG_FAULT:
-					manejar_seg_fault();
+					manejar_seg_fault(cliente_fd);
 					break;
 				case -1:
 					log_error(logger, "La CPU se desconecto. Terminando servidor ");

@@ -435,8 +435,6 @@ int traducir_direccion_memoria(int direccion_logica, int bytes_a_acceder, int TA
 
 	int direccion_fisica;
 
-	log_info(logger, "id segmento en la direccion logica: %d", num_segmento);
-	log_info(logger, "hay %d segmentos para este proceso", list_size(contexto->tabla_de_segmentos->segmentos));
 	
 	// verifico si es válida la peticion
 	if(entrada_segmento->tamano > (desplazamiento_segmento + bytes_a_acceder)){
