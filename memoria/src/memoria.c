@@ -369,8 +369,56 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 
 void delete_segment(int cliente_fd){
-//TODO delete segment
+
+	int size;
+	void * buffer;
+	buffer = recibir_buffer(&size, cliente_fd);
+
+	uint32_t id_segmento;
+	int pid;
+	memcpy(&id_segmento,buffer,sizeof(uint32_t));
+	memcpy(&pid,buffer+sizeof(uint32_t),sizeof(int));
+	free(buffer);
+
+	t_tabla_de_segmento* tabla_buscada = buscar_tabla_de(pid);
+
+		bool encontrar_segmento(void* segmento ){
+			t_segmento* segmento_n = (t_segmento*) segmento;
+
+			return segmento_n->id_segmento == id_segmento;
+		}
+
+		t_segmento* segmento_buscado =list_find(tabla_buscada->segmentos, encontrar_segmento);
+
+		t_segmento* copia_segmento_buscado = duplicar_segmento(segmento_buscado);
+
+		segmento_buscado->id_segmento =-1;
+		segmento_buscado->direccion_base =-1;
+		segmento_buscado->tamano =-1;
+
+		list_add(huecos_libres,copia_segmento_buscado);
+
+		t_paquete* paquete = crear_paquete(ELIMINAR_SEGMENTO);
+
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla_buscada->cantidad_segmentos), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla_buscada->pid), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &list_size (tabla_buscada->segmentos), sizeof(int));
+
+		for(int i=0;i<list_size (tabla_buscada->segmentos);i++){
+
+			t_segmento segmento_n = list_get(tabla_buscada->segmentos,i);
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->id_segmento, sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->direccion_base, sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->tamano, sizeof(uint32_t));
+
+		}
+
+		enviar_paquete(paquete,cliente_fd);
+
+
 }
+
+
 
 void acceder_espacio_usuario_lectura(int cliente_fd, int retardo_memoria){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
@@ -744,4 +792,15 @@ t_segmento* crear_segmento_sin_usar(){
 	segmento_nuevo->id_segmento = -1;
 
 	return segmento_nuevo;
+}
+
+
+t_segmento* duplicar_segmento(t_segmento* segmento_buscado){
+
+	t_segmento* segmento_copia = malloc(sizeof(t_segmento));
+	segmento_copia->direccion_base = segmento_buscado->direccion_base;
+	segmento_copia->tamano = segmento_buscado->tamano;
+	segmento_copia->id_segmento = segmento_buscado->id_segmento;
+
+	return segmento_copia;
 }

@@ -653,7 +653,7 @@ void delete_segment(){
 
 	//serializo el tamaño del segmento y el id del segmento
 	agregar_a_paquete_sin_agregar_tamanio(paquete,&(segmento_a_eliminar->id_segmento),sizeof(uint32_t) );
-
+	agregar_a_paquete_sin_agregar_tamanio(paquete,&(contexto->pid),sizeof(int) );
 	//se envía a memoria
 	enviar_paquete(paquete, socket_memoria);
 
