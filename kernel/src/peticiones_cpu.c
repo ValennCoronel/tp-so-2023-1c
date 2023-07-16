@@ -666,7 +666,7 @@ void delete_segment(){
 
 	if(cod_op == ELIMINAR_SEGMENTO){
 		// se recibe la tabla de segmentos actualizada del proceso ejecutando
-		t_tabla_de_segmento* tabla_de_segmentos_actualizada = (t_tabla_de_segmento*) recibir_tabla_de_segmentos();
+		t_tabla_de_segmento* tabla_de_segmentos_actualizada = recibir_tabla_de_segmentos();
 
 		//y actualizar la tabla de segmentos del proceso ejecutando
 
@@ -702,8 +702,10 @@ t_tabla_de_segmento* recibir_tabla_de_segmentos(){
 		memcpy(&tamano_segmentos, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 
+		tabla_de_segmento->segmentos = list_create();
+
 		for(int j =0; j<tamano_segmentos; j++){
-			t_segmento* segmento = malloc(sizeof(t_segmento*));
+			t_segmento* segmento = malloc(sizeof(t_segmento));
 
 			memcpy(&(segmento->id_segmento), buffer + desplazamiento, sizeof(uint32_t));
 			desplazamiento+= sizeof(uint32_t);

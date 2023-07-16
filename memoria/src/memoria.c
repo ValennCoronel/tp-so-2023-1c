@@ -402,14 +402,15 @@ void delete_segment(int cliente_fd){
 
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla_buscada->cantidad_segmentos), sizeof(uint32_t));
 		agregar_a_paquete_sin_agregar_tamanio(paquete, &(tabla_buscada->pid), sizeof(uint32_t));
-		agregar_a_paquete_sin_agregar_tamanio(paquete, &list_size (tabla_buscada->segmentos), sizeof(int));
+		int tamano_lista = list_size(tabla_buscada->segmentos);
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &tamano_lista, sizeof(int));
 
 		for(int i=0;i<list_size (tabla_buscada->segmentos);i++){
 
-			t_segmento segmento_n = list_get(tabla_buscada->segmentos,i);
-			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->id_segmento, sizeof(uint32_t));
-			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->direccion_base, sizeof(uint32_t));
-			agregar_a_paquete_sin_agregar_tamanio(paquete, &segmento_n->tamano, sizeof(uint32_t));
+			t_segmento* segmento_n = (t_segmento*) list_get(tabla_buscada->segmentos,i);
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->id_segmento), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->direccion_base), sizeof(uint32_t));
+			agregar_a_paquete_sin_agregar_tamanio(paquete, &(segmento_n->tamano), sizeof(uint32_t));
 
 		}
 
