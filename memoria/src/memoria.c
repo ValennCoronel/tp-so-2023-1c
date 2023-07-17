@@ -271,8 +271,10 @@ void compactar_memoria(int cliente_fd)
 
 		for(int j = 0; j< cantidad_segmentos ; j++){
 			t_segmento* segmento_n = list_get(tabla_n->segmentos, j);
-
-			log_info(logger, "PID: %d - Segmento: %d - Base: %d - Tamaño %d", tabla_n->pid, segmento_n->id_segmento, segmento_n->direccion_base, segmento_n->tamano);
+			
+			if(segmento_n->id_segmento != -1){
+			  log_info(logger, "PID: %d - Segmento: %d - Base: %d - Tamaño %d", tabla_n->pid, segmento_n->id_segmento, segmento_n->direccion_base, segmento_n->tamano);
+			}
 
 			agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(segmento_n->id_segmento),sizeof(uint32_t));
 			agregar_a_paquete_sin_agregar_tamanio(paquete_respuesta, &(segmento_n->direccion_base),sizeof(uint32_t));
@@ -281,7 +283,7 @@ void compactar_memoria(int cliente_fd)
 
 	}
 
-	enviar_paquete(paquete_respuesta, socket_kernel);
+	enviar_paquete(paquete_respuesta, cliente_fd);
 
 }
 

@@ -369,7 +369,8 @@ void finalizarProceso(int socket_cliente, int socket_memoria){
 
 	destroy_proceso_ejecutando();
 	contexto_ejecucion_destroy(contexto);
-	return;
+
+	poner_a_ejecutar_otro_proceso();
 }
 
 void create_segment(){
@@ -464,6 +465,8 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 	//recibo el texto, a pesar de que no lo uso para evitar errores de codigo de operación
 	char* mensaje = recibir_mensaje(socket_memoria);
 
+	log_info(logger, "Se recibio de memoria: %s", mensaje);
+
 	bool debo_esperar_peticiones_fs = hay_operaciones_entre_fs_y_memoria();
 
 	if(debo_esperar_peticiones_fs){
@@ -480,12 +483,16 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 
 	// se solicita compactar la memoria
 	enviar_mensaje("Compacta!!",socket_memoria, COMPACTAR_MEMORIA);
+	
+	int cod_op = recibir_operacion(socket_memoria);
 
-	// luego se recibe las tablas de segmentos actualizadas
-	t_list* tablas_de_segmentos_actualizadas = (t_list*) recibir_tablas_de_segmentos();
+	if(cod_op == COMPACTAR_MEMORIA){
 
-	//y actualizar la tabla de segmentos de cada proceso en la cola de ready
-	acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
+		// luego se recibe las tablas de segmentos actualizadas
+		t_list* tablas_de_segmentos_actualizadas = (t_list*) recibir_tablas_de_segmentos();
+
+		//y actualizar la tabla de segmentos de cada proceso en la cola de ready
+		acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
 
 	log_info(logger, "Se finalizó el proceso de compactación");
 
@@ -494,6 +501,9 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+	agregar_a_paquete_sin_agregar_tamanio(paquete, &(contexto->pid), sizeof(int));
+	
+
 
 	// enviar paquete serializado
 	enviar_paquete(paquete, socket_memoria);
@@ -501,6 +511,7 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 	// de forma recursiva escucho y manejo las peticiones de memoria
 	// 	la recursión se rompe en un out_of_memory o con el segmento creado
 	escuchar_respuesta_memoria(contexto, peticion_segmento);
+	}
 }
 
 // escucha las respuestas de memoria pero es solo luego de intentar de crear el segmento
@@ -603,10 +614,12 @@ t_list* recibir_tablas_de_segmentos(){
 	t_list* tablas_de_segmentos = list_create();
 	int desplazamiento = 0;
 
+
 	while(desplazamiento < size){
-		int lista_length = 0;
+		int lista_length;
 		memcpy(&lista_length, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
+
 
 		for(int i = 0; i< lista_length; i++){
 			t_tabla_de_segmento* tabla_de_segmento = malloc(sizeof(t_tabla_de_segmento));
@@ -622,8 +635,10 @@ t_list* recibir_tablas_de_segmentos(){
 			memcpy(&tamano_segmentos, buffer + desplazamiento, sizeof(int));
 			desplazamiento+=sizeof(int);
 
+			tabla_de_segmento->segmentos = list_create();
+
 			for(int j =0; j<tamano_segmentos; j++){
-				t_segmento* segmento = malloc(sizeof(t_segmento*));
+				t_segmento* segmento = malloc(sizeof(t_segmento));
 
 				memcpy(&(segmento->id_segmento), buffer + desplazamiento, sizeof(uint32_t));
 				desplazamiento+= sizeof(uint32_t);
@@ -640,6 +655,7 @@ t_list* recibir_tablas_de_segmentos(){
 			list_add(tablas_de_segmentos, tabla_de_segmento);
 		}
 	}
+
 
 	free(buffer);
 	return tablas_de_segmentos;
