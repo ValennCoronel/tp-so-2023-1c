@@ -111,7 +111,7 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
 
-	log_info(logger, "recursos: %s",instruccion->parametros[0]);
+	log_info(logger, "Inicio Wait al recurso %s",instruccion->parametros[0]);
 
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
@@ -186,6 +186,8 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 		t_instruccion* instruccion = list_get(contexto->lista_instrucciones,contexto->program_counter-2);
 
+		log_info(logger, "Inicio Signal al recurso %s",instruccion->parametros[0]);
+
 		sem_wait(&m_proceso_ejecutando);
 		proceso_ejecutando->program_counter = contexto->program_counter;
 		sem_post(&m_proceso_ejecutando);
@@ -227,9 +229,11 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_desbloqueado->PID, "BLOC","READY");
 
-			sem_wait(&m_proceso_ejecutando);
-			proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
-			sem_post(&m_proceso_ejecutando);
+			//actualizo los recursos disponibles para que no se le actualize a otro proceso
+			recurso_disponible[indice_recurso] -= 1;
+
+			proceso_desbloqueado->temporal_ultimo_desalojo = temporal_create();
+
 
 			pasar_a_ready(proceso_desbloqueado);
 		}
