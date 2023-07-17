@@ -120,19 +120,11 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 	
 }
 
-void pasar_a_ready(t_pcb* proceso_bloqueado,int grado_max_multiprogramacion){
+void pasar_a_ready(t_pcb* proceso_bloqueado){
 
-	while(1){
-	if(puede_ir_a_ready(grado_max_multiprogramacion)){
-
-		sem_wait(&m_cola_ready);
-		queue_push(cola_ready, proceso_bloqueado);
-		//char *pids = listar_pids_cola_ready();
-		sem_post(&m_cola_ready);
-		break;
-
-	}
-}
+	sem_wait(&m_cola_ready);
+	queue_push(cola_ready, proceso_bloqueado);
+	sem_post(&m_cola_ready);
 
 }
 

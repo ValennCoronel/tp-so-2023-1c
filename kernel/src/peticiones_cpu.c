@@ -36,7 +36,6 @@ void manejar_seg_fault(int socket_cliente){
 void* simulacion_io(void* arg){
 	t_argumentos_simular_io* argumentos = (t_argumentos_simular_io* ) arg;
 	int tiempo_io = argumentos->tiempo_io;
-	int grado_max_multiprogramacion = argumentos->grado_max_multiprogramacion;
 
 	sem_wait(&m_proceso_ejecutando);
 	t_pcb* proceso_en_IO = proceso_ejecutando;
@@ -55,7 +54,7 @@ void* simulacion_io(void* arg){
 	proceso_en_IO->temporal_ultimo_desalojo = temporal_create();
 
 
-	pasar_a_ready(proceso_en_IO,grado_max_multiprogramacion);
+	pasar_a_ready(proceso_en_IO);
 	sem_post(&m_proceso_ejecutando);
 
 	return NULL;
@@ -148,17 +147,20 @@ void apropiar_recursos(int socket_cliente, char** recursos, int* recurso_disponi
 	}
 
 	if(recurso_disponible[indice_recurso] <= 0){
+
+
+
 		sem_wait(&m_proceso_ejecutando);
 		bloquear_proceso_por_recurso(proceso_ejecutando, recursos[indice_recurso]);
 		sem_post(&m_proceso_ejecutando);
 
-		poner_a_ejecutar_otro_proceso();
-
 		char* recursos_disponibles_string = listar_recursos_disponibles(recurso_disponible, cantidad_de_recursos);
 		log_info(logger, "PID: %d - Wait: %s - Instancias: [%s]", contexto->pid,recursos[indice_recurso], recursos_disponibles_string);
 
-		free(recursos_disponibles_string);
 
+		poner_a_ejecutar_otro_proceso();
+
+		free(recursos_disponibles_string);
 		contexto_ejecucion_destroy(contexto);
 
 		return;
@@ -229,7 +231,7 @@ void desalojar_recursos(int cliente_fd,char** recursos, int* recurso_disponible,
 			proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
 			sem_post(&m_proceso_ejecutando);
 
-			pasar_a_ready(proceso_desbloqueado,grado_max_multiprogramacion);
+			pasar_a_ready(proceso_desbloqueado);
 		}
 
 
@@ -265,7 +267,7 @@ void desalojar_proceso(int socket_cliente,int grado_max_multiprogramacion){
 	proceso_ejecutando->temporal_ultimo_desalojo = temporal_create();
 	proceso_ejecutando->program_counter = contexto->program_counter;
 
-	pasar_a_ready(proceso_ejecutando,grado_max_multiprogramacion);
+	pasar_a_ready(proceso_ejecutando);
 	sem_post(&m_proceso_ejecutando);
 
 	poner_a_ejecutar_otro_proceso();

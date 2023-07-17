@@ -102,7 +102,7 @@ void f_close(){
 
 		log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-		pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+		pasar_a_ready(pcb_a_desbloquear);
 	}
 
 	// en ambos casos continua con el mismo proceso
@@ -161,7 +161,7 @@ void truncar_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-			pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
@@ -205,7 +205,7 @@ void leer_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-			pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
@@ -249,7 +249,7 @@ void escribir_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
-			pasar_a_ready(pcb_a_desbloquear, grado_max_multiprogramacion);
+			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
