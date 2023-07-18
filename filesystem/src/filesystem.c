@@ -6,7 +6,6 @@ int socket_kernel;
 int socket_memoria;
 int socket_fs;
 t_dictionary* fcb_por_archivo;
-t_dictionary* tabla_global_de_archivos_abiertos;
 char* path_fcb;
 t_bitarray* bitarray_bloques_libres;
 FILE* bitmap;
@@ -30,7 +29,7 @@ int main(void){
 	if(config == NULL){
 		log_error(logger, "No se pudo crear el archivo de configuración !!");
 
-		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+		terminar_programa( logger, config, bitmap, bloques);
 	}
 
 	ip_memoria = config_get_string_value(config, "IP_MEMORIA");
@@ -45,7 +44,7 @@ int main(void){
 	if(!ip_memoria || !puerto_memoria || !puerto_escucha || !path_superbloque || !path_bitmap || !path_bloques || !path_fcb || !retardo_acceso_bloque){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'PATH_SUPERBLOQUE', 'PATH_BITMAP', 'PATH_BLOQUES', 'PATH_FCB', 'RETARDO_ACCESO_BLOQUE' ");
 
-		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+		terminar_programa(logger, config, bitmap, bloques);
 	}
 
 	int result_conexion_memoria = conectar_con_memoria(ip_memoria, puerto_memoria);
@@ -54,7 +53,7 @@ int main(void){
 	if(result_conexion_memoria == -1){
 		log_error(logger, "El File System no se pudo conectar con el modulo Memoria !!");
 
-		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+		terminar_programa( logger, config, bitmap, bloques);
 
 	}
 
@@ -64,34 +63,42 @@ int main(void){
 	if(superbloque == NULL){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo del superbloque: 'BLOCK_SIZE', 'BLOCK_COUNT' ");
 
-		terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+		terminar_programa(logger, config, bitmap, bloques);
 	}
 
 	// creo el bitarray
-	int tamanio_bitmap = superbloque->block_count;
-	char* bits = malloc(tamanio_bitmap);
-	bitarray_bloques_libres = bitarray_create_with_mode(bits, tamanio_bitmap, MSB_FIRST);
+	int tamanio_bitmap = superbloque->block_count /8; // lo paso a bytes
 
 	bitmap = levantar_archivo_binario(path_bitmap);
 
 	// guardo los bits en el archivo del bitmap
-	fwrite(&bits,tamanio_bitmap,1, bitmap);
+	//fwrite(bits,sizeof(char),superbloque->block_count, bitmap);
 
+	//trunco el archivo para que tenga el tamaño del bitmap
+	int bitmap_fd = fileno(bitmap);
+
+	ftruncate(bitmap_fd, tamanio_bitmap);
+
+	//creo un bloque en memoria para manejar la escritura en el archivo
+	//	osea si modifico algo en el bits_bitmap, tambien se moficica en el archivo
+	char* bits_bitmap = mmap(NULL, tamanio_bitmap, PROT_WRITE, MAP_SHARED, bitmap_fd, 0);
+
+	bitarray_bloques_libres = bitarray_create_with_mode(bits_bitmap, tamanio_bitmap, MSB_FIRST);
 
 	bloques = levantar_archivo_binario(path_bloques);
 
-
+	fcb_por_archivo = dictionary_create();
 
 	//escucho conexiones del Kernel
-	socket_kernel = iniciar_servidor(puerto_escucha);
+	socket_fs = iniciar_servidor(puerto_escucha);
 
 	log_info(logger, "File System listo para recibir peticiones del Kernel");
 
-	manejar_peticiones_kernel(logger, socket_kernel, socket_memoria, bloques, superbloque);
+	manejar_peticiones_kernel(logger, socket_fs, socket_memoria, bloques, superbloque);
 
 
-
-	terminar_programa(socket_memoria, logger, config, bitmap, bloques);
+	munmap(bits_bitmap, tamanio_bitmap);
+	terminar_programa( logger, config, bitmap, bloques);
 }
 
 
@@ -111,10 +118,12 @@ t_config* iniciar_config(void){
 }
 
 
-void terminar_programa(int conexion, t_log* logger, t_config* config, FILE* bitmap, FILE* bloques){
+void terminar_programa(t_log* logger, t_config* config, FILE* bitmap, FILE* bloques){
 	log_destroy(logger);
 	config_destroy(config);
-	close(conexion);
+	close(socket_memoria);
+	close(socket_fs);
+	close (socket_kernel);
 	bitarray_destroy(bitarray_bloques_libres);
 	fclose(bitmap);
 	fclose(bloques);
@@ -147,7 +156,7 @@ int conectar_con_memoria( char* ip, char* puerto){
 
 void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria, FILE* bloques,t_superbloque* superbloque){
 
-	int socket_kernel = esperar_cliente(server_fd);
+	socket_kernel = esperar_cliente(socket_fs);
 
 	while (1) {
 			int cod_op = recibir_operacion(socket_kernel);
@@ -163,16 +172,16 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 					abrir_archivo();
 					break;
 				case CREAR_ARCHIVO:
-					crear_archivo(socket_kernel);
+					crear_archivo();
 					break;
 				case TRUNCAR_ARCHIVO:
-					truncar_archivo(socket_kernel, socket_memoria, superbloque);
+					truncar_archivo( superbloque);
 						break;
 				case LEER_ARCHIVO:
-					leer_archivo(socket_kernel, socket_memoria,superbloque);
+					leer_archivo(superbloque);
 					break;
 				case ESCRIBIR_ARCHIVO:
-					escribir_archivo(socket_kernel, socket_memoria,superbloque);
+					escribir_archivo(superbloque);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");

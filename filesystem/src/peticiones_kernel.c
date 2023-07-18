@@ -11,6 +11,8 @@ void abrir_archivo(){
 
 	char* nombre_archivo = strdup(instruccion->parametros[0]);
 
+	log_info(logger, "Abrir Archivo: %s", nombre_archivo);
+
 	char* direccion_fcb = string_new();
 	string_append(&direccion_fcb, path_fcb);
 	string_append(&direccion_fcb, "/");
@@ -39,6 +41,8 @@ void abrir_archivo(){
 
 		//CASO B: La FCB no existe => el archivo tampoco
 		}else{
+
+			log_info(logger, "El archivo %s no se encontro ", nombre_archivo);
 			//Doy aviso a Kernel
 			enviar_mensaje("ERROR", socket_kernel, ABRIR_ARCHIVO);
 
@@ -60,11 +64,14 @@ void crear_archivo(){
 
 	char* nombre_archivo = strdup(instruccion->parametros[0]);
 
+	log_info(logger, "Crear Archivo: %s", nombre_archivo);
+
 	char* direccion_fcb = string_new();
 	string_append(&direccion_fcb, path_fcb);
 	string_append(&direccion_fcb, "/");
 	string_append(&direccion_fcb, nombre_archivo);
 
+	log_info(logger, "Guardando el fcb del archivo %s en %s", nombre_archivo, direccion_fcb);
 
 	//creamos la fcb
 	t_fcb* fcb = crear_fcb(instruccion, direccion_fcb);
@@ -75,9 +82,10 @@ void crear_archivo(){
 }
 
 
-void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloque){
+void truncar_archivo(t_superbloque* superbloque){
 
 	t_instruccion* instruccion_peticion = (t_instruccion*) recibir_instruccion(socket_kernel);
+
 
 	char* nombre_archivo = instruccion_peticion->parametros[0];
 	int nuevo_tamano_archivo = atoi(instruccion_peticion->parametros[1]);
@@ -119,22 +127,25 @@ void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superb
 }
 
 
-void leer_archivo(int socket_kernel, int socket_memoria, t_superbloque* superbloque){
+void leer_archivo( t_superbloque* superbloque){
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-	int puntero = -1;
-	int pid = -1;
+	int puntero ;
+	int pid ;
 
-	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, puntero, pid);
+	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, &puntero, &pid);
 
 	int cantidad_de_bytes_a_leer = atoi(instruccion->parametros[2]);
+	
+	log_info(logger, "Leer Archivo: %s - Puntero: %d - Memoria: %s - Tamaño: %d", instruccion->parametros[0], puntero, instruccion->parametros[1], cantidad_de_bytes_a_leer );
 
 	char* contenido_a_escribir = string_new();
 
 	int cantidad_de_bolques_a_leer = calcular_cantidad_de_bloques(cantidad_de_bytes_a_leer, superbloque);
 
 	for(int i = 0; i< cantidad_de_bolques_a_leer ; i ++){
-		string_append(&contenido_a_escribir, leer_en_bloque(puntero +i ,superbloque));
+		string_append(&contenido_a_escribir, leer_en_bloque(instruccion->parametros[0], puntero +i ,superbloque));
 	}
+
 
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &pid, sizeof(int));
@@ -159,14 +170,15 @@ void leer_archivo(int socket_kernel, int socket_memoria, t_superbloque* superblo
 }
 
 
-void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* superbloque){
+void escribir_archivo(t_superbloque* superbloque){
 
 	t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-	int puntero = -1;
-	int pid = -1;
+	int puntero;
+	int pid;
 
-	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, puntero, pid);
+	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, &puntero, &pid);
 
+	log_info(logger, "“Escribir Archivo: %s - Puntero: %d - Memoria: %s - Tamaño: %s", instruccion->parametros[0], puntero, instruccion->parametros[1], instruccion->parametros[2]);
 
 	t_paquete* paquete = crear_paquete(READ_MEMORY);
 
@@ -199,7 +211,7 @@ void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* super
 		memcpy(contenido_bloque_n, buffer + desplazamiento, superbloque->block_size);
 		desplazamiento += superbloque->block_size;
 
-		guardar_en_bloque(puntero + i, contenido_bloque_n, superbloque);
+		guardar_en_bloque(instruccion->parametros[0], puntero + i, contenido_bloque_n, superbloque);
 	}
 
 	enviar_mensaje("OK", socket_kernel, ESCRIBIR_ARCHIVO);
@@ -208,7 +220,7 @@ void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* super
 
 //----------UTILS------------
 
-void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int puntero, int pid){
+void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int* puntero, int* pid){
 
 	int size;
 	void *  buffer = recibir_buffer(&size, socket_kernel);
@@ -216,10 +228,10 @@ void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* i
 
 	while (desplazamiento<size){
 
-		memcpy(&pid, buffer+desplazamiento, sizeof(int));
+		memcpy(pid, buffer+desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 
-		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, desplazamiento);
+		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, &desplazamiento);
 
 		memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
@@ -227,7 +239,7 @@ void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* i
 		memcpy(instruccion->parametros[2], buffer + desplazamiento, instruccion->parametro3_lenght);
 		desplazamiento += instruccion->parametro3_lenght;
 
-		memcpy(&(puntero), buffer + desplazamiento, sizeof(int));
+		memcpy(puntero, buffer + desplazamiento, sizeof(int));
 		desplazamiento += sizeof(int);
 
 	}
@@ -245,7 +257,7 @@ t_instruccion* recibir_instruccion(int socket_cliente){
 	while (desplazamiento<size){
 
 
-		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, desplazamiento);
+		deserializar_instruccion_con_dos_parametros_de(buffer, instruccion, &desplazamiento);
 
 		memcpy(&(instruccion->parametro3_lenght), buffer+desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
@@ -266,7 +278,7 @@ t_fcb* crear_fcb( t_instruccion* instruccion, char* path){
 	config->properties = dictionary_create();
 
 	config_set_value(config, "NOMBRE_ARCHIVO", instruccion->parametros[0]);
-	config_set_value(config, "TAMANIO_ARCHIVO", 0);
+	config_set_value(config, "TAMANIO_ARCHIVO", string_itoa(0));
 	config_set_value(config, "PUNTERO_DIRECTO", string_itoa(-1));
 	config_set_value(config, "PUNTERO_INDIRECTO", string_itoa(-1));
 
@@ -287,6 +299,7 @@ t_fcb* crear_fcb( t_instruccion* instruccion, char* path){
 t_fcb* iniciar_fcb(t_config* config){
 	// si no existe la config no hace nada
 	if(config == NULL){
+		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo o no existe");
 		return NULL;
 	}
 
@@ -298,8 +311,8 @@ t_fcb* iniciar_fcb(t_config* config){
 	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
 
 
-	if(!(fcb->nombre_archivo) || !(fcb->tamanio_archivo) || !(fcb->puntero_directo) || !(fcb->puntero_indirecto) ){
-		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo");
+	if(fcb->nombre_archivo==NULL ){
+		log_error(logger, "El archivo ligado a la FCB que intentas abrir es erroneo o no existe");
 		return NULL;
 	}
 
@@ -346,8 +359,6 @@ void sacar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_sacar, int bloques_act
 
 		if(bloques_a_sacar == cantidad_de_bloques_maximo && bloques_actuales == cantidad_de_bloques_maximo){
 			 // solo pasa si bloques_a_sacar == bloques actuales
-			 // marco todos los bloques como libres
-			 marcar_bloques_libres_directo( fcb_a_actualizar->puntero_directo);
 			 marcar_bloques_libres_indirecto(fcb_a_actualizar->puntero_indirecto, superbloque, punteros_x_bloque);
 
 			 fcb_a_actualizar->puntero_directo = -1;
@@ -398,8 +409,8 @@ void marcar_bloques_libres_directo(uint32_t numero_de_bloque_directo){
 	bitarray_clean_bit(bitarray_bloques_libres, numero_de_bloque_directo);
 
 	// actualizo el archivo del bitmap con los nuevos valores
-	fseek(bitmap, 0, SEEK_SET);
-	fwrite(bitarray_bloques_libres->bitarray,bitarray_bloques_libres->size,1, bitmap);
+	//fseek(bitmap, 0, SEEK_SET);
+	//fwrite(bitarray_bloques_libres->bitarray,bitarray_bloques_libres->size,1, bitmap);
 }
 
 // actualiza el bitarray de bloques libres
@@ -506,6 +517,8 @@ int obtener_primer_bloque_libre(){
 	for(puntero_primer_bloque_libre = 0; puntero_primer_bloque_libre< bits_bitarray; puntero_primer_bloque_libre++){
 		bool esta_ocupado = bitarray_test_bit(bitarray_bloques_libres, puntero_primer_bloque_libre);
 
+		log_info(logger, "Acceso a Bitmap - Bloque: %d - Estado: %d", puntero_primer_bloque_libre, esta_ocupado);
+
 		if(!esta_ocupado)
 				break;
 	}
@@ -519,8 +532,8 @@ int obtener_primer_bloque_libre(){
 void colocar_en_ocupado_bitarray_en(int posicion){
 	bitarray_set_bit(bitarray_bloques_libres, posicion);
 
-	fseek(bitmap, 0, SEEK_SET);
-	fwrite(bitarray_bloques_libres->bitarray, bitarray_bloques_libres->size, 1, bitmap);
+	//fseek(bitmap, 0, SEEK_SET);
+	//fwrite(bitarray_bloques_libres->bitarray, bitarray_bloques_libres->size, 1, bitmap);
 
 }
 
@@ -567,7 +580,7 @@ void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punter
 		//string_append(&punteros_directos,string_itoa(puntero_directo_n) );
 	}
 
-	guardar_en_bloque(puntero_indirecto, punteros_directos, superbloque);
+	guardar_en_bloque(fcb->nombre_archivo, puntero_indirecto, punteros_directos, superbloque);
 
 	fcb->puntero_indirecto = puntero_indirecto;
 
@@ -576,9 +589,13 @@ void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punter
 
 
 // retorna el contenido del bloque pasado por parámetros
-char* leer_en_bloque(uint32_t bloque_a_leer, t_superbloque* superbloque){
+char* leer_en_bloque(char* nombre_archivo, uint32_t bloque_a_leer, t_superbloque* superbloque){
 
 	int posicion_en_archivo_a_leer = (superbloque->block_size)*bloque_a_leer;
+
+	//TODO VER QUE ES BLOQUE ARCHIVO VS BLOQUE FILESYSTEM
+	log_info(logger, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d",nombre_archivo, posicion_en_archivo_a_leer, bloque_a_leer);
+
 
 	fseek(bloques, posicion_en_archivo_a_leer, SEEK_SET);
 	char* contenido_del_bloque = malloc(superbloque->block_size);
@@ -593,13 +610,19 @@ char* leer_en_bloque(uint32_t bloque_a_leer, t_superbloque* superbloque){
 
 // En base a un numero de bloque lo guarda en el archivo
 // 	se tiene en cuenta de que el contenido_a_guardar tenga menor a igual a los bytes que puede se ocupar en un bloque
-void guardar_en_bloque(int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque){
+void guardar_en_bloque(char* nombre_archivo, int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque){
+	
 
 	if(strlen(contenido_a_guardar) > superbloque->block_size){
 		return;
 	}
 
 	int posicion_en_archivo_a_guardar = (superbloque->block_size)*numero_de_bloque;
+
+	//TODO VER QUE ES BLOQUE ARCHIVO VS BLOQUE FILESYSTEM
+	log_info(logger, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d",nombre_archivo, posicion_en_archivo_a_guardar, numero_de_bloque);
+
+
 
 	fseek(bloques, posicion_en_archivo_a_guardar, SEEK_SET);
 	fwrite(contenido_a_guardar,superbloque->block_size, 1, bloques);
@@ -614,8 +637,9 @@ void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, 
 	if(puntero_indirecto == -1){
 		return;
 	}
+	
 
-	char* punteros_directos_leidos = leer_en_bloque(puntero_indirecto, superbloque);
+	char* punteros_directos_leidos = leer_en_bloque(fcb->nombre_archivo, puntero_indirecto, superbloque);
 
 	for(int i = 0; i< bloques_a_agregar; i++){
 		int puntero_directo_n = obtener_primer_bloque_libre();
@@ -647,7 +671,7 @@ void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, 
 
 	}
 
-	guardar_en_bloque(puntero_indirecto, punteros_directos_leidos, superbloque);
+	guardar_en_bloque(fcb->nombre_archivo, puntero_indirecto, punteros_directos_leidos, superbloque);
 }
 
 /*

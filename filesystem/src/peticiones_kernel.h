@@ -9,13 +9,13 @@
 
 
 void crear_archivo();
-void truncar_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloque);
-void leer_archivo(int socket_kernel, int socket_memoria,t_superbloque* superbloque);
-void escribir_archivo(int socket_kernel,int socket_memoria, t_superbloque* superbloque);
+void truncar_archivo(t_superbloque* superbloque);
+void leer_archivo(t_superbloque* superbloque);
+void escribir_archivo(t_superbloque* superbloque);
 void abrir_archivo();
 t_fcb* iniciar_fcb(t_config* config);
 t_fcb* crear_fcb(t_instruccion* instruccion, char* path);
-void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int puntero, int pid);
+void recibir_instruccion_y_puntero_kernel_en(int socket_kernel, t_instruccion* instruccion, int* puntero, int* pid);
 t_instruccion* recibir_instruccion(int socket_cliente);
 
 int calcular_cantidad_de_bloques(int tamanio_en_bytes ,t_superbloque* superbloque);
@@ -31,8 +31,8 @@ void colocar_en_ocupado_bitarray_en(int posicion);
 void ocupar_bloque_libre_directo(t_fcb* fcb);
 void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, t_superbloque* superbloque);
 void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punteros_x_bloque, t_superbloque* superbloque);
-void guardar_en_bloque(int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque);
-char* leer_en_bloque(uint32_t bloque_a_leer, t_superbloque* superbloque);
+void guardar_en_bloque(char* nombre_archivo, int numero_de_bloque, char* contenido_a_guardar, t_superbloque* superbloque);
+char* leer_en_bloque(char* nombre_archivo, uint32_t bloque_a_leer, t_superbloque* superbloque);
 
 
 #endif /* PETICIONES_KERNEL_H_ */

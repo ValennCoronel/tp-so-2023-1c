@@ -9,7 +9,6 @@ int grado_max_multiprogramacion;
 
 //Tablas del FS
 t_dictionary* tabla_global_de_archivos_abiertos;
-t_dictionary* fcb_por_archivo;
 
 int main(void){
 
@@ -122,6 +121,8 @@ int main(void){
 		dictionary_put(recurso_bloqueado,nombre_recurso,cola_bloqueados);
 	}
 	string_iterate_lines(recursos,iterador_recursos);
+
+	tabla_global_de_archivos_abiertos = dictionary_create();
 
 	//inicio hilos
 

@@ -318,8 +318,7 @@ void abrir_archivo(t_instruccion* instruccion){
 
 	//Cargo estructuras restantes
 	t_tabla_global_de_archivos_abiertos* archivo = malloc(sizeof(t_tabla_global_de_archivos_abiertos));
-	t_fcb* fcb = dictionary_get(fcb_por_archivo, nombre_archivo);
-	archivo->fileDescriptor = fcb->puntero_directo;
+	//archivo->fileDescriptor = fcb->puntero_directo;
 	archivo->file = nombre_archivo;
 	archivo->open = 1;
 
