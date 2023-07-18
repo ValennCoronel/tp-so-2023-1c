@@ -117,7 +117,7 @@ void f_seek(int cliente_fd){
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = instruccion_peticion->parametros[0];
+	char* nombre_archivo = strup(instruccion_peticion->parametros[0]);
 	int posicion = atoi(instruccion_peticion->parametros[1]);
 
 	sem_wait(&m_proceso_ejecutando);
@@ -128,6 +128,9 @@ void f_seek(int cliente_fd){
 
 	// continua con el mismo proceso
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+
+	free(nombre_archivo);
+	contexto_ejecucion_destroy(contexto);
 }
 
 void truncar_archivo(){
@@ -138,10 +141,12 @@ void truncar_archivo(){
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = instruccion_peticion->parametros[0];
-	char* tamanio_a_truncar_string = instruccion_peticion->parametros[1];
+	char* nombre_archivo = strdup(instruccion_peticion->parametros[0]);
+	char* tamanio_a_truncar_string = strdup(instruccion_peticion->parametros[1]);
 
 	log_info(logger, "PID: %d - Archivo: %s - Tamaño: %s", contexto->pid, nombre_archivo, tamanio_a_truncar_string);
+
+	free(tamanio_a_truncar_string);
 
 	//crear una bloquear proceso general UwU
 	enviar_peticion_fs(TRUNCAR_ARCHIVO,instruccion_peticion);
@@ -161,13 +166,17 @@ void truncar_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
+			pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 		}
+	} else {
+		log_error(logger, "No se pudo truncar el archivo");
 	}
-
+	free(nombre_archivo);
+	contexto_ejecucion_destroy(contexto);
 }
 
 void leer_archivo(){
@@ -178,14 +187,18 @@ void leer_archivo(){
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = instruccion_peticion->parametros[0];
+	char* nombre_archivo = strdup(instruccion_peticion->parametros[0]);
 	sem_wait(&m_proceso_ejecutando);
 	int puntero = proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero;
 	sem_post(&m_proceso_ejecutando);
-	char* direccion_fisica = instruccion_peticion->parametros[1];
-	char* bytes_a_leer_string = instruccion_peticion->parametros[2];
+
+	char* direccion_fisica = strdup(instruccion_peticion->parametros[1]);
+	char* bytes_a_leer_string = strdup(instruccion_peticion->parametros[2]);
 
 	log_info(logger, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %s - Tamaño %s", contexto->pid, nombre_archivo, puntero, direccion_fisica, bytes_a_leer_string);
+
+	free(direccion_fisica);
+	free(bytes_a_leer_string);
 
 	sem_wait(&m_proceso_ejecutando);
 	enviar_peticion_puntero_fs(LEER_ARCHIVO,instruccion_peticion, proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero, contexto->pid);
@@ -205,13 +218,17 @@ void leer_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
+			pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+		} else {
+			log_error(logger, "No se pudo leer el archivo");
 		}
 	}
-
+	free(nombre_archivo);
+	contexto_ejecucion_destroy(contexto);
 }
 
 void escribir_archivo(){
@@ -222,15 +239,17 @@ void escribir_archivo(){
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = instruccion_peticion->parametros[0];
+	char* nombre_archivo = strdup(instruccion_peticion->parametros[0]);
 	sem_wait(&m_proceso_ejecutando);
 	int puntero = proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero;
 	sem_post(&m_proceso_ejecutando);
-	char* direccion_fisica = instruccion_peticion->parametros[1];
-	char* bytes_a_escribir_string = instruccion_peticion->parametros[2];
+	char* direccion_fisica = strdup(instruccion_peticion->parametros[1]);
+	char* bytes_a_escribir_string = strdup(instruccion_peticion->parametros[2]);
 
 	log_info(logger, "PID: %d - Escribir Archivo: %s - Puntero %d - Dirección Memoria %s - Tamaño %s", contexto->pid, nombre_archivo, puntero, direccion_fisica, bytes_a_escribir_string);
 
+	free(bytes_a_escribir_string);
+	free(direccion_fisica);
 	sem_wait(&m_proceso_ejecutando);
 	enviar_peticion_puntero_fs(ESCRIBIR_ARCHIVO,instruccion_peticion, proceso_ejecutando->tabla_archivos_abiertos_del_proceso->puntero, contexto->pid);
 	sem_post(&m_proceso_ejecutando);
@@ -249,12 +268,18 @@ void escribir_archivo(){
 
 			log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
 
+			pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
 			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+		} else {
+			log_error(logger, "No se pudo escirbir el archivo");
 		}
 	}
+
+	free(nombre_archivo);
+	contexto_ejecucion_destroy(contexto);
 }
 
 // -------- UTILS ----------
