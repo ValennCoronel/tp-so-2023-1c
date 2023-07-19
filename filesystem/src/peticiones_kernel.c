@@ -120,6 +120,33 @@ void truncar_archivo(t_superbloque* superbloque){
     // actualizo tamanio_fcb
    fcb_a_truncar->tamanio_archivo = nuevo_tamano_archivo;
 
+   log_info(logger, " puntero directo: %d",fcb_a_truncar->puntero_directo );
+   log_info(logger, " puntero indirecto: %d",fcb_a_truncar->puntero_indirecto );
+
+	
+
+ 	char* direccion_fcb = string_new();
+	string_append(&direccion_fcb, path_fcb);
+	string_append(&direccion_fcb, "/");
+	string_append(&direccion_fcb, fcb_a_truncar->nombre_archivo);
+
+   	t_config* archivo_fcb = config_create(direccion_fcb);
+
+	if(archivo_fcb == NULL){
+		log_error(logger, "No se encontro el fcb del archivo %s", fcb_a_truncar->nombre_archivo);
+		enviar_mensaje("ERROR", socket_kernel, TRUNCAR_ARCHIVO);
+		return;
+
+	}
+
+
+	config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", string_itoa(fcb_a_truncar->tamanio_archivo));
+	config_set_value(archivo_fcb, "PUNTERO_DIRECTO", string_itoa(fcb_a_truncar->puntero_directo));
+	config_set_value(archivo_fcb, "PUNTERO_INDIRECTO", string_itoa(fcb_a_truncar->puntero_indirecto));
+
+	config_save(archivo_fcb );
+
+
    // respondo a kernel un OK
 	enviar_mensaje("OK", socket_kernel, TRUNCAR_ARCHIVO);
 
@@ -142,11 +169,21 @@ void leer_archivo( t_superbloque* superbloque){
 
 	int cantidad_de_bolques_a_leer = calcular_cantidad_de_bloques(cantidad_de_bytes_a_leer, superbloque);
 
+	log_info(logger, "Cantidad de bloques a leer: %d",cantidad_de_bolques_a_leer );
+
 	for(int i = 0; i< cantidad_de_bolques_a_leer ; i ++){
-		char* contenido_del_bloque = (char*) leer_en_bloque(instruccion->parametros[0], puntero +i ,superbloque);
-		string_append(&contenido_a_escribir, contenido_del_bloque);
+		void* contenido_del_bloque = leer_en_bloque(instruccion->parametros[0], puntero +i ,superbloque);
+
+		char* contenido_bloque_n_string = malloc(superbloque->block_size);
+		memcpy(contenido_bloque_n_string, contenido_del_bloque  ,superbloque->block_size );
+
+		log_info(logger, "lei: %s", contenido_bloque_n_string);
+		string_append(&contenido_a_escribir, contenido_bloque_n_string);
+
+		free(contenido_del_bloque);
 	}
 
+	log_info(logger, "Lei %s de los bloques",contenido_a_escribir );
 
 	t_paquete* paquete = crear_paquete(WRITE_MEMORY);
 	agregar_a_paquete_sin_agregar_tamanio(paquete, &pid, sizeof(int));
@@ -154,7 +191,16 @@ void leer_archivo( t_superbloque* superbloque){
 	agregar_a_paquete(paquete,  instruccion->parametros[1],  instruccion->parametro2_lenght);
 	agregar_a_paquete(paquete,   instruccion->parametros[2], instruccion->parametro3_lenght);
 	agregar_a_paquete(paquete,  contenido_a_escribir,strlen(contenido_a_escribir)+1);
+	
+	char* nombre_modulo = string_new();
+	string_append(&nombre_modulo, "Filesystem");
+
+	agregar_a_paquete(paquete, nombre_modulo, strlen(nombre_modulo )+1);
+
 	enviar_paquete(paquete, socket_memoria);
+
+	free(nombre_modulo);
+	eliminar_paquete(paquete);
 
 	int cod_op = recibir_operacion(socket_memoria);
 
@@ -168,6 +214,7 @@ void leer_archivo( t_superbloque* superbloque){
 	enviar_mensaje(repuesta_memoria, socket_kernel,LEER_ARCHIVO);
 
 	free(repuesta_memoria);
+	instruccion_destroy(instruccion);
 }
 
 
@@ -189,8 +236,15 @@ void escribir_archivo(t_superbloque* superbloque){
 
 	agregar_a_paquete(paquete, instruccion->parametros[1], instruccion->parametro2_lenght);
 	agregar_a_paquete(paquete, instruccion->parametros[2], instruccion->parametro3_lenght);
+
+	char* nombre_modulo = string_new();
+	string_append(&nombre_modulo, "Filesystem");
+
+	agregar_a_paquete(paquete, nombre_modulo, strlen(nombre_modulo) + 1);
+
 	enviar_paquete(paquete, socket_memoria);
 
+	free(nombre_modulo);
 	eliminar_paquete(paquete);
 
 	int cod_op = recibir_operacion(socket_memoria);
@@ -216,6 +270,8 @@ void escribir_archivo(t_superbloque* superbloque){
 	}
 
 	enviar_mensaje("OK", socket_kernel, ESCRIBIR_ARCHIVO);
+
+	instruccion_destroy(instruccion);
 }
 
 
@@ -586,6 +642,7 @@ void* leer_en_bloque(char* nombre_archivo, uint32_t bloque_a_leer, t_superbloque
 	int datos_leidos = fread(contenido_del_bloque,superbloque->block_size, 1, bloques);
 
 	if(datos_leidos == 0){
+		log_info(logger, "No se leyo nada del archivo de bloques");
 		return NULL;
 	}
 

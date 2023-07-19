@@ -124,7 +124,16 @@ void pasar_a_ready(t_pcb* proceso_bloqueado){
 
 	sem_wait(&m_cola_ready);
 	queue_push(cola_ready, proceso_bloqueado);
+	int procesos_en_ready = queue_size(cola_ready);
 	sem_post(&m_cola_ready);
+
+	sem_wait(&m_proceso_ejecutando);
+	if(proceso_ejecutando == NULL && procesos_en_ready > 0 ){
+		sem_post(&m_proceso_ejecutando);
+		sem_post(&consumidor);
+	} else {
+		sem_post(&m_proceso_ejecutando);
+	}
 
 }
 

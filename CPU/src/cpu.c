@@ -175,6 +175,7 @@ void manejar_peticion_al_cpu(int RETARDO_INSTRUCCION, int TAM_MAX_SEGMENTO)
 		}
 
 
+
 		// al final del fetch, actualizo el program counter
 		contexto->program_counter += 1;
 

@@ -62,6 +62,7 @@ void f_open(){
 		enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 	}
 
+	contexto_ejecucion_destroy(contexto);
 }
 
 //Cierra la instancia de un archivo abierto, si ya no hay mas procesos solicitando el archivo lo saca de la tabla global, sino reduce el contador de archivos abiertos
@@ -73,11 +74,15 @@ void f_close(){
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = instruccion->parametros[0];
+
+	char* nombre_archivo = strdup(instruccion->parametros[0]);
 	t_tabla_global_de_archivos_abiertos* tabla = dictionary_get(tabla_global_de_archivos_abiertos, nombre_archivo);
 
 	//se borra la entrada de la tabla de archivos por porceso en cualquier caso
 	sem_wait(&m_proceso_ejecutando);
+
+	log_info(logger, "proceso ejecutando es null? %d (0 no , 1 si)", proceso_ejecutando == NULL);
+
 	free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso->file);
 	free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso);
 	proceso_ejecutando->tabla_archivos_abiertos_del_proceso = NULL;
@@ -101,23 +106,27 @@ void f_close(){
 
 
 		log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb_a_desbloquear->PID, "BLOC","READY");
-
+		
+		pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 		pasar_a_ready(pcb_a_desbloquear);
 	}
 
+
 	// en ambos casos continua con el mismo proceso
 	enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+	contexto_ejecucion_destroy(contexto);
 }
 
 void f_seek(int cliente_fd){
 	t_contexto_ejec* contexto = (t_contexto_ejec*) recibir_contexto_de_ejecucion(socket_cpu);
 	t_instruccion* instruccion_peticion = (t_instruccion*) list_get(contexto->lista_instrucciones, contexto->program_counter - 2);
 
+
 	sem_wait(&m_proceso_ejecutando);
 	proceso_ejecutando->program_counter = contexto->program_counter;
 	sem_post(&m_proceso_ejecutando);
 
-	char* nombre_archivo = strup(instruccion_peticion->parametros[0]);
+	char* nombre_archivo = strdup(instruccion_peticion->parametros[0]);
 	int posicion = atoi(instruccion_peticion->parametros[1]);
 
 	sem_wait(&m_proceso_ejecutando);
@@ -169,8 +178,10 @@ void truncar_archivo(){
 			pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 			pasar_a_ready(pcb_a_desbloquear);
 
+			log_info(logger, "program counter %d",pcb_a_desbloquear->program_counter );
+
 			//continua con el mismo proceso
-			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
+			//enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 		}
 	} else {
 		log_error(logger, "No se pudo truncar el archivo");
@@ -221,8 +232,6 @@ void leer_archivo(){
 			pcb_a_desbloquear->temporal_ultimo_desalojo = temporal_create();
 			pasar_a_ready(pcb_a_desbloquear);
 
-			//continua con el mismo proceso
-			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 		} else {
 			log_error(logger, "No se pudo leer el archivo");
 		}
@@ -272,7 +281,6 @@ void escribir_archivo(){
 			pasar_a_ready(pcb_a_desbloquear);
 
 			//continua con el mismo proceso
-			enviar_contexto_de_ejecucion_a(contexto, PETICION_CPU, socket_cpu);
 		} else {
 			log_error(logger, "No se pudo escirbir el archivo");
 		}
@@ -285,7 +293,7 @@ void escribir_archivo(){
 // -------- UTILS ----------
 
 void enviar_cola_archivos_bloqueados(t_instruccion* instruccion){
-	char* nombre_archivo = instruccion->parametros[0];
+	char* nombre_archivo = strdup(instruccion->parametros[0]);
 
 	//Si no existe el archivo en el diccionario, lo creo. Si existe agrego el elemento a la cola
 	if(!dictionary_has_key(colas_de_procesos_bloqueados_para_cada_archivo, nombre_archivo)){
@@ -339,7 +347,9 @@ void enviar_cola_archivos_bloqueados(t_instruccion* instruccion){
 
 void abrir_archivo(t_instruccion* instruccion){
 
-	char* nombre_archivo = instruccion->parametros[0];
+	char* nombre_archivo = strdup(instruccion->parametros[0]);
+
+	log_info(logger, " Abriendo archivo %s ...", nombre_archivo);
 
 	//Cargo estructuras restantes
 	t_tabla_global_de_archivos_abiertos* archivo = malloc(sizeof(t_tabla_global_de_archivos_abiertos));

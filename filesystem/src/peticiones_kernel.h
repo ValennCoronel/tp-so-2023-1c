@@ -9,7 +9,7 @@
 
 
 void crear_archivo();
-void truncar_archivo(t_superbloque* superbloque);
+void truncar_archivo(t_superbloque* superbloque );
 void leer_archivo(t_superbloque* superbloque);
 void escribir_archivo(t_superbloque* superbloque);
 void abrir_archivo();
