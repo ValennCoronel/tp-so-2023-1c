@@ -71,8 +71,9 @@ t_segmento* first_fit(t_list* huecos_candidatos);
 t_segmento* worst_fit(t_list* huecos_candidatos);
 t_segmento* best_fit(t_list* huecos_candidatos);
 
-t_segmento* obtener_ultimo_hueco_de_la_tabla();
+t_segmento* obtener_ultimo_hueco_de_lista(t_list* segmentos_del_sistema);
 t_segmento* crear_segmento_sin_usar();
 t_segmento* duplicar_segmento(t_segmento* segmento_buscado);
+t_list* obtener_todos_los_segmentos();
 
 #endif /* CPU_H */

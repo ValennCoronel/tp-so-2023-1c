@@ -194,39 +194,54 @@ void compactar_memoria(int cliente_fd)
 
 	log_info(logger, "Solicitud de Compactación");
 
+	t_list* todos_los_segmentos_del_sistema = obtener_todos_los_segmentos();
 
-	int cantidad_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
+	
+	int cantidad_segmentos = list_size(todos_los_segmentos_del_sistema);
 
-	for (int i = 0; i < tablas_de_segmentos_de_todos_los_procesos->elements_count; i++)
+	for (int i = 0; i < cantidad_segmentos; i++)
 	{
-		t_segmento* segmento_actual = list_get(tablas_de_segmentos_de_todos_los_procesos,i);
+		t_segmento* segmento_actual = list_get(todos_los_segmentos_del_sistema,i);
 
-
+		if(segmento_actual->tamano != -1 && segmento_actual->direccion_base != -1 && segmento_actual->direccion_base != 0){
+			
+			
+			  log_info(logger, "Segmento actual: %d - Base: %d - Tamaño %d",  segmento_actual->id_segmento, segmento_actual->direccion_base, segmento_actual->tamano);
+		
         // Obtener el siguiente segmento
-		t_segmento* segmento_siguiente = NULL;
-		if (i < cantidad_segmentos - 1)
-		{
-			segmento_siguiente = list_get(tablas_de_segmentos_de_todos_los_procesos, i + 1);
-		}
+			t_segmento* segmento_siguiente = NULL;
+			int indice_segmento_siguiente = i+1;
+			while (indice_segmento_siguiente < cantidad_segmentos )
+			{
+				segmento_siguiente = list_get(todos_los_segmentos_del_sistema, indice_segmento_siguiente);
+				if(segmento_siguiente->tamano != -1 && segmento_siguiente->direccion_base != -1 && segmento_siguiente->direccion_base != segmento_actual->direccion_base && segmento_siguiente->direccion_base != 0 ){
+					break;
+				}
+
+				indice_segmento_siguiente++;
+				segmento_siguiente = NULL;
+			}
+
 
         // Calcular el desplazamiento necesario para compactar el segmento actual
-		int desplazamiento = 0;
-		if (segmento_siguiente != NULL) {
-			desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
-		}
+			int desplazamiento = 0;
+			if (segmento_siguiente != NULL) {
+				log_info(logger, "Segmento siguiente: %d - Base: %d - Tamaño %d",  segmento_siguiente->id_segmento, segmento_siguiente->direccion_base, segmento_siguiente->tamano);
+				desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
+			}
 
 		// Mover los datos del actual al nuevo espacio contiguo
-		if (desplazamiento > 0)
-		{
-			void* origen = espacio_usuario + segmento_siguiente->direccion_base;
-			void* destino = espacio_usuario + segmento_actual->direccion_base + segmento_actual->tamano;
-			size_t bytes_a_mover = segmento_siguiente->tamano;
-			memmove(destino, origen, bytes_a_mover);
+			if (desplazamiento > 0)
+			{
+				void* origen = espacio_usuario + segmento_siguiente->direccion_base;
+				void* destino = espacio_usuario + segmento_actual->direccion_base + segmento_actual->tamano;
+				size_t bytes_a_mover = segmento_siguiente->tamano;
+				memmove(destino, origen, bytes_a_mover);
 
 			// Actualizar la dirección base del hueco actual
-			segmento_siguiente->direccion_base += segmento_actual->direccion_base + segmento_actual->tamano;
+				segmento_siguiente->direccion_base = segmento_actual->direccion_base + segmento_actual->tamano;
+			}
 		}
-
 	}
 
 	// actualizo la lista de huecos libres para que haya un solo hueco libre de lo que falta por ocupar de memoria
@@ -243,7 +258,7 @@ void compactar_memoria(int cliente_fd)
 
 	huecos_libres  = list_create();
 
-	t_segmento* ultimo_segmento = obtener_ultimo_hueco_de_la_tabla();
+	t_segmento* ultimo_segmento = obtener_ultimo_hueco_de_lista(todos_los_segmentos_del_sistema);
 
 	t_segmento* unico_hueco_libre = malloc(sizeof(t_segmento));
 	unico_hueco_libre->id_segmento = -1;
@@ -251,6 +266,7 @@ void compactar_memoria(int cliente_fd)
 
 	// tamano con el resto de la memoria que falta por ocupar
 	unico_hueco_libre->tamano = tam_memoria - unico_hueco_libre->direccion_base;
+	log_info(logger, "Unico hueco libre post compactacion de %d",unico_hueco_libre->tamano);
 
 	list_add(huecos_libres, unico_hueco_libre);
 
@@ -322,7 +338,6 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 		t_segmento* hueco_a_usar = list_get(huecos_posibles, 0);
 
-		usar_hueco(hueco_a_usar, peticion_segmento->tamano_segmento);
 
 		t_segmento* nuevo_segmento = malloc(sizeof(t_segmento));
 
@@ -330,9 +345,11 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 		nuevo_segmento->id_segmento = peticion_segmento->id_segmento;
 		nuevo_segmento->tamano = peticion_segmento->tamano_segmento;
 
+		usar_hueco(hueco_a_usar, peticion_segmento->tamano_segmento);
+
 		agregar_nuevo_segmento_a(pid, nuevo_segmento);
 
-		log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,peticion_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
+		log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,nuevo_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
 
 		t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
 
@@ -346,7 +363,6 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 
 	t_segmento* hueco_a_ocupar = determinar_hueco_a_ocupar(huecos_posibles, algoritmo_asignacion);
 
-	usar_hueco(hueco_a_ocupar, peticion_segmento->tamano_segmento);
 
 	t_segmento* nuevo_segmento = malloc(sizeof(t_segmento));
 
@@ -354,10 +370,11 @@ void create_segment(char* algoritmo_asignacion,uint64_t cliente_fd){
 	nuevo_segmento->id_segmento = peticion_segmento->id_segmento;
 	nuevo_segmento->tamano = peticion_segmento->tamano_segmento;
 
+	usar_hueco(hueco_a_ocupar, peticion_segmento->tamano_segmento);
 	// acutalizo la tabla del proceso correspondiente
 	agregar_nuevo_segmento_a(pid, nuevo_segmento);
 
-	log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,peticion_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
+	log_info(logger, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d",pid,nuevo_segmento->id_segmento, nuevo_segmento->direccion_base, nuevo_segmento->tamano);
 
 
 	// envio la direccion base del nuevo segmento a kernel
@@ -399,6 +416,8 @@ void delete_segment(int cliente_fd){
 		segmento_buscado->tamano =-1;
 
 		list_add(huecos_libres,copia_segmento_buscado);
+
+		log_info(logger, "PID: %d - Eliminar Segmento: %d - Base: %d - TAMAÑO: %d", pid, id_segmento,copia_segmento_buscado->direccion_base, copia_segmento_buscado->tamano );
 
 		t_paquete* paquete = crear_paquete(ELIMINAR_SEGMENTO);
 
@@ -465,6 +484,8 @@ void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 
 
 	log_info(logger, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_escribir, nombre_modulo);
+
+	log_info(logger, "Contenido a escribir: %s, con length: %ld", contenido_a_escribir, strlen(contenido_a_escribir));
 
 
 	 esperar_por(retardo_memoria);
@@ -628,12 +649,14 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 	if(segmento_a_actualizar == NULL){
 		// si un proceso utilizo todos sus segmentos no hace nada
 		//	esto es algo que no va a suceder y va a estar contemplado en el psuedocódigo
+		log_error(logger, "No se pudo encontrar un segmento vacio para actualizarlo, el proceso ya uso todos los segmentos que puede usar");
 		return;
 	}
 
 	// actualizo la tabla del proceso
 
-	tabla_del_proceso->cantidad_segmentos +=1;
+
+	log_info(logger, "Guardando segmento %d con tamano: %d",segmento->id_segmento,segmento->tamano);
 
 	//uso el segmento
 	segmento_a_actualizar->direccion_base = segmento->direccion_base;
@@ -641,7 +664,6 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 	segmento_a_actualizar->tamano = segmento->tamano;
 
 
-	free(segmento);
 }
 
 /*
@@ -781,10 +803,21 @@ t_segmento* best_fit(t_list* huecos_candidatos){
 	return list_get_minimum(huecos_candidatos, _calcular_minimo);
 }
 
-t_segmento* obtener_ultimo_hueco_de_la_tabla(){
-	int cantidad_de_segmentos = tablas_de_segmentos_de_todos_los_procesos->elements_count;
+t_segmento* obtener_ultimo_hueco_de_lista(t_list* segmentos_del_sistema){
+	int cantidad_de_segmentos = list_size(segmentos_del_sistema);
+	t_segmento* ultimo_segmento = (t_segmento*) list_get(segmentos_del_sistema,cantidad_de_segmentos-1);
 
-	return (t_segmento*) list_get(tablas_de_segmentos_de_todos_los_procesos,cantidad_de_segmentos-1);
+	int i = 2;
+
+	while((ultimo_segmento->id_segmento == 0 || (ultimo_segmento->direccion_base == -1 && ultimo_segmento->tamano == -1))&& i < cantidad_de_segmentos ){
+		ultimo_segmento = NULL;
+
+		ultimo_segmento = (t_segmento*) list_get(segmentos_del_sistema,cantidad_de_segmentos-i);
+		i++;
+
+	}
+
+	return  ultimo_segmento;
 }
 
 t_segmento* crear_segmento_sin_usar(){
@@ -806,4 +839,21 @@ t_segmento* duplicar_segmento(t_segmento* segmento_buscado){
 	segmento_copia->id_segmento = segmento_buscado->id_segmento;
 
 	return segmento_copia;
+}
+
+t_list* obtener_todos_los_segmentos(){
+	t_list* segmentos_del_sistema = list_create();
+	int cantidad_de_procesos = list_size(tablas_de_segmentos_de_todos_los_procesos);
+
+	for(int i = 0; i < cantidad_de_procesos ; i++){
+		t_tabla_de_segmento* tabla_del_proceso_n = list_get(tablas_de_segmentos_de_todos_los_procesos, i);
+
+		log_info(logger, "agarro los segmentos del proceso %d con %d segmentos", tabla_del_proceso_n->pid, tabla_del_proceso_n->cantidad_segmentos);
+		for(int j = 0; j < tabla_del_proceso_n->cantidad_segmentos; j++){
+			t_segmento* segmento_n = list_get(tabla_del_proceso_n->segmentos,j);	
+			list_add(segmentos_del_sistema, segmento_n);
+		}
+	}
+
+	return segmentos_del_sistema;
 }

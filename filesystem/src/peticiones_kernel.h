@@ -35,4 +35,6 @@ void guardar_en_bloque(char* nombre_archivo, int numero_de_bloque, void* conteni
 void* leer_en_bloque(char* nombre_archivo, uint32_t bloque_a_leer, t_superbloque* superbloque);
 bool es_puntero_valido(uint32_t posible_puntero, t_superbloque* superbloque);
 
+uint32_t obtener_bloque_siguiente(t_fcb* fcb_archivo, uint32_t puntero_inicio, uint32_t numero_de_bloque, t_superbloque* superbloque);
+
 #endif /* PETICIONES_KERNEL_H_ */
