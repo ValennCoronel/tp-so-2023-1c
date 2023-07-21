@@ -10,6 +10,8 @@ sem_t consumidor;
 sem_t m_cola_ready;
 sem_t m_cola_new;
 sem_t m_proceso_ejecutando;
+sem_t m_recurso_bloqueado;
+sem_t m_cola_de_procesos_bloqueados_para_cada_archivo;
 
 t_dictionary* colas_de_procesos_bloqueados_para_cada_archivo;
 
@@ -22,6 +24,8 @@ void inicializar_colas_y_semaforos(){
 	sem_init(&m_cola_new, 0, 1);
 	sem_init(&m_proceso_ejecutando, 0, 1);
 	sem_init(&consumidor,0,0);
+	sem_init(&m_recurso_bloqueado, 0, 1);
+	sem_init(&m_cola_de_procesos_bloqueados_para_cada_archivo, 0,1);
 }
 
 
@@ -248,6 +252,21 @@ int calcular_procesos_en_memoria(int procesos_en_ready){
 	}
 
 	dictionary_iterator(recurso_bloqueado, _calcular_procesos_bloqueados);
+
+
+	sem_wait(&m_cola_de_procesos_bloqueados_para_cada_archivo);
+	void _calcular_procesos_bloqueados_por_archivo(char* key, void* value){
+		t_queue* cola_bloqueados_archivo_n = (t_queue*) value;
+
+		if(queue_size(cola_bloqueados_archivo_n) != 0){
+			procesos_bloqueados += queue_size(cola_bloqueados_archivo_n);
+		}
+	}
+
+	dictionary_iterator(colas_de_procesos_bloqueados_para_cada_archivo, _calcular_procesos_bloqueados_por_archivo);
+	sem_post(&m_cola_de_procesos_bloqueados_para_cada_archivo);
+
+
 
 	if(proceso_ejecutando != NULL){
 		procesos_bloqueados ++;

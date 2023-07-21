@@ -494,23 +494,24 @@ void manejar_escucha_compactar(t_contexto_ejec* contexto, t_segmento_parametro* 
 		//y actualizar la tabla de segmentos de cada proceso en la cola de ready
 		acutalizar_tablas_de_procesos(tablas_de_segmentos_actualizadas);
 
-	log_info(logger, "Se finalizó el proceso de compactación");
+
+		log_info(logger, "Se finalizó el proceso de compactación");
 
 	// luego solicita a memoria otra vez de crear el segmento
-	t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
+		t_paquete* paquete = crear_paquete(CREAR_SEGMENTO);
 
-	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
-	agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
-	agregar_a_paquete_sin_agregar_tamanio(paquete, &(contexto->pid), sizeof(int));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->id_segmento), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(peticion_segmento->tamano_segmento), sizeof(uint32_t));
+		agregar_a_paquete_sin_agregar_tamanio(paquete, &(contexto->pid), sizeof(int));
 	
 
 
 	// enviar paquete serializado
-	enviar_paquete(paquete, socket_memoria);
+		enviar_paquete(paquete, socket_memoria);
 
 	// de forma recursiva escucho y manejo las peticiones de memoria
 	// 	la recursión se rompe en un out_of_memory o con el segmento creado
-	escuchar_respuesta_memoria(contexto, peticion_segmento);
+		escuchar_respuesta_memoria(contexto, peticion_segmento);
 	}
 }
 
@@ -566,6 +567,38 @@ void acutalizar_tablas_de_procesos(t_list* tablas_de_segmentos_actualizadas){
 	// actualizo la tabla del proceso ejecutando actualmente
 	actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_ejecutando);
 	sem_post(&m_proceso_ejecutando);
+
+	// actualizo tambioen los que estan bloqueados
+
+	sem_wait(&m_recurso_bloqueado);
+	void _actualizar_pcbs_bloqueado(char* key, void* value){
+		t_queue* cola_bloqueados_recurso_n = (t_queue*) value;
+
+		int tamanio_bloqueados = queue_size(cola_bloqueados_recurso_n);
+		for(int j = 0; j< tamanio_bloqueados; j++){
+			t_pcb* proceso_n = list_get(cola_bloqueados_recurso_n->elements, j);
+				
+			actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_n);
+		}
+	}
+	dictionary_iterator(recurso_bloqueado, _actualizar_pcbs_bloqueado);
+	sem_post(&m_recurso_bloqueado);
+
+	sem_wait(&m_cola_de_procesos_bloqueados_para_cada_archivo);
+
+	void _actualizar_pcbs_bloqueados_por_archivo(char* key, void* value){
+		t_queue* cola_bloqueados_archivo_n = (t_queue*) value;
+
+		int tamanio_bloqueados = queue_size(cola_bloqueados_archivo_n);
+		for(int j = 0; j< tamanio_bloqueados; j++){
+			t_pcb* proceso_n = list_get(cola_bloqueados_archivo_n->elements, j);
+				
+			actualizar_tabla_del_proceso(tablas_de_segmentos_actualizadas, proceso_n);
+		}
+	}
+	dictionary_iterator(colas_de_procesos_bloqueados_para_cada_archivo, _actualizar_pcbs_bloqueados_por_archivo);
+
+	sem_post(&m_cola_de_procesos_bloqueados_para_cada_archivo);
 
 }
 

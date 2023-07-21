@@ -47,6 +47,11 @@ int main(void){
 		terminar_programa(logger, config, bitmap, bloques);
 	}
 
+	path_superbloque = string_replace(path_superbloque, "~", "/home/utnso");
+	path_bitmap = string_replace(path_bitmap, "~", "/home/utnso");
+	path_bloques = string_replace(path_bloques, "~", "/home/utnso");
+	path_fcb = string_replace(path_fcb, "~", "/home/utnso");
+
 	int result_conexion_memoria = conectar_con_memoria(ip_memoria, puerto_memoria);
 
 
@@ -227,6 +232,7 @@ t_superbloque* iniciar_superbloque(char* path_superbloque){
 	t_config* config_superbloque = config_create(path_superbloque);
 
 	if(config_superbloque == NULL){
+		log_error(logger, "No se encontro el arhivo del superbloque, con path %s", path_superbloque);
 		return NULL;
 	}
 

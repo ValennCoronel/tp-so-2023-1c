@@ -488,7 +488,7 @@ bool manejar_instruccion_mov_in(int cliente_fd, t_contexto_ejec** contexto,t_ins
 	}
 	char* valor_leido = leer_valor_de(direccion_fisica, (*contexto)->pid, bytes_a_leer);
 
-	log_info(logger,"PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %s - Valor: %s", (*contexto)->pid,numero_segmento, registro_a_guardar, valor_leido);
+	log_info(logger,"PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", (*contexto)->pid,numero_segmento, direccion_fisica, valor_leido);
 
 	//setear registro con lo devuelto
 	setear_registro(contexto, registro_a_guardar, valor_leido);

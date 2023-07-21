@@ -44,6 +44,8 @@ extern sem_t m_cola_ready;
 extern sem_t m_cola_new;
 extern sem_t consumidor;
 extern sem_t m_proceso_ejecutando;
+extern sem_t m_recurso_bloqueado;
+extern sem_t m_cola_de_procesos_bloqueados_para_cada_archivo;
 
 void inicializar_colas_y_semaforos();
 void *planificar_nuevos_procesos_largo_plazo(void *arg);

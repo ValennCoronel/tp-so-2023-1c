@@ -194,52 +194,58 @@ void compactar_memoria(int cliente_fd)
 
 	log_info(logger, "Solicitud de Compactación");
 
+	//si modifco estos se modifican de las tablas tambien, entonces lo duplico
 	t_list* todos_los_segmentos_del_sistema = obtener_todos_los_segmentos();
+
+	//t_list* todos_los_segmentos_del_sistema_pre_compactacion = duplicar_lista_segmentos(todos_los_segmentos_del_sistema);  
 
 	
 	int cantidad_segmentos = list_size(todos_los_segmentos_del_sistema);
+
+	int direccion_base_actual = 0;
 
 	for (int i = 0; i < cantidad_segmentos; i++)
 	{
 		t_segmento* segmento_actual = list_get(todos_los_segmentos_del_sistema,i);
 
-		if(segmento_actual->tamano != -1 && segmento_actual->direccion_base != -1 && segmento_actual->direccion_base != 0){
-			
+
+
+		if(segmento_actual->direccion_base > direccion_base_actual){
+			direccion_base_actual = segmento_actual->direccion_base;	
+		}
 			
 		
         // Obtener el siguiente segmento
-			t_segmento* segmento_siguiente = NULL;
-			int indice_segmento_siguiente = i+1;
-			while (indice_segmento_siguiente < cantidad_segmentos )
-			{
-				segmento_siguiente = list_get(todos_los_segmentos_del_sistema, indice_segmento_siguiente);
-				if(segmento_siguiente->tamano != -1 && segmento_siguiente->direccion_base != -1 && segmento_siguiente->direccion_base != segmento_actual->direccion_base && segmento_siguiente->direccion_base != 0 ){
-					break;
-				}
-
-				indice_segmento_siguiente++;
-				segmento_siguiente = NULL;
+		t_segmento* segmento_siguiente = NULL;
+		int indice_segmento_siguiente = i+1;
+		
+		while (indice_segmento_siguiente < cantidad_segmentos )
+		{
+			segmento_siguiente = list_get(todos_los_segmentos_del_sistema, indice_segmento_siguiente);
+			if(segmento_siguiente->direccion_base != segmento_actual->direccion_base && segmento_siguiente->direccion_base  > direccion_base_actual ){
+				break;
 			}
+			indice_segmento_siguiente++;
+			segmento_siguiente = NULL;
+		}
 
 
         // Calcular el desplazamiento necesario para compactar el segmento actual
-			int desplazamiento = 0;
-			if (segmento_siguiente != NULL) {
-				desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
-			}
-
-		// Mover los datos del actual al nuevo espacio contiguo
-			if (desplazamiento > 0)
-			{
-				void* origen = espacio_usuario + segmento_siguiente->direccion_base;
-				void* destino = espacio_usuario + segmento_actual->direccion_base + segmento_actual->tamano;
-				size_t bytes_a_mover = segmento_siguiente->tamano;
-				memmove(destino, origen, bytes_a_mover);
-
-			// Actualizar la dirección base del hueco actual
-				segmento_siguiente->direccion_base = segmento_actual->direccion_base + segmento_actual->tamano;
-			}
+		int desplazamiento = 0;
+		if (segmento_siguiente != NULL) {
+			desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
 		}
+		// Mover los datos del actual al nuevo espacio contiguo
+		if (desplazamiento > 0)
+		{
+			void* origen = espacio_usuario + segmento_siguiente->direccion_base;
+			void* destino = espacio_usuario + segmento_actual->direccion_base + segmento_actual->tamano;
+			size_t bytes_a_mover = segmento_siguiente->tamano;
+			memmove(destino, origen, bytes_a_mover);
+			// Actualizar la dirección base del hueco actual
+			segmento_siguiente->direccion_base = segmento_actual->direccion_base + segmento_actual->tamano;
+		}
+		
 	}
 
 	// actualizo la lista de huecos libres para que haya un solo hueco libre de lo que falta por ocupar de memoria
@@ -845,7 +851,11 @@ t_list* obtener_todos_los_segmentos(){
 
 		for(int j = 0; j < tabla_del_proceso_n->cantidad_segmentos; j++){
 			t_segmento* segmento_n = list_get(tabla_del_proceso_n->segmentos,j);	
-			list_add(segmentos_del_sistema, segmento_n);
+			if( segmento_n->direccion_base != -1 && segmento_n->tamano != -1 && ((i == 0 && j== 0) || (j>0))){	
+
+				list_add(segmentos_del_sistema, segmento_n);
+			}
+
 		}
 	}
 
