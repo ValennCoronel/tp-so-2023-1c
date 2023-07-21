@@ -86,6 +86,12 @@ int main(void){
 	bitarray_bloques_libres = bitarray_create_with_mode(bits_bitmap, tamanio_bitmap, MSB_FIRST);
 
 	bloques = levantar_archivo_binario(path_bloques);
+	
+	int bloques_fd = fileno(bloques);
+
+	ftruncate(bloques_fd, superbloque->block_size * superbloque->block_count);
+
+
 
 	fcb_por_archivo = dictionary_create();
 
@@ -200,6 +206,9 @@ void manejar_peticiones_kernel(t_log* logger, int server_fd, int socket_memoria,
 FILE* levantar_archivo_binario(char* path_archivo){
 
 	FILE* archivo = fopen(path_archivo, "ab+");
+
+	archivo = freopen(path_archivo, "rb+", archivo);
+
 
 	if(archivo == NULL){
 		log_error(logger, "No existe el archivo con el path: %s",path_archivo);

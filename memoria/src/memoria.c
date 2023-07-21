@@ -206,7 +206,6 @@ void compactar_memoria(int cliente_fd)
 		if(segmento_actual->tamano != -1 && segmento_actual->direccion_base != -1 && segmento_actual->direccion_base != 0){
 			
 			
-			  log_info(logger, "Segmento actual: %d - Base: %d - Tamaño %d",  segmento_actual->id_segmento, segmento_actual->direccion_base, segmento_actual->tamano);
 		
         // Obtener el siguiente segmento
 			t_segmento* segmento_siguiente = NULL;
@@ -226,7 +225,6 @@ void compactar_memoria(int cliente_fd)
         // Calcular el desplazamiento necesario para compactar el segmento actual
 			int desplazamiento = 0;
 			if (segmento_siguiente != NULL) {
-				log_info(logger, "Segmento siguiente: %d - Base: %d - Tamaño %d",  segmento_siguiente->id_segmento, segmento_siguiente->direccion_base, segmento_siguiente->tamano);
 				desplazamiento = segmento_siguiente->direccion_base - (segmento_actual ->direccion_base + segmento_actual ->tamano);
 			}
 
@@ -266,7 +264,6 @@ void compactar_memoria(int cliente_fd)
 
 	// tamano con el resto de la memoria que falta por ocupar
 	unico_hueco_libre->tamano = tam_memoria - unico_hueco_libre->direccion_base;
-	log_info(logger, "Unico hueco libre post compactacion de %d",unico_hueco_libre->tamano);
 
 	list_add(huecos_libres, unico_hueco_libre);
 
@@ -485,7 +482,6 @@ void acceder_espacio_usuario_escritura(int cliente_fd, int retardo_memoria){
 
 	log_info(logger, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: %s", pid, direccion_fisica, bytes_a_escribir, nombre_modulo);
 
-	log_info(logger, "Contenido a escribir: %s, con length: %ld", contenido_a_escribir, strlen(contenido_a_escribir));
 
 
 	 esperar_por(retardo_memoria);
@@ -656,7 +652,6 @@ void agregar_nuevo_segmento_a(int pid, t_segmento* segmento){
 	// actualizo la tabla del proceso
 
 
-	log_info(logger, "Guardando segmento %d con tamano: %d",segmento->id_segmento,segmento->tamano);
 
 	//uso el segmento
 	segmento_a_actualizar->direccion_base = segmento->direccion_base;
@@ -848,7 +843,6 @@ t_list* obtener_todos_los_segmentos(){
 	for(int i = 0; i < cantidad_de_procesos ; i++){
 		t_tabla_de_segmento* tabla_del_proceso_n = list_get(tablas_de_segmentos_de_todos_los_procesos, i);
 
-		log_info(logger, "agarro los segmentos del proceso %d con %d segmentos", tabla_del_proceso_n->pid, tabla_del_proceso_n->cantidad_segmentos);
 		for(int j = 0; j < tabla_del_proceso_n->cantidad_segmentos; j++){
 			t_segmento* segmento_n = list_get(tabla_del_proceso_n->segmentos,j);	
 			list_add(segmentos_del_sistema, segmento_n);

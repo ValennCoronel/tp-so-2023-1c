@@ -89,9 +89,10 @@ void truncar_archivo(t_superbloque* superbloque){
 	char* nombre_archivo = strdup(instruccion_peticion->parametros[0]);
 	int nuevo_tamano_archivo = atoi(instruccion_peticion->parametros[1]);
 
-	log_info(logger, "Truncar Archivo: %s - Tamaño: %d", nombre_archivo, nuevo_tamano_archivo);
 
+	log_info(logger, "Truncar Archivo: %s - Tamaño: %d", nombre_archivo, nuevo_tamano_archivo);
 	t_fcb* fcb_a_truncar = dictionary_get(fcb_por_archivo, nombre_archivo);
+
 
 
 	  //calculo de cantidad de bloques a truncar
@@ -101,6 +102,9 @@ void truncar_archivo(t_superbloque* superbloque){
     int numero_de_bloques_actual = calcular_cantidad_de_bloques(fcb_a_truncar->tamanio_archivo, superbloque);
 
 
+
+
+	log_info(logger, "Bloques actual %d vs Bloque nuevo %d", numero_de_bloques_actual, numero_de_bloques_nuevo);
 
     if(numero_de_bloques_nuevo > numero_de_bloques_actual){
 	   //ampliar tamanio
@@ -244,7 +248,7 @@ void escribir_archivo(t_superbloque* superbloque){
 
 	recibir_instruccion_y_puntero_kernel_en(socket_kernel, instruccion, &puntero, &pid);
 
-	log_info(logger, "“Escribir Archivo: %s - Puntero: %d - Memoria: %s - Tamaño: %s", instruccion->parametros[0], puntero, instruccion->parametros[1], instruccion->parametros[2]);
+	log_info(logger, "Escribir Archivo: %s - Puntero: %d - Memoria: %s - Tamaño: %s", instruccion->parametros[0], puntero, instruccion->parametros[1], instruccion->parametros[2]);
 
 	t_paquete* paquete = crear_paquete(READ_MEMORY);
 
@@ -289,6 +293,10 @@ void escribir_archivo(t_superbloque* superbloque){
 			}else{
 				numero_de_bloque = obtener_bloque_siguiente(fcb_archivo, puntero, i, superbloque);
 			}
+
+		log_info(logger, "Guardo bloque nro %d en el bloque %d", i,numero_de_bloque);
+
+
 		void* contenido_bloque_n = malloc(superbloque->block_size);
 		memcpy(contenido_bloque_n, buffer + desplazamiento, superbloque->block_size);
 		desplazamiento += superbloque->block_size;
@@ -365,7 +373,7 @@ t_fcb* crear_fcb( t_instruccion* instruccion, char* path){
 	config->path = strdup(path);
 	config->properties = dictionary_create();
 
-	config_set_value(config, "NOMBRE_ARCHIVO", instruccion->parametros[0]);
+	config_set_value(config, "NOMBRE_ARCHIVO", string_duplicate(instruccion->parametros[0]));
 	config_set_value(config, "TAMANIO_ARCHIVO", string_itoa(0));
 	config_set_value(config, "PUNTERO_DIRECTO", string_itoa(-1));
 	config_set_value(config, "PUNTERO_INDIRECTO", string_itoa(-1));
@@ -374,7 +382,7 @@ t_fcb* crear_fcb( t_instruccion* instruccion, char* path){
 
 	t_fcb* fcb = malloc(sizeof(t_fcb));
 
-	fcb->nombre_archivo = config_get_string_value(config, "NOMBRE_ARCHIVO");
+	fcb->nombre_archivo = string_duplicate(config_get_string_value(config, "NOMBRE_ARCHIVO"));
 	fcb->tamanio_archivo = config_get_int_value(config, "TAMANIO_ARCHIVO");
 	fcb->puntero_directo = config_get_int_value(config, "PUNTERO_DIRECTO");
 	fcb->puntero_indirecto = config_get_int_value(config, "PUNTERO_INDIRECTO");
@@ -581,12 +589,15 @@ void agregar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_agregar, t_superbloq
 
 	int punteros_x_bloque =superbloque->block_size/sizeof(uint32_t); //4 bytes ocupa un puntero
 
+
+
 	if(fcb_a_actualizar->puntero_directo == -1 && bloques_a_agregar == 1){
 		ocupar_bloque_libre_directo(fcb_a_actualizar);
 	} else if(fcb_a_actualizar->puntero_directo == -1 && bloques_a_agregar > 1){
 		//ocupa priermo el directo
 		ocupar_bloque_libre_directo(fcb_a_actualizar);
 		bloques_a_agregar -= 1;
+
 		// luego ocupa el indirecto para el resto de bloques
 		ocupar_bloque_libre_indirecto(fcb_a_actualizar, bloques_a_agregar, punteros_x_bloque, superbloque);
 
@@ -595,15 +606,19 @@ void agregar_bloques(t_fcb* fcb_a_actualizar, int bloques_a_agregar, t_superbloq
 		ocupar_bloque_libre_indirecto(fcb_a_actualizar, bloques_a_agregar, punteros_x_bloque, superbloque);
 
 	} else if(fcb_a_actualizar->puntero_indirecto != -1 && fcb_a_actualizar->puntero_directo != -1 ){
+
 		// no va a pasar que se intenten agregar bloques de mas
 		ocupar_bloque_libre_indirecto_fatlantes(fcb_a_actualizar, bloques_a_agregar, superbloque);
-	}
+	} 
+
+
+
 
 }
 
 // obtiene el numero del primer bloque libre según el bit array y lo pone como ocupado
-int obtener_primer_bloque_libre(){
-	int puntero_primer_bloque_libre = 0;
+uint32_t obtener_primer_bloque_libre(){
+	uint32_t puntero_primer_bloque_libre = 0;
 
 	int bits_bitarray = bitarray_get_max_bit(bitarray_bloques_libres);
 
@@ -636,11 +651,12 @@ void ocupar_bloque_libre_directo(t_fcb* fcb){
 
 	fcb->puntero_directo = obtener_primer_bloque_libre();
 
+
 }
 
 //agrega un puntero indirecto al fcb y le agrega adentro todos los bloques que necesite sin pasarse de los punteros por bloque
 void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punteros_x_bloque, t_superbloque* superbloque){
-	int puntero_indirecto = obtener_primer_bloque_libre();
+	uint32_t puntero_indirecto = obtener_primer_bloque_libre();
 	void* punteros_directos = malloc(bloques_a_agregar*sizeof(uint32_t));
 
 	int desplazamiento = 0;
@@ -651,9 +667,10 @@ void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punter
 		desplazamiento += sizeof(uint32_t);
 	}
 
+
 	guardar_en_bloque(fcb->nombre_archivo, puntero_indirecto, 1, punteros_directos, superbloque);
 
-	fcb->puntero_indirecto = (uint32_t) puntero_indirecto;
+	fcb->puntero_indirecto =  puntero_indirecto;
 
 	free(punteros_directos);
 }
@@ -729,6 +746,7 @@ void ocupar_bloque_libre_indirecto_fatlantes(t_fcb* fcb, int bloques_a_agregar, 
 	for(int i = 0; i< bloques_a_agregar; i++){
 		uint32_t puntero_directo_n = (uint32_t) obtener_primer_bloque_libre();
 
+
 		memcpy(punteros_directos_leidos+desplazamiento,&puntero_directo_n, sizeof(uint32_t));
 		desplazamiento += sizeof(uint32_t);
 
@@ -752,7 +770,7 @@ uint32_t obtener_bloque_siguiente(t_fcb* fcb_archivo, int byte_inicio, int numer
 	int cantidad_de_bloques_del_archivo = calcular_cantidad_de_bloques(fcb_archivo->tamanio_archivo, superbloque);
 	
 	// le saco los bytes del bloque directo
-	int numero_de_bloque_indirecto_inicio = calcular_cantidad_de_bloques(byte_inicio - superbloque->block_size,superbloque);
+	int numero_de_bloque_indirecto_inicio = calcular_cantidad_de_bloques(byte_inicio - superbloque->block_size,superbloque) ;// +1 oara qye vaya al siguiente
 
 	int desplazamiento = 0;
 
@@ -762,12 +780,13 @@ uint32_t obtener_bloque_siguiente(t_fcb* fcb_archivo, int byte_inicio, int numer
 		uint32_t puntero_n;
 		
 		memcpy(&puntero_n, punteros_leidos+desplazamiento, sizeof(uint32_t));
+
 		desplazamiento += sizeof(uint32_t);
 
 		punteros_bloque_indirecto_leidos[i] =  puntero_n;
 	}
 
-	uint32_t numero_de_bloque_siguiente = punteros_bloque_indirecto_leidos[numero_de_bloque_indirecto_inicio - 1 + numero_de_bloque ];
+	uint32_t numero_de_bloque_siguiente = punteros_bloque_indirecto_leidos[numero_de_bloque_indirecto_inicio + numero_de_bloque ];
 
 	return numero_de_bloque_siguiente;
 }
