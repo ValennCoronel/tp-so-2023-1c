@@ -82,7 +82,7 @@ int main(void){
 
 	log_info(logger, "Memoria lista para recibir peticiones");
 
-	manejar_peticiones(algoritmo_asignacion, retardo_memoria, cant_segmentos);
+	manejar_peticiones(algoritmo_asignacion, retardo_memoria, cant_segmentos, retardo_compactacion);
 
 	terminar_programa(logger, config);
 
@@ -114,7 +114,7 @@ void terminar_programa(t_log* logger, t_config* config){
 
 
 //Funcion para manejo de peticiones tanto para kernel, CPU y filesystem
-void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria, int cant_segmentos){
+void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria, int cant_segmentos,int retardo_compactacion ){
 
 	while(1){
 		pthread_t thread;
@@ -125,7 +125,7 @@ void manejar_peticiones(char* algoritmo_asignacion, int retardo_memoria, int can
 		argumentos_atender_cliente->algoritmo_asignacion = algoritmo_asignacion;
 		argumentos_atender_cliente->retardo_memoria = retardo_memoria;
 		argumentos_atender_cliente->cant_segmentos = cant_segmentos;
-
+		argumentos_atender_cliente->retardo_compactacion = retardo_compactacion ;
 
 
 		pthread_create(&thread, NULL, atender_cliente, (void*) argumentos_atender_cliente);
@@ -141,6 +141,7 @@ void* atender_cliente(void *args){
 	char* algoritmo_asignacion = argumentos->algoritmo_asignacion;
 	uint64_t cliente_fd = argumentos->cliente_fd;
 	uint64_t retardo_memoria = argumentos->retardo_memoria;
+	uint64_t retardo_compactacion = argumentos->retardo_compactacion;
 	uint64_t cant_segmentos = argumentos->cant_segmentos;
 
 	while(1){
@@ -172,7 +173,7 @@ void* atender_cliente(void *args){
 					acceder_espacio_usuario_escritura(cliente_fd, retardo_memoria);
 					break;
 				case COMPACTAR_MEMORIA:
-					compactar_memoria(cliente_fd);
+					compactar_memoria(cliente_fd, retardo_compactacion);
 					break;
 				case -1:
 					log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -187,7 +188,7 @@ void* atender_cliente(void *args){
 }
 
 
-void compactar_memoria(int cliente_fd)
+void compactar_memoria(int cliente_fd, int retardo_compactacion)
 {
 	 // se debe recibir para evitar errores en los sockets, por mas que no se use
 	char* mensaje = recibir_mensaje(cliente_fd);
@@ -301,6 +302,8 @@ void compactar_memoria(int cliente_fd)
 		}
 
 	}
+	
+	esperar_por(retardo_compactacion);
 
 	enviar_paquete(paquete_respuesta, cliente_fd);
 
@@ -706,7 +709,9 @@ t_list* check_espacio_contiguo(uint32_t tamano_requerido){
 	bool _encontrar_espacio_contiguo(void* hueco){
 		t_segmento* hueco_libre = (t_segmento*) hueco;
 
-		return hueco_libre->tamano >= tamano_requerido;
+
+		//aislo el segmento 0
+		return hueco_libre->tamano >= tamano_requerido && hueco_libre->direccion_base != 0;
 	}
 
 	huecos_contiguos = list_filter(huecos_libres, _encontrar_espacio_contiguo);

@@ -39,6 +39,7 @@ extern t_queue* cola_new;
 extern t_queue* cola_ready;
 extern t_pcb* proceso_ejecutando;
 extern t_temporal* rafaga_proceso_ejecutando;
+extern char* algoritmo_planificacion;
 
 extern sem_t m_cola_ready;
 extern sem_t m_cola_new;
@@ -50,7 +51,6 @@ extern sem_t m_cola_de_procesos_bloqueados_para_cada_archivo;
 void inicializar_colas_y_semaforos();
 void *planificar_nuevos_procesos_largo_plazo(void *arg);
 void agregar_proceso_a_ready(int conexion_memoria,  char* algoritmo_planificacion);
-int puede_ir_a_ready(int grado_max_multiprogramacion);
 void agregar_cola_new(t_pcb* pcb_proceso);
 
 t_tabla_de_segmento* obtener_tabla_segmentos(int conexion_memoria, int pid);

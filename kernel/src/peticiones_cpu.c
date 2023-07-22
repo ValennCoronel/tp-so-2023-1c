@@ -824,22 +824,18 @@ void destroy_proceso_ejecutando(){
 char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_recursos){
 
 		char** recursos_disponibles_string_array = string_array_new();
-		char* recursos_disponibles_string = string_new();
 
 
 		for(int i =0; i< cantidad_de_recursos; i++){
 			int diponibilidad_recurso_n = recursos_disponibles[i];
 
 			string_array_push(&recursos_disponibles_string_array, string_itoa(diponibilidad_recurso_n));
+			string_array_push(&recursos_disponibles_string_array,"," );
 		}
 
+		string_array_pop(recursos_disponibles_string_array);
 
-		void crear_string(char *recurso_disponible_string){
-		    string_append(&recursos_disponibles_string, recurso_disponible_string);
-		    string_append(&recursos_disponibles_string, ",");
-		}
-
-		string_iterate_lines(recursos_disponibles_string_array,crear_string);
+		char* recursos_disponibles_string = pasar_a_string(recursos_disponibles_string_array);
 
 		string_array_destroy(recursos_disponibles_string_array);
 

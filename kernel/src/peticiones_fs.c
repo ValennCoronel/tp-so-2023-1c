@@ -81,7 +81,6 @@ void f_close(){
 	//se borra la entrada de la tabla de archivos por porceso en cualquier caso
 	sem_wait(&m_proceso_ejecutando);
 
-	log_info(logger, "proceso ejecutando es null? %d (0 no , 1 si)", proceso_ejecutando == NULL);
 
 	free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso->file);
 	free(proceso_ejecutando->tabla_archivos_abiertos_del_proceso);
@@ -348,8 +347,6 @@ void enviar_cola_archivos_bloqueados(t_instruccion* instruccion){
 void abrir_archivo(t_instruccion* instruccion){
 
 	char* nombre_archivo = strdup(instruccion->parametros[0]);
-
-	log_info(logger, " Abriendo archivo %s ...", nombre_archivo);
 
 	//Cargo estructuras restantes
 	t_tabla_global_de_archivos_abiertos* archivo = malloc(sizeof(t_tabla_global_de_archivos_abiertos));

@@ -20,8 +20,7 @@ int main(void){
 	char* puerto_filesystem;
 	char* ip_cpu;
 	char* puerto_cpu;
-	char* puerto_escucha;
-	char* algoritmo_planificacion;
+	char* puerto_escucha;	
 	int estimacion_inicial;
 	double hrrn_alfa;
 

@@ -4,6 +4,7 @@ t_queue* cola_new;
 t_queue* cola_ready;
 t_pcb* proceso_ejecutando;
 t_temporal* rafaga_proceso_ejecutando;
+char* algoritmo_planificacion;
 
 
 sem_t consumidor;
@@ -51,17 +52,12 @@ void *planificar_nuevos_procesos_largo_plazo(void *arg){
 		// sumo uno para simular si agrego a ready el proceso qeu esta en new
 		procesos_en_memoria_total ++;
 
-		if(tamanio_cola_ready == 0 && tamanio_cola_new != 0 && procesos_en_memoria_total < grado_max_multiprogramacion ){
 
-			agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
-
-		} else if(tamanio_cola_new != 0 && procesos_en_memoria_total < grado_max_multiprogramacion){
+		if(tamanio_cola_new != 0 && procesos_en_memoria_total < grado_max_multiprogramacion){
 
 			//verificar si se lo puede admitir a la cola de ready
-				agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
-//			if(puede_ir_a_ready(grado_max_multiprogramacion)){
-//			}
-		}
+			agregar_proceso_a_ready(conexion_memoria, algoritmo_planificacion);
+		} 
 	}
 
 	return NULL;
@@ -120,19 +116,28 @@ void agregar_proceso_a_ready(int conexion_memoria, char* algoritmo_planificacion
 		sem_post(&m_proceso_ejecutando);
 		sem_post(&consumidor);
 	}
-	log_info(logger, "salgo planificador largo plazo");
 	
 }
 
 void pasar_a_ready(t_pcb* proceso_bloqueado){
 
 	sem_wait(&m_cola_ready);
+
 	queue_push(cola_ready, proceso_bloqueado);
 	int procesos_en_ready = queue_size(cola_ready);
+
+	char *pids = listar_pids_cola_ready();
+
 	sem_post(&m_cola_ready);
+
+
+	log_info(logger, "Cola Ready %s: [%s]",algoritmo_planificacion, pids);
+
+	free(pids);
 
 	sem_wait(&m_proceso_ejecutando);
 	if(proceso_ejecutando == NULL && procesos_en_ready > 0 ){
+		sem_post(&m_cola_ready);
 		sem_post(&m_proceso_ejecutando);
 		sem_post(&consumidor);
 	} else {
@@ -141,18 +146,6 @@ void pasar_a_ready(t_pcb* proceso_bloqueado){
 
 }
 
-int puede_ir_a_ready(int grado_max_multiprogramacion){
-
-	sem_wait(&m_cola_ready);
-	int size_cola_ready = queue_size(cola_ready);
-	sem_post(&m_cola_ready);
-
-	if(size_cola_ready < (grado_max_multiprogramacion-1)){
-		return 1;
-	}
-
-	return 0;
-}
 
 void agregar_cola_new(t_pcb* pcb_proceso){
 	pcb_proceso->temporal_ready = temporal_create();
@@ -229,7 +222,11 @@ char* listar_pids_cola_ready(void){
 		char *PID_string = string_itoa(item->PID);
 
 		string_array_push(&array_pids, PID_string);
+		string_array_push(&array_pids, ",");
 	}
+
+	//saco la ultima comma
+	string_array_pop(array_pids);
 
 
 	char* string_pids = pasar_a_string(array_pids);

@@ -82,7 +82,10 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 		return;
 	}
 
-	void _calcular_proxima_rafaga_estimada_cada_proceso(t_pcb* pcb_proceso){
+	void _calcular_proxima_rafaga_estimada_cada_proceso(void *pcb){
+		t_pcb* pcb_proceso = (t_pcb*) pcb;
+
+
 		int64_t tiempo_de_espera = calcular_tiempo_de_espera(pcb_proceso);
 
 		double estimado_proxima_rafaga = estimar_proxima_rafaga_proceso(hrrn_alpha, pcb_proceso->rafaga_anterior , pcb_proceso->estimado_proxima_rafaga);
@@ -93,13 +96,19 @@ void planificar_corto_plazo_hrrn(double hrrn_alpha, int socket_cpu){
 		pcb_proceso->prioridad = prioridad;
 	}
 
-	list_iterate(cola_ready->elements, (void *) _calcular_proxima_rafaga_estimada_cada_proceso);
+	list_iterate(cola_ready->elements, _calcular_proxima_rafaga_estimada_cada_proceso);
 
 
 	reordenar_cola_ready_hrrn();
 
 	t_pcb *proceso_a_ejecutar = queue_pop(cola_ready);
-	sem_post(&m_cola_ready);
+	sem_post(&m_cola_ready);	
+
+	log_info(logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", proceso_a_ejecutar->PID, "READY", "EXEC");
+
+	temporal_stop(proceso_a_ejecutar->temporal_ultimo_desalojo);
+	temporal_destroy(proceso_a_ejecutar->temporal_ultimo_desalojo);
+	proceso_a_ejecutar->temporal_ultimo_desalojo = NULL;
 
 	t_contexto_ejec* contexto_ejecucion = malloc(sizeof(t_contexto_ejec));
 	contexto_ejecucion->lista_instrucciones = proceso_a_ejecutar->instrucciones;
@@ -134,11 +143,7 @@ void reordenar_cola_ready_hrrn(){
 
 int64_t calcular_tiempo_de_espera(t_pcb* pcb_proceso){
 
-	int64_t tiempo_espera = temporal_gettime(pcb_proceso->temporal_ultimo_desalojo);
-
-	temporal_stop(pcb_proceso->temporal_ultimo_desalojo);
-	temporal_destroy(pcb_proceso->temporal_ultimo_desalojo);
-	pcb_proceso->temporal_ultimo_desalojo = NULL;
+	int64_t tiempo_espera = temporal_gettime(pcb_proceso->temporal_ultimo_desalojo);	
 
 	return tiempo_espera;
 }
