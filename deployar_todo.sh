@@ -109,7 +109,7 @@ if [ "$target" != "./consola" ]; then
 	exit 0
 fi
 
-echo -e "\n${yellowColour}[*]${endColour}${grayColour}Compialdo todo correctamente ...${endColour}\n\n"
+echo -e "\n${yellowColour}[*]${endColour}${grayColour}Compilado todo correctamente ...${endColour}\n\n"
 
 
 

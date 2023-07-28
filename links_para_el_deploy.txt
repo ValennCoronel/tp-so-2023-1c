@@ -1,0 +1,13 @@
+
+commons:
+	- https://github.com/sisoputnfrba/so-commons-library.git 
+
+tp nuestro:
+	- https://github.com/sisoputnfrba/tp-2023-1c-Grupo-SO-1.git 
+
+doc de pruebas:
+	- https://docs.google.com/document/d/1MNalaTCB95qGO8q3rlR7VVCQqv3VLP3oeYxBgXgBy5g/edit
+
+link pruebas:
+	- https://github.com/sisoputnfrba/tuki-pruebas.git 
+
