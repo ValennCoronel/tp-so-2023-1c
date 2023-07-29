@@ -5,7 +5,7 @@
 #include "../global.h"
 #include "utils_cliente.h"
 
-#define IP "127.0.0.1"
+#define IP "192.168.0.99"
 
 void* recibir_buffer(int*, int);
 

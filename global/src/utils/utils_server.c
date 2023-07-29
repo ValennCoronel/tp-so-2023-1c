@@ -448,8 +448,16 @@ void contexto_ejecucion_destroy(t_contexto_ejec* contexto_ejecucion){
 void destroy_tabla_de_segmentos(t_tabla_de_segmento* tabla_a_borrar){
 	int segmentos_count = list_size(tabla_a_borrar->segmentos);
 	if(segmentos_count > 0){
+		int i = 0;
 		void _destroy_segmentos(void* segmento){
 			t_segmento* segmento_a_borrar = (t_segmento*)segmento;
+
+			//ignoro el segmento  0
+			if(i == 0){
+				return;
+			}
+			i ++;
+			log_info(logger, "borrando segmento %d", segmento_a_borrar->id_segmento);
 
 			free(segmento_a_borrar);
 		}
