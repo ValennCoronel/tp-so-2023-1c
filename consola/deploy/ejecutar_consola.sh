@@ -22,5 +22,14 @@ if [ ! -f "$pathPseudocodigo" ]; then
 
 fi
 
-LD_LIBRARY_PATH="/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" ./consola ./consola.config "${pathPseudocodigo}"
+conValgrind=$2
+
+if [ "$conValgrind" = "1" ]; then
+
+        LD_LIBRARY_PATH="/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" valgrind --leak-check=full --show-leak-kinds=all --log-file=valgrind.log ./consola ./consola.config "${pathPseudocodigo}"
+
+else
+        LD_LIBRARY_PATH="/home/utnso/Desktop/tp-2023-1c-Grupo-SO-1/global/deploy" ./consola ./consola.config "${pathPseudocodigo}"
+fi
+
 

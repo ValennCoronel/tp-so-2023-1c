@@ -80,6 +80,7 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 	char* cadena;
 
 	t_list* lista_instrucciones = list_create();
+	
 
 	//Leer archivo de pseudocodigo, guardar memoria y rellenar la estructura
 
@@ -108,6 +109,12 @@ int main(int argc, char** argv){ //Los argumentos contienen la cantidad de argum
 
 
 			t_instruccion *ptr_inst = malloc(sizeof(t_instruccion)); //Creo la struct y reservo memoria
+
+
+			ptr_inst->parametros[0] = NULL;
+			ptr_inst->parametros[1] = NULL;
+			ptr_inst->parametros[2] = NULL;
+
 
 			char* token = strtok(cadena, " "); // obtiene el primer elemento en token
 

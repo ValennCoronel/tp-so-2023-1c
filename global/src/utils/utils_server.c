@@ -61,6 +61,7 @@ char* recibir_mensaje(int socket_cliente)
 	int size;
 	char* buffer = recibir_buffer(&size, socket_cliente);
 	int length_buffer = strlen(buffer);
+	buffer = realloc(buffer, length_buffer + 1);
 	buffer[length_buffer +1] = '\0';
 
 	return buffer;

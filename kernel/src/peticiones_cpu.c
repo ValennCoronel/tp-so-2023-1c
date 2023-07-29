@@ -837,7 +837,6 @@ char* listar_recursos_disponibles(int* recursos_disponibles, int cantidad_de_rec
 
 		char* recursos_disponibles_string = pasar_a_string(recursos_disponibles_string_array);
 
-		string_array_destroy(recursos_disponibles_string_array);
 
 		return recursos_disponibles_string ;
 }
