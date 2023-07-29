@@ -44,7 +44,7 @@ void enviar_mensaje(char* mensaje, int socket_cliente, op_code codigo)
 	paquete->codigo_operacion = codigo;
 
 	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = strlen(mensaje) + 1;
+	paquete->buffer->size = strlen(mensaje) +1;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
 

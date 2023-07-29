@@ -231,7 +231,6 @@ char* listar_pids_cola_ready(void){
 
 	char* string_pids = pasar_a_string(array_pids);
 
-	string_array_destroy(array_pids);
 
 	return string_pids ;
 }
