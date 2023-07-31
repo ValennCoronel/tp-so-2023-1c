@@ -469,6 +469,7 @@ void destroy_tabla_de_segmentos(t_tabla_de_segmento* tabla_a_borrar){
 	}
 
 	free(tabla_a_borrar);
+	tabla_a_borrar=NULL;
 }
 
 void registro_cpu_destroy(registros_CPU* registro){

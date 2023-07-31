@@ -774,6 +774,11 @@ t_tabla_de_segmento* buscar_tabla_de(int pid){
 	bool _encontrar_por_pid(void* tabla ){
 		t_tabla_de_segmento* tabla_de_segmentos = (t_tabla_de_segmento*) tabla;
 
+		if(tabla_de_segmentos == NULL){
+			return false;
+		}
+
+
 		return tabla_de_segmentos->pid == pid;
 	}
 
