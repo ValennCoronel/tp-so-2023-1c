@@ -1,6 +1,7 @@
 #include "peticiones_kernel.h"
 
 
+int retardo_acceso_bloque;
 //Esta operación consistirá en verificar que exista el FCB correspondiente al
 //archivo y en caso de que exista deberá completar las estructuras necesarias y abrir el archivo,
 //caso contrario, deberá crear el archivo
@@ -680,6 +681,7 @@ void ocupar_bloque_libre_indirecto(t_fcb* fcb, int bloques_a_agregar, int punter
 void* leer_en_bloque(char* nombre_archivo, uint32_t bloque_a_leer, int bloque_archivo, t_superbloque* superbloque){
 
 	int posicion_en_archivo_a_leer = (superbloque->block_size)*bloque_a_leer;
+	esperar_por(retardo_acceso_bloque);
 
 	//TODO VER QUE ES BLOQUE ARCHIVO VS BLOQUE FILESYSTEM
 	log_info(logger, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d",nombre_archivo, bloque_archivo, bloque_a_leer);
@@ -703,6 +705,8 @@ void guardar_en_bloque(char* nombre_archivo, uint32_t numero_de_bloque, int bloq
 	
 
 	int posicion_en_archivo_a_guardar = (superbloque->block_size)*numero_de_bloque;
+
+	esperar_por(retardo_acceso_bloque);
 
 	//TODO VER QUE ES BLOQUE ARCHIVO VS BLOQUE FILESYSTEM
 	log_info(logger, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d",nombre_archivo, bloque_archivo, numero_de_bloque);

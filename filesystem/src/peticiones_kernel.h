@@ -7,6 +7,7 @@
 #include "filesystem.h"
 #include <math.h>
 
+extern int retardo_acceso_bloque;
 
 void crear_archivo();
 void truncar_archivo(t_superbloque* superbloque );

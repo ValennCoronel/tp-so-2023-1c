@@ -19,7 +19,6 @@ int main(void){
 	char* path_superbloque;
 	char* path_bitmap;
 	char* path_bloques;
-	double retardo_acceso_bloque;
 
 	t_superbloque* superbloque;
 
@@ -39,7 +38,7 @@ int main(void){
 	path_bitmap =config_get_string_value(config, "PATH_BITMAP");
 	path_bloques =config_get_string_value(config, "PATH_BLOQUES");
 	path_fcb = config_get_string_value(config, "PATH_FCB");
-	retardo_acceso_bloque = config_get_double_value(config, "RETARDO_ACCESO_BLOQUE");
+	retardo_acceso_bloque = config_get_int_value(config, "RETARDO_ACCESO_BLOQUE");
 
 	if(!ip_memoria || !puerto_memoria || !puerto_escucha || !path_superbloque || !path_bitmap || !path_bloques || !path_fcb || !retardo_acceso_bloque){
 		log_error(logger, "Falta una de las siguientes propiedades en el archivo de configuración: 'IP_MEMORIA', 'PUERTO_MEMORIA', 'PUERTO_ESCUCHA', 'PATH_SUPERBLOQUE', 'PATH_BITMAP', 'PATH_BLOQUES', 'PATH_FCB', 'RETARDO_ACCESO_BLOQUE' ");
