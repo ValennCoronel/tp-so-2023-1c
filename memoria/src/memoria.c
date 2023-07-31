@@ -869,5 +869,13 @@ t_list* obtener_todos_los_segmentos(){
 		}
 	}
 
+	bool _ordenar_segmentos(void* segmento_actual, void* segmento_siguiente){
+		t_segmento* segmento_actual_n = (t_segmento*) segmento_actual;
+		t_segmento* segmento_siguiente_n = (t_segmento*) segmento_siguiente;
+		return segmento_actual_n->direccion_base < segmento_siguiente_n->direccion_base;
+	}
+
+	list_sort(segmentos_del_sistema, _ordenar_segmentos);
+
 	return segmentos_del_sistema;
 }
